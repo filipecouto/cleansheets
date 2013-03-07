@@ -1,0 +1,422 @@
+<html>
+<head>
+<!--    
+ @startuml api/csheets/doc-files/domain_model_formulas_image1.png
+class Formula {
+	+Formula(Cell cell, Expression expression) 
+}
+interface Expression {
+	+Value evaluate()
+	+Object accept(ExpressionVisitor visitor)
+}
+interface Reference {
+}
+abstract class Operation {
+}
+class UnaryOperation {
+}
+class BinaryOperation {
+}
+class FunctionCall {
+}
+class Literal {
+}
+interface ExpressionVisitor {
+	+Object visitLiteral(Literal literal)
+	+Object visitUnaryOperation(UnaryOperation operation)
+	+Object visitBinaryOperation(BinaryOperation operation)
+	+Object visitReference(Reference reference)
+	+Object visitFunctionCall(FunctionCall call)
+}
+Expression <|-- Formula
+Expression <|-- Reference
+Expression <|-- Operation
+Expression <|-- FunctionCall
+Expression <|-- Literal
+Operation <|-- BinaryOperation
+Operation <|-- UnaryOperation
+Formula --> Reference : getReferences()
+Reference --> Cell : getCells();
+Cell --> Formula : getFormula
+BinaryOperation --> Expression : leftOperand
+BinaryOperation --> Expression : rightOperand
+UnaryOperation --> Expression : operand
+ @enduml
+ 
+ @startuml api/csheets/doc-files/domain_model_image1.png
+ class Workbook {
+  + Workbook() 
+  + Workbook(int sheets)
+  + Workbook(String[][]... contents)
+ }
+ interface Spreadsheet {
+ 	+String getTitle()
+	+setTitle(String title)
+	+int getColumnCount()
+	+getRowCount()
+	+Cell getCell(Address address)
+	+Cell getCell(int column, int row)
+	+SortedSet<Cell> getCells(Address address1, Address address2)
+	+Cell[] getColumn(int index)
+	+Cell[] getRow(int index)
+ }
+ interface Cell {
+	+String getContent()
+	+setContent(String content)
+	+clear()
+	+SortedSet<Cell> getPrecedents()
+	+SortedSet<Cell> getDependents()
+	+copyFrom(Cell source)
+	+moveFrom(Cell source)
+ }
+ class Address {
+ 	+Address(int column, int row)
+ 	+int getColumn()
+ 	+int getRow()
+ 	+int compareTo(Address address) 
+ 	+String toString() 
+ }
+ class Value {
+ 	+Value()
+	+Value(Number number)
+	+Value(String text) 
+	+Value(Boolean booleanValue) 
+	+Value(Date date) 
+	+Value(Value[] matrix) 
+	+Value(Value[][] matrix) 
+	+Value(Throwable error) 
+	+Object toAny()
+	+boolean isOfType(Type type)
+	+Number toNumber()
+	+double toDouble()
+	+String toText()
+	+Boolean toBoolean() 
+	+public Date toDate()
+	+Value[][] toMatrix()
+	+Throwable toError()
+	+int compareTo(Value otherValue)
+	+String toString(Format format)
+	+Value parseValue(String value, Type... types)
+ }
+ enum Value.Type {
+		UNDEFINED
+		NUMERIC
+		TEXT
+		BOOLEAN
+		DATE
+		MATRIX
+		ERROR
+ }
+ interface WorkbookListener {
+	+spreadsheetInserted(Spreadsheet spreadsheet, int index)
+	+spreadsheetRemoved(Spreadsheet spreadsheet)
+	+spreadsheetRenamed(Spreadsheet spreadsheet)
+}
+interface CellListener {
+	+valueChanged(Cell cell)
+	+contentChanged(Cell cell)
+	+public void dependentsChanged(Cell cell)
+	+cellCleared(Cell cell)
+	+cellCopied(Cell cell, Cell source)
+}
+class SpreadsheetImpl {
+}
+class CellImpl {
+}
+Spreadsheet <|-- SpreadsheetImpl
+Cell <|-- CellImpl
+
+ Workbook --> Spreadsheet : spreadsheets
+ Workbook --> WorkbookListener : listeneers
+ Spreadsheet --> Cell : iterator
+ Spreadsheet --> CellListener : listeners
+ 
+ Cell --> Address : getAddress()
+ Cell --> Value : getValue()
+ Cell --> CellListener : listeners
+ 
+ Value --> Value.Type : getType()
+  
+ @enduml 
+-->
+
+<!--    
+ @startuml api/csheets/doc-files/application_start_image1.png
+participant CleanSheets as CS
+participant "app : CleanSheets" as aCS
+participant "FormulaCompiler" as FC
+participant Language as L
+participant ExtensionManager as EM
+participant "extProps : Properties" as extProps
+participant Class as Class
+participant "aClass : Class" as aClass
+participant "extension : Extension" as aExt
+
+[-> CS: main
+
+activate CS 
+
+create aCS
+CS -> aCS : app = new
+
+activate aCS
+aCS -> FC : getInstance
+aCS -> L : getInstance
+aCS -> EM : getInstance
+
+activate EM
+EM -> EM : instance=new ExtensionManager();
+EM -> extProps : load ("res/extensions.props")
+note right: load the extensions of the application
+EM -> extProps : load ("extensions.props")
+note right: load the extensions of the user
+
+loop for entry : extProps
+    EM -> Class : aClass = forName(entry.getKey())
+    activate Class
+    create aClass
+ 	Class -> aClass : new
+	deactivate Class
+    EM -> aClass : extension = (Extension)newInstance();
+	activate aClass
+    create aExt
+    aClass -> aExt : new
+    deactivate aClass
+    
+    EM -> aExt : name = getName
+    activate aExt
+    deactivate aExt
+    EM -> EM : extensionMap.put(name, extension)
+end
+        
+deactivate EM
+
+deactivate aCS
+
+deactivate CS
+@enduml
+-->
+<!--    
+ @startuml api/csheets/doc-files/application_start_image2.png
+participant CleanSheets as CS
+participant "app : CleanSheets" as aCS
+participant "Frame.Creator" as FC
+participant "Frame" as F
+participant "uiController : UIController" as UIC
+participant "chooser : FileChooser" as FChooser
+participant "actionManager : ActionManager" as aM
+participant "mb : MenuBar" as MB
+
+
+[-> CS: main
+
+activate CS 
+
+create aCS
+CS -> aCS : app = new
+...
+CS -> FC : new(app)
+CS -> FC : createAndWait
+activate FC
+FC -> FC : run
+activate FC
+create F
+FC -> F : new(app)
+activate F
+create UIC
+F -> UIC : uiController = new(app)
+create FChooser
+F -> FChooser : chooser = new(this, app.getUserProperties)
+create aM
+F -> aM : actionManager = (app, uiController, chooser);
+|||
+note right of F
+  Here we have more
+  initializations...
+end note
+create MB
+F -> MB : mb = new(app, actionManager, uiController)
+F -> F : setJMenuBar(mb)
+deactivate F
+deactivate FC
+deactivate FC
+
+
+ @enduml
+-->
+
+</head>
+<body>
+CleanSheets is a spreadsheet application for the Java platform, featuring Excel-style formulas and an extension mechanism. The application requires the Java 2 Platform Standard Edition 5.0 to compile and run. <br/>
+This is a special fork from the original CleanSheets project that is used by the LAPR4 course of the Informatics Engineering undergraduate program at ISEP (http://www.isep.pt).<br/> 
+Questions and comments can be addressed to Alexandre Braganca (atb@isep.ipp.pt).
+<hr>
+
+<h1>Technical documentation regarding LAPR4 project extensions</h1><br/>
+
+This technical documentation is divided in the following sections:<br/>
+<li><a href="#project_workflow">Project Workflow</a></li>
+<li><a href="#arranque_da_aplicacao">Application Start</a></li>
+<li><a href="#mecanisno_de_extensoes">Extension Mechaninsm</a></li>
+<li><a href="#modelo_de_dominio">Domain Model</a></li> 
+<li><a href="#persistencia">Persistence</a></li>
+<li><a href="#linguagens">Languages</a></li>
+<li><a href="#partilha">Shared Memory</a></li>
+</ul>
+
+<br/>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B><a name="project_workflow">Project Workflow</a></B>
+</FONT></TH>
+</TR>
+</TABLE>
+
+<br/>
+This sections explains the workflow of the LAPR4 project. <br/>
+<br/>
+<b>The team and the repository</b><br/>
+The LAPR4 project is to be developed by a group (team) of 3 students during 3 weeks at full time.<br/>
+Each group will have a supervisor which is a teacher of LAPR4.<br/>
+Each group should make a fork of the CleanSheets repository at bitbucket (https://bitbucket.org). This is a Git repository.<br/>
+The resulting repository should by private and acessible only by the group members, the group supervisor and the LAPR4 regent (atb@isep.ipp.pt)<br/>
+The repository should also have "issues" enabled, since these will be used during the project to register the work of each group member.<br/>
+<br/>
+<b>The requirements iteractions</b><br/>
+The project regards extensions and adaptations to CleanSheets. The requirements of these extensions and adaptations are presented and explained to the group in a iteratively fashion.<br/>
+At the beginning of each week new requirements are presented to the group. The group is expected to use a scrum-like work method to develop the project.<br/>
+At the beginning of each week the group should plan the week's "sprint" in order to address the requirements of that week. This should be done with the help and supervision of the Management teachers at the management module class at the beginning of the week.<br/>
+Issues should be used to register how requirements will be addressed and by whom. It is of paramount importance to use the "issues" feature of bitbucket because it will serve as a major input for the assessment of the project.<br/>
+<br/>
+<b>The project structure</b><br/>
+As stated before each team will be composed of 3 students. The project duration is 3 weeks. The functional requirements are devided in 3 major areas: persistence; languages and shared memory.</br>
+Each member of a team is supposed to address a specific functional area each week. However that are also common tasks, like tool support, research, documentation, etc. that need to be addressed by the team. The planning of all these tasks is one of the major results of the week's planning class, as denoted before.<br/> 
+The individual assessment of each member is majorated by how many different functional areas has he worked on.<br/> For instance, a group member that addressed 3 different functional areas during the 3 weeks will (normally) have his work better graded than a group member that only addressed a single functional area during the same 3 weeks.<br/> 
+Excepcionally there can be groups with only 2 members. Even so, each member of these groups can address as many as 3 functional areas but less deeply. For instance, a specific student in this case could address the first week requirements for the persistence area during week 1, the second week requirements for the languages area during week 2 (assuming his collegue had worked this area in the first week) and the first week requirements for the shared memory area during the final week.<br/>
+Each team should configure the issues features of the project in bitbucket as follows:<br/>
+- Components: persistence; languages; shared memory.<br/>
+- Milestones: week1(alfa), week2(beta), week3(release candidate).<br/>
+- Version: 1.5a<br/>
+<br/>
+<b>Unit Tests and Use Case Tests</b><br/>
+The member that will address a specific requirement (i.e., issue) will also be responsable for: the unit tests regarding the classes used to implement the requirement and the technical documentation of the requirement (i.e., updating this documentation).<br/>
+However, it is expected that use case tests (i.e., manual tests based on the use cases) be executed by a member that did not design and implement the use case. <br/>
+The use case tests should be executed after the issue (requirement) is closed by the member that implemented the requirement. If the member that executes the use case test identifies a problem or a bug he should re-open the issue and alert his collegue to this situation. <br/>
+Obviouslly it is a goal of the developer not to close issues (requirements) that may have problems/bugs. Also, for a use case tester the goal is to identify as many problems/bugs as possible before the release of a version to the end user.<br/>
+<br/>
+<b>Technical documentation</b><br/>
+"falar desta documentacao em javadoc"
+<br/>
+<b>Design</b><br/>
+"falar do padroes", "IOC - inversion of control, etc"
+<br/>
+
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B><a name="arranque_da_aplicacao">Application Start</a></B>
+</FONT></TH>
+</TR>
+</TABLE>
+
+<!-- Place here documentation regarding the start of the application -->
+</br>
+The following diagram illustrates how the application starts. Particularly, it illustrates the initial loading of extensions by the application.<br/>
+The extensions of the application are "special" classes that are registered in specific property files as denoted by the diagram.<br/>
+<br/>
+<img src="csheets/doc-files/application_start_image1.png"></a> 
+<br/>
+<br/>
+Finally (but also within the main method) the user interface is created.<br/>
+The following diagram depicts this last setup task.<br/>
+The MenuBar class will build the menu options. These menu options include not only the base menu options but also menu options that may have been declared by the application extensions.<br/>
+
+<br/>
+<img src="csheets/doc-files/application_start_image2.png"></a> 
+<br/>
+<br/>
+
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B><a name="mecanismo_de_estensoes">Extension Mechanism</a></B>
+</FONT></TH>
+</TR>
+</TABLE>
+
+</br>
+Place here documentation regarding the extension mechanism.
+<br/>
+<br/>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B><a name="modelo_de_dominio">Domain Model</a></B>
+</FONT></TH>
+</TR>
+</TABLE>
+
+<br/>
+Place here documentation regarding the domain model.
+<br/>
+
+<img src="csheets/doc-files/domain_model_image1.png"></a> 
+
+<br/>
+The formulas...
+<br/>
+<img src="csheets/doc-files/domain_model_formulas_image1.png"></a> 
+<br/>
+<br/>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B><a name="persistencia">Persistence</a></B>
+</FONT></TH>
+</TR>
+</TABLE>
+
+</br>
+Place here documentation regarding the persistence functional area of the project.
+<br/>
+<br/>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B><a name="linguagens">Languages</a></B>
+</FONT></TH>
+</TR>
+</TABLE> 
+
+</br>
+Place here documentation regarding the languages functional area of the project.
+<br/>
+<br/>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B><a name="partilha">Shared Memory</a></B>
+</FONT></TH>
+</TR>
+</TABLE>
+
+</br>
+Place here documentation regarding the shared memory functional area of the project.
+<br/>
+<br/>
+
+@version 1.4c
+@author Alexandre Braganca
+@version 1.4b
+@author Einar Pehrson
+
+</body
+</html>
