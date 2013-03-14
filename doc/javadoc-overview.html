@@ -256,7 +256,7 @@ Questions and comments can be addressed to Alexandre Braganca (atb@isep.ipp.pt).
 
 This technical documentation is divided in the following sections:<br/>
 <li><a href="#project_workflow">Project Workflow</a></li>
-<li><a href="#arranque_da_aplicacao">Application Start</a></li>
+<li><a href="#arranque_da_aplicacao">Application Startup</a></li>
 <li><a href="#mecanisno_de_extensoes">Extension Mechaninsm</a></li>
 <li><a href="#modelo_de_dominio">Domain Model</a></li> 
 <li><a href="#persistencia">Persistence</a></li>
@@ -300,24 +300,91 @@ Each team should configure the issues features of the project in bitbucket as fo
 - Milestones: week1(alfa), week2(beta), week3(release candidate).<br/>
 - Version: 1.5a<br/>
 <br/>
+<b>Working with issues in bitbucket</b><br/>
+At the beginning of the week the team shall meet to plan the sprint. A series of issues resulting from the requirements should be defined. Each team member should be responsible for one or more issues. Issues should be registered in bitbucket as described earlier.<br/>
+Each issue registered in bitbucket is identified by an integer number. Every time a team member commits work in the repository the commit message should contain the related issue number as weel as the email of the author. The following is an example of a commit message "223322@isep.ipp.pt: added the setup classes for the annotation extension ref #1"<br/> 
+There are some keyworks that are specially identified by bitbucket in commits and result in some automatic behavior. In the previous example, the keyword "ref" followed by "#" and the issue number will automatically generate a comment in the issue 1 with the text of the commit message as weel as a reference to the changeset produced by the commit. Other very usefull keyword is "close", which changes the state of the issue to closed. This keyword should be used when the author enters the last commit regarding an issue.<br/> 
+Team members should also use bitbucket to register comments regarding important events or notes in issues. For instance, if a team member did some specific task related to an issue that did not result in a commit he can (shall) register that in a comment of the issue. For instance "Done some research on how to validate xml files. Going to document this in a new section of the technical documentation in a future commit.". Comments in issues can also be used to alert other team members of encountered problems, for instance.<br/> 
+<br/>
+<b>Issues, Requirements and Use Cases</b><br/>
+At the beginning of each week a new requirements document is published. From the statement of the requirements one or more use cases can be identified. Usually support tasks are not identified as use cases (i.e., setup or configurations required to support a use case) if they will be addressed by the same team member that will be responsible for the use case.<br/>
+Each use case will usually also give origin to one issue in bitbucket that will be assigned to one team member.<br/>
+However, even in these cases, a issue that resulted from a use case will usually require several tasks (each item ~ a working day):<br/>
+- to scope the problem (i.g., what information to include/exclude when saving a spreadsheet) and to address specific technical problems (e.g. study how xml files can be validated);<br/>
+- detailed analysis of the use case and first draft of a solution by proposing a use case realization. Identification of possible updates to the domain model. The first draft of unit tests for the use case;<br/>
+- design (apply design patterns, etc.) and coding of the solution. Address the technical documentation (javadoc);<br/>
+- when coding is completed do as much tests as possible (this time use case tests, not unit tests). Complete the technical documentation (e.g., domain model diagram, use case relization diagram, technical descriptions, etc.). Commit the issue and mark it as closed so that other team member can run use case tests on it;<br/>
+- run use case tests (this should be done by a team member that was not the author of the use case). If bugs are detected reopen the issue so that the author can address the bug. When all the issues (use cases) of the sprint are tested and closed a tag should be added to the repository to mark the milestone.<br/>
+<br/>
 <b>Unit Tests and Use Case Tests</b><br/>
-The member that will address a specific requirement (i.e., issue) will also be responsable for: the unit tests regarding the classes used to implement the requirement and the technical documentation of the requirement (i.e., updating this documentation).<br/>
+The member that will address a specific requirement (i.e., issue) will also be responsible for: the unit tests regarding the classes used to implement the requirement and the technical documentation of the requirement (i.e., updating this documentation).<br/>
 However, it is expected that use case tests (i.e., manual tests based on the use cases) be executed by a member that did not design and implement the use case. <br/>
 The use case tests should be executed after the issue (requirement) is closed by the member that implemented the requirement. If the member that executes the use case test identifies a problem or a bug he should re-open the issue and alert his collegue to this situation. <br/>
 Obviouslly it is a goal of the developer not to close issues (requirements) that may have problems/bugs. Also, for a use case tester the goal is to identify as many problems/bugs as possible before the release of a version to the end user.<br/>
 <br/>
 <b>Technical documentation</b><br/>
-"falar desta documentacao em javadoc"
+The technical documentation of the project is the one presented in this collection of html files that was generated by javadoc. Javadoc is a tool (included in the java sdk) that essentially generates the technical documentation from special comments on the source code of the project.<br/>
+Therefore the technical documentation that javadoc usually produces regards documentation about elements of the code (classes, methods, etc.). For this kind of project this is not enough since a very important part of the technical documentation regards aspects that relate to other stages of the software development process, like analysis and design. In these cases, documentation usually does not directely relate to code elements. Formats such as narrative text or visual diagrams are used (e.g., UML diagrams).<br/>
+Since javadoc does not provide direct support to generate UML diagrams a tool named PlanUML (plantuml.sourceforge.net) was adopted to generate the diagrams and incorporate them in the html that is generated with javadoc.<br/>
+PlantUML is not a drawing tool, it is a tool that generates diagrams from textual descriptions of the diagrams, by using a simple and intuitive textual language.<br/> 
+These textual descriptions of the diagrams can be incorporated in comments, near the javadoc comments. Javadoc directives can then reference the diagrams (since plantuml will generate an image for each diagram).<br/>
+All the documentation of this technical documentation was generate from javadoc comments inside the java source files of the project (with plantuml diagrams) except for this page (javadoc-overview.html) that is the main and default page (and is not generated by javadoc but is included in the folder containing the generated documentation).<br/> 
+By following this approach it becomes more easy to maintain the documentation in synch with the code and always in control by the DVCS (Distributed Version Control System).<br/>  
 <br/>
 <b>Design</b><br/>
-"falar do padroes", "IOC - inversion of control, etc"
+"falar do padroes", "IOC - inversion of control, etc"<br/>
 <br/>
+<b>The structure of the repository</b><br/>
+This section describes the artifacts that compose the project (files and folders).<br/>
+These are the main artifacts:<br/>
+- <b>readme.txt</b>: This file contains the "must read before all things" information. For instance it should state how to generate and open this documentation.<br/>
+- <b>src</b>: This folder contains the java source code of the project.<br/>
+- <b>src-resources</b>: This folder contains other artifacts that are used/necessary to configure or build the project but are not java source files (e.g., image files, property files)<br/>
+- <b>src-tests</b>: This folder contains the source code for the unit tests<br/>
+- <b>scripts</b>: This folder contains scripts that can be used to execute several tasks (e.g., build the cleanseets jar, generate the technical documentation)<br/>
+- <b>lib</b>: This folder contains dependencies that are required for building cleansheets. Initially antlr.jar, junit-4.10.jar and plantuml.jar.<br/>
+- <b>legal</b>: Legal information regarding the Cleansheets project.<br/>
+- <b>doc</b>: This folder contains files related to the technical documentation that are not generated from the javadoc comments in the source files. The documentation generated from javadoc is created in the subfolder "api" (which is not required to be in the DVCS because it is generated)<br/>
+- <b>dist</b>: This folder should contain all files that are required to execute cleansheets. Initially it contains antlr.jar and csheets.jar. Since these files result from the building process they are not required to be controlled by the DVCS.<br/>
+- <b>tmp-build</b>: This folder contains de result of the building process. It should not be in the DVCS.<br/>
+These are the artifacts required for eclipse:<br/>
+- <b>.classpath</b>: This file contains several paths of the eclipse project<br/>
+- <b>.project</b>: This is the main project file of the eclipse project<br/>
+- <b>res</b>: This folder contains de result of the building process of eclipse. It should not be in the DVCS.<br/>
+These are the artifacts required for netbeans:<br/>
+- <b>nbproject</b>: This is the main folder for the netbeans project<br/>
+- <b>??</b>:<br/>
 
+ignorar (do netbeans):
+/nbproject/private
+/build.xml
+/manifest.mf
+
+These are the artifacts required for the DVCS (Git):<br/>
+- <b>.gitignore</b>: This file contains entries that specify files or folders that we want to exclude from the DVCS<br/>
+<br/>
+<b>Scripts</b><br/>
+The project includes scripts that are used to accomplish several tasks in the project. Even if the team uses netbeans or eclipse as an environment for the development process it should always maintain the scripts updated. <b>The scripts will always be used for presentation of the project and for evaluations.</b><br/>
+The project only comes with updated scripts for Linux or Mac OS. Team members should create/update the Windows versions.<br/>
+Scripts should be executed within a terminal/console and with the "scripts" folder as current folder<br/>
+To build the Cleanseets jar:<br/>
+./cc.sh - this generates lexer and parser code from the .g files<br/>
+./makejar.sh - this compiles the java code; adds the resource files; creates the csheets.jar file and updates the dist folder<br/>
+<br/>
+./build.sh - so compila o codigo java, nao cria o jar nem coloca em dist<br/>
+./build_tests.sh - so compila o codigo do testes (nao actualizado)<br/>
+./run_tests.sh - executa o testes com o junit (nao actualizado)<br/>
+./run.sh - executa o cleansheets a partir do csheets.jar em dist<br/>
+./makeuml.sh - gera os diagramas (imagens) descritos nos comentarios do codigo java e em javadoc-overview.html.<br/>
+./makedoc.sh - gera a documentacao do projecto com base nos comentarios javadoc<br/>
+./console.sh - nao actualizado<br/>
+./clean.sh - nao actualizado <br/>
+<br/>
 
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B><a name="arranque_da_aplicacao">Application Start</a></B>
+<B><a name="arranque_da_aplicacao">Application Startup</a></B>
 </FONT></TH>
 </TR>
 </TABLE>
