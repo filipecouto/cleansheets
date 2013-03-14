@@ -1,17 +1,13 @@
-As seguintes pastas NAO devem estar no repositorio (sao geradas ou tem apenas ficheiros temporarios):
-dist
-doc/api       ; o seu conteudo e' gerado pelo javadoc
-res           ; o eclipse coloca nesta pasta o resultado da sua compilacao
-tmp-build
+The 'scripts' folder contains executable files that can be used to perform important tasks of the project.
 
-Ficheiros especificos do eclipse (que devem ser mantidos no repositorio):
-.classpath
-.project
-
-Para executar o projecto fazer (no minimo):
+Attention: Only files with the extension .sh (Linux and Mac OS) are updated. You should update/create the
+corresponding files for Windows (.bat)!!
+Ê
+One of the first tasks is to generate technical documentation and study it.
+For that you should do:
 $> cd scripts
-$> ./cc.sh                    ; para gerar codigo java com base na especificacao das linguagens - ficheiros .g
-$> ./makejar.sh               ; compila todo o codigo java; junta aos recursos (src-resources); gera o ficheiro csheets.jar e coloca o necessario na pasta dist 
-$> ./run.sh                   ; executa o csheets.jar que se encontra na pasta dist
+$> ./makeuml.sh
+$> ./makedoc.sh
+Then open the file doc/api/index.html in a browser.
 
 
