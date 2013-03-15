@@ -3,6 +3,7 @@ The 'scripts' folder contains executable files that can be used to perform impor
 Attention: Only files with the extension .sh (Linux and Mac OS) are updated. You should update/create the
 corresponding files for Windows (.bat)!!
 
+
 One of the first tasks is to generate technical documentation and study it.
 For that you should do:
 $> cd scripts
