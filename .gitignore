@@ -1,4 +1,5 @@
 /tmp-build
+/tmp-build-tests
 /csheets.xml
 /doc/api
 /res
@@ -12,5 +13,5 @@
 /src/csheets/ext/comments/doc-files/
 /src/csheets/ext/simple/doc-files/
 /scripts/csheets.xml
+/scripts/c.lst
 /dist
-
