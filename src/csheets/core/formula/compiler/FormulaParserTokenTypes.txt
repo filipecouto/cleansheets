@@ -1,4 +1,4 @@
-// $ANTLR 2.7.5 (20050128): FormulaCompiler.g -> FormulaParserTokenTypes.txt$
+// $ANTLR 2.7.5 (20050128): ../src/csheets/core/formula/compiler/FormulaCompiler.g -> FormulaParserTokenTypes.txt$
 FormulaParser    // output token vocab name
 EQ=4
 NEQ=5

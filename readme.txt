@@ -10,4 +10,15 @@ $> ./makeuml.sh
 $> ./makedoc.sh
 Then open the file doc/api/index.html in a browser.
 
+To build the csheets.jar you should do:
+$> cd scripts
+$> ./cc.sh
+$> ./makejar.sh
+
+To execute csheets (from csheets.jar):
+$> cd scripts
+$> ./run.sh
+
+ 
+
 
