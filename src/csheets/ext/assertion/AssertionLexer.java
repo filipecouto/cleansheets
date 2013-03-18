@@ -1,4 +1,4 @@
-// $ANTLR 2.7.5 (20050128): "AssertionParser.g" -> "AssertionLexer.java"$
+// $ANTLR 2.7.5 (20050128): "../src/csheets/ext/assertion/AssertionParser.g" -> "AssertionLexer.java"$
 package csheets.ext.assertion;
 import java.io.InputStream;
 import antlr.TokenStreamException;

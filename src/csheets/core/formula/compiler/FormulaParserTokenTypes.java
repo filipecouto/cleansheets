@@ -1,4 +1,4 @@
-// $ANTLR 2.7.5 (20050128): "FormulaCompiler.g" -> "FormulaLexer.java"$
+// $ANTLR 2.7.5 (20050128): "../src/csheets/core/formula/compiler/FormulaCompiler.g" -> "FormulaLexer.java"$
 package csheets.core.formula.compiler;
 public interface FormulaParserTokenTypes {
 	int EOF = 1;
