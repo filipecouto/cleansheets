@@ -1,8 +1,8 @@
-/tmp-build
-/tmp-build-tests
+/tmp-build/
+/tmp-build-tests/
 /csheets.xml
-/doc/api
-/res
+/doc/api/
+/res/
 /nbproject/private/
 /build.xml
 /manifest.mf
@@ -14,4 +14,4 @@
 /src/csheets/ext/simple/doc-files/
 /scripts/csheets.xml
 /scripts/c.lst
-/dist
+/dist/
