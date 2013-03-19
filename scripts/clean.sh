@@ -1,4 +1,7 @@
 #!/bin/sh
-
-echo Removing temporary files...
-find ../res -iname "*.class" -exec rm {} \;
+rm -dfR ../tmp-build
+mkdir ../tmp-build
+rm -dfR ../tmp-build-tests
+mkdir ../tmp-build-tests
+rm -dfR ../dist
+mkdir ../dist

@@ -10,8 +10,8 @@
 /nbdist/
 /build.xml
 /nbproject/genfiles.properties
-/src/csheets/ext/comments/doc-files/
-/src/csheets/ext/simple/doc-files/
+/src/csheets/ext/comments/doc-files/*
+/src/csheets/ext/simple/doc-files/*
 /scripts/csheets.xml
 /scripts/c.lst
-/dist/
+/dist/*
