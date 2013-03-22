@@ -1,7 +1,12 @@
-The 'scripts' folder contains executable files that can be used to perform important tasks of the project.
+The 'scripts' folder contains executable files that can be used 
+to perform important tasks of the project.
 
-Scripts with the .sh extension are to be used in Linux and Mac OS. Scripts with the .bat extension are to be used in Windows.
+Scripts with the .sh extension are to be used in Linux and Mac OS. 
+Scripts with the .bat extension are to be used in Windows.
 Attention: You should always maintain the scripts up-to-date!
+
+You should install Graphviz (http://www.graphviz.org/) in your computer 
+to be able to generate all type of diagrams in javadoc!
 
 One of the first tasks is to generate technical documentation and study it.
 For that you should do:
