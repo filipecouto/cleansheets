@@ -4,5 +4,4 @@ csheets.ext.assertion.AssertionExtension
 csheets.ext.test.TestExtension
 csheets.ext.simple.ExtensionExample
 csheets.ext.comments.CommentsExtension
-
-
+csheets.ext.db.DatabaseExtension
