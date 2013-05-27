@@ -7,7 +7,7 @@ package csheets.ext.exportation.db;
  * @author Filipe_1110688
  */
 
-public interface DBExportInterface {
+public interface DataBaseExportInterface {
 
 	/**
 	 * Invoked by the application to create a new table in the determined database driver
