@@ -109,6 +109,7 @@ public class CleanSheets {
 	public static void main(String[] args) {
 		CleanSheets app = new CleanSheets();
 
+		// The following lines were commented out so the program has the same look and feel as the other programs 
 		// Configures look and feel
 		// javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);
 		// javax.swing.JDialog.setDefaultLookAndFeelDecorated(true);
@@ -118,6 +119,8 @@ public class CleanSheets {
 //				javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
 //		} catch (Exception e) {
 //		}
+		//
+		
 		/* try {
 			javax.swing.UIManager.setLookAndFeel("className");
 		} catch (Exception e) {} */
