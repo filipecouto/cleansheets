@@ -5,7 +5,7 @@ package csheets.ext.db;
  * @author gil_1110484 & Filipe_1110688
  */
 
-public class DatabaseExporter {
+public class DatabaseExportBuilder {
 
 	// variables
 	private String driver; //database driver
@@ -14,14 +14,14 @@ public class DatabaseExporter {
 	private String[][] values; //values for the table
 	
 	// constructors
-	public DatabaseExporter(String driver, String database, String[] columns, String[][] values) {
+	public DatabaseExportBuilder(String driver, String database, String[] columns, String[][] values) {
 		setDriver(driver);
 		setDatabase(database);
 		setColumns(columns);
 		setValues(values);
 	}
 	
-	public DatabaseExporter(String driver) {
+	public DatabaseExportBuilder(String driver) {
 		setDriver(driver);
 	}
 	
