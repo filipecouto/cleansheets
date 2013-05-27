@@ -110,14 +110,14 @@ public class CleanSheets {
 		CleanSheets app = new CleanSheets();
 
 		// Configures look and feel
-		javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);
-		javax.swing.JDialog.setDefaultLookAndFeelDecorated(true);
+		// javax.swing.JFrame.setDefaultLookAndFeelDecorated(true);
+		// javax.swing.JDialog.setDefaultLookAndFeelDecorated(true);
 		
-		try {
-			javax.swing.UIManager.setLookAndFeel(
-				javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
-		} catch (Exception e) {
-		}
+//		try {
+//			javax.swing.UIManager.setLookAndFeel(
+//				javax.swing.UIManager.getCrossPlatformLookAndFeelClassName());
+//		} catch (Exception e) {
+//		}
 		/* try {
 			javax.swing.UIManager.setLookAndFeel("className");
 		} catch (Exception e) {} */
