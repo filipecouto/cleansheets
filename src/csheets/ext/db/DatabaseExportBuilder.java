@@ -10,7 +10,7 @@ public class DatabaseExportBuilder {
 	// variables
 	private String driver; //database driver
 	private String database; //database name
-	private String[] columns; //columns for the table
+	private String[] columns; //columns for the table	
 	private String[][] values; //values for the table
 	
 	// constructors
@@ -59,7 +59,21 @@ public class DatabaseExportBuilder {
 	}
 	
 	public void export() {
-	
+		try {
+			Class<?> cl = Class.forName(driver);
+			Class<? extends DatabaseExportInterface> type = null;
+			Class<? extends DatabaseExportInterface> target = cl.asSubclass(type);
+			try {
+				DatabaseExportInterface exporter = target.newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 }
