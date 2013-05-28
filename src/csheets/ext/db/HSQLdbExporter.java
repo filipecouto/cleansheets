@@ -11,7 +11,7 @@ import java.sql.SQLException;
  *
  */
 
-public class hsqldbExporter implements DatabaseExportInterface {
+public class HSQLdbExporter implements DatabaseExportInterface {
 
     private Connection databaseConnection;
 
@@ -39,7 +39,6 @@ public class hsqldbExporter implements DatabaseExportInterface {
 		}
 	    }
 	    Statement += ")";
-	    System.out.println(Statement);
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (SQLException e) {
 	    e.printStackTrace();
