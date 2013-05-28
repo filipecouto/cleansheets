@@ -46,4 +46,10 @@ public interface DatabaseExportInterface {
 	 * @return true if it requires username false if it does not
 	 */
 	public boolean requiresUsername();
+	
+	/**
+	 * Invoked by the user interface to find if this exporter requires an password
+	 * @return true if it requires password false if it does not
+	 */
+	public boolean requiresPassword();
 }
