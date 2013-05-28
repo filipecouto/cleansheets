@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 
 import csheets.core.Cell;
 import csheets.ext.db.DatabaseExportBuilder;
+import csheets.ext.db.DatabaseExportController;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.sheet.SpreadsheetTable;
 
@@ -104,7 +105,8 @@ public class DatabaseExportDialog extends JFrame {
 		ok.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				export();
+				DatabaseExportController controller = new DatabaseExportController();
+				controller.export();
 			}
 		});
 		add(ok);
@@ -141,31 +143,4 @@ public class DatabaseExportDialog extends JFrame {
 		return field;
 	}
 
-	private void export() {
-		try {
-			DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(extension.getAvailableDrivers()[format.getSelectedIndex()]);
-			exportBuilder.setDatabase(url.getText().length() != 0 ? url.getText() : fileChooser.getSelectedFile().getAbsolutePath());
-			exportBuilder.setTableName(tableName.getText());
-			final Cell[][] selectedCells = table.getSelectedCells();
-			final int rowCount = selectedCells.length - 1;
-			if (rowCount < 1) return;
-			final int columnCount = selectedCells[0].length;
-			String[] columns = new String[columnCount];
-			for (int i = 0; i < columnCount; i++) {
-				columns[i] = selectedCells[0][i].getValue().toString();
-			}
-			exportBuilder.setColumns(columns);
-			String[][] values = new String[rowCount][columnCount];
-			for (int y = 0; y < rowCount; y++) {
-				for (int x = 0; x < columnCount; x++) {
-					values[y][x] = selectedCells[y + 1][x].getValue().toString();
-				}
-			}
-			exportBuilder.setValues(values);
-			exportBuilder.export();
-		} catch (Exception e1) {
-			JOptionPane.showMessageDialog(getContentPane(), "There was an error while exporting your cells: " + e1.getMessage(), "Error while exporting",
-					JOptionPane.ERROR_MESSAGE);
-		}
-	}
 }
