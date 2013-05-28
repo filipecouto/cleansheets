@@ -8,7 +8,7 @@ import java.sql.SQLException;
  * Class responsible for working with HSQL Databases
  * 
  * @author Filipe_1110688
- *
+ * 
  */
 
 public class HSQLdbExporter implements DatabaseExportInterface {

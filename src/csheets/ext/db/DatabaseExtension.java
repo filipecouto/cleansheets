@@ -8,7 +8,8 @@ import csheets.ui.ctrl.UIController;
 import csheets.ui.ext.UIExtension;
 
 /**
- * This extension allows the user to export a range of cells in the active spreadsheet.
+ * This extension allows the user to export a range of cells in the active
+ * spreadsheet.
  * 
  * @author gil_1110484
  */
@@ -18,7 +19,9 @@ public class DatabaseExtension extends Extension {
     }
 
     /**
-     * Gets all available export drivers (DatabaseExportInterface's) gathering them from the DatabaseDriverManager
+     * Gets all available export drivers (DatabaseExportInterface's) gathering
+     * them from the DatabaseDriverManager
+     * 
      * @return A list containing all available drivers
      */
     public List<DatabaseExportInterface> getAvailableDrivers() {
