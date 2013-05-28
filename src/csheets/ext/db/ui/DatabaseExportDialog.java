@@ -19,6 +19,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import csheets.core.Cell;
+import csheets.ext.db.DatabaseExportControllerContainer;
 import csheets.ext.db.DatabaseExportBuilder;
 import csheets.ext.db.DatabaseExportController;
 import csheets.ext.db.DatabaseExtension;
@@ -105,8 +106,14 @@ public class DatabaseExportDialog extends JFrame {
 		ok.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DatabaseExportController controller = new DatabaseExportController();
-				controller.export();
+				try {
+					DatabaseExportController controller = new DatabaseExportController();
+					DatabaseExportControllerContainer container = new DatabaseExportControllerContainer(DatabaseExportDialog.this.extension, format, url, fileChooser, tableName, table);
+					controller.export(container);
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(getContentPane(), "There was an error while exporting your cells: " + e1.getMessage(), "Error while exporting",
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		add(ok);
