@@ -17,6 +17,7 @@ public class H2Exporter implements DatabaseExportInterface {
 	public void openDatabase(String database) {
 		try {
 			Class.forName("org.h2.Driver");
+			if (database.endsWith("h2.db")) database = database.substring(0, database.indexOf("h2.db") - 1);
 			databaseConnection = DriverManager.getConnection("jdbc:h2:" + database);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();

@@ -13,6 +13,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -37,6 +38,8 @@ public class DatabaseExportDialog extends JFrame {
 	private SpreadsheetTable table;
 
 	public DatabaseExportDialog(DatabaseExtension extension) {
+		super("Export to Database");
+
 		this.extension = extension;
 
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -111,7 +114,7 @@ public class DatabaseExportDialog extends JFrame {
 
 	public void prepareDialog(SpreadsheetTable table) {
 		this.table = table;
-		
+
 		// check whether the user selected a range of cells
 		// if he/she did: exportSelected will be checked
 		// if he/she didn't: exportWhile will be checked and exportSelected will be disabled
@@ -139,31 +142,30 @@ public class DatabaseExportDialog extends JFrame {
 	}
 
 	private void export() {
-		// try {
-		DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(extension.getAvailableDrivers()[format.getSelectedIndex()]);
-		exportBuilder.setDatabase(url.getText().length() != 0 ? url.getText() : fileChooser.getSelectedFile().getAbsolutePath());
-		exportBuilder.setTableName(tableName.getText());
-		final Cell[][] selectedCells = table.getSelectedCells();
-		final int rowCount = selectedCells.length - 1;
-		if (rowCount < 1) return;
-		final int columnCount = selectedCells[0].length;
-		String[] columns = new String[columnCount];
-		for (int i = 0; i < columnCount; i++) {
-			columns[i] = selectedCells[0][i].getValue().toString();
-		}
-		exportBuilder.setColumns(columns);
-		String[][] values = new String[rowCount][columnCount];
-		for (int y = 0; y < rowCount; y++) {
-			for (int x = 0; x < columnCount; x++) {
-				values[y][x] = selectedCells[y + 1][x].getValue().toString();
+		try {
+			DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(extension.getAvailableDrivers()[format.getSelectedIndex()]);
+			exportBuilder.setDatabase(url.getText().length() != 0 ? url.getText() : fileChooser.getSelectedFile().getAbsolutePath());
+			exportBuilder.setTableName(tableName.getText());
+			final Cell[][] selectedCells = table.getSelectedCells();
+			final int rowCount = selectedCells.length - 1;
+			if (rowCount < 1) return;
+			final int columnCount = selectedCells[0].length;
+			String[] columns = new String[columnCount];
+			for (int i = 0; i < columnCount; i++) {
+				columns[i] = selectedCells[0][i].getValue().toString();
 			}
+			exportBuilder.setColumns(columns);
+			String[][] values = new String[rowCount][columnCount];
+			for (int y = 0; y < rowCount; y++) {
+				for (int x = 0; x < columnCount; x++) {
+					values[y][x] = selectedCells[y + 1][x].getValue().toString();
+				}
+			}
+			exportBuilder.setValues(values);
+			exportBuilder.export();
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(getContentPane(), "There was an error while exporting your cells: " + e1.getMessage(), "Error while exporting",
+					JOptionPane.ERROR_MESSAGE);
 		}
-		exportBuilder.setValues(values);
-		exportBuilder.export();
-		// } catch (Exception e1) {
-		// JOptionPane.showMessageDialog(getContentPane(), "There was an error while exporting your cells: " +
-		// e1.getMessage(), "Error while exporting",
-		// JOptionPane.ERROR_MESSAGE);
-		// }
 	}
 }
