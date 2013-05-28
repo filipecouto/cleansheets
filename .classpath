@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="lib/junit-4.10.jar"/>
 	<classpathentry kind="lib" path="lib/plantuml.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/FILIPE/git/lapr4_2da_g3_s1/lib/h2-1.3.172.jar"/>
-	<classpathentry kind="lib" path="C:/Users/FILIPE/git/lapr4_2da_g3_s1/lib/hsqldb-2.2.9.jar"/>
+	<classpathentry kind="lib" path="lib/h2-1.3.172.jar"/>
+	<classpathentry kind="lib" path="lib/hsqldb-2.2.9.jar"/>
 	<classpathentry kind="output" path="res"/>
 </classpath>
