@@ -94,10 +94,12 @@ public class DatabaseExportDialog extends JFrame {
 		DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(
 			extension.getAvailableDrivers().get(
 				format.getSelectedIndex()));
-		exportBuilder
-			.setDatabase(url.getText().length() == 0 ? fileChooser
-				.getSelectedFile().getAbsolutePath() : url
-				.getText());
+		String dbUrl = url.getText();
+		if (!dbUrl.contains("/") && !dbUrl.contains("/"))
+		    dbUrl = fileChooser.getCurrentDirectory().getAbsolutePath()
+			    + "/" + dbUrl;
+		exportBuilder.setDatabase(dbUrl.length() == 0 ? fileChooser
+			.getSelectedFile().getAbsolutePath() : dbUrl);
 		exportBuilder.setTableName(tableName.getText());
 		final Cell[][] selectedCells = table.getSelectedCells();
 		final int rowCount = selectedCells.length - 1;
