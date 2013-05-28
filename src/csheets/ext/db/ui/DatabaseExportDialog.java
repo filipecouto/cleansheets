@@ -1,8 +1,5 @@
 package csheets.ext.db.ui;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -17,17 +14,12 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.Spring;
-import javax.swing.SpringLayout;
 
 import csheets.core.Cell;
-import csheets.ext.db.DatabaseExportControllerContainer;
 import csheets.ext.db.DatabaseExportBuilder;
-import csheets.ext.db.DatabaseExportController;
 import csheets.ext.db.DatabaseExportInterface;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.sheet.SpreadsheetTable;
