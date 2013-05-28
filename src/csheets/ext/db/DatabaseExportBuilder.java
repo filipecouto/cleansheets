@@ -73,6 +73,9 @@ public class DatabaseExportBuilder {
 	this.createTable = createTable;
     }
 
+    /**
+     * Proceeds to the exportation to the database, checks if creation of table is required
+     */
     public void export() {
 	// TODO maybe check if everything is ready to export, throw a
 	// RuntimeException if not

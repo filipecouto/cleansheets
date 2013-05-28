@@ -83,6 +83,9 @@ public class DatabaseExportDialog extends JFrame {
 	return panelButtons;
     }
 
+    /**
+     * Creates a Dialog that is used to retrieve the exportation data from the user in order to proceed to the exportation
+     */
     private void export() {
 	JLabel info = new JLabel("Exporting...");
 	panelButtons.add(info);

@@ -20,12 +20,19 @@ public class DatabaseDriverManager {
 
     private List<DatabaseExportInterface> drivers;
 
+    /**
+     * Creates an instance if it's null otherwise just returns it
+     * @return the instance of the DatabaseDriverManager
+     */
     public static DatabaseDriverManager getInstance() {
 	if (INSTANCE == null)
 	    INSTANCE = new DatabaseDriverManager();
 	return INSTANCE;
     }
 
+    /**
+     * Default constructor for the DriverManager
+     */
     private DatabaseDriverManager() {
 	drivers = new ArrayList<DatabaseExportInterface>();
 
@@ -71,11 +78,19 @@ public class DatabaseDriverManager {
 	    // load(className, classPath);
 	}
     }
+    
+    /**
+     * @return a list of the supported drivers
+     */
 
     public List<DatabaseExportInterface> getAvailableDrivers() {
 	return drivers;
     }
-
+    
+    /**
+     * loads extension class and detects if anything goes wrong
+     * @param className the name of the class
+     */
     private void load(String className) {
 	try {
 	    Class extensionClass = Class.forName(className);
@@ -85,6 +100,11 @@ public class DatabaseDriverManager {
 		    + ".");
 	}
     }
+    
+    /**
+     * loads extension class and detects if anything goes wrong
+     * @param extensionClass the class
+     */
 
     public void load(Class extensionClass) {
 	try {

@@ -28,6 +28,9 @@ public class DatabaseExtension extends Extension {
 	return DatabaseDriverManager.getInstance().getAvailableDrivers();
     }
 
+    /**
+     * returns a new instance of the DatabaseUIExtension
+     */
     @Override
     public UIExtension getUIExtension(UIController uiController) {
 	return new DatabaseUIExtension(this, uiController);
