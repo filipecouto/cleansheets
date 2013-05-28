@@ -82,4 +82,9 @@ public class H2Exporter implements DatabaseExportInterface {
 	public boolean requiresUsername() {
 		return false;
 	}
+	
+	@Override
+	public boolean requiresPassword() {
+	return false;
+    }
 }
