@@ -8,6 +8,8 @@
 <entry key="filetype0.description">CleanSheets workbook (*.cls)</entry>
 <entry key="filetype1.extension">csv</entry>
 <entry key="filetype1.description">Comma-separated file (*.csv)</entry>
+<entry key="filetype2.extension">xml</entry>
+<entry key="filetype2.description">eXtensible Markup Language file (*.xml)</entry>
 
 <entry key="dependencies.ui.sidebar">true</entry>
 <entry key="style.ui.toolbar">true</entry>
