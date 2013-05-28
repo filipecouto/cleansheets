@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
@@ -89,40 +90,71 @@ public class DatabaseExportDialog extends JFrame {
 	revalidate();
 	repaint();
 	Thread exportThread = new Thread(new Runnable() {
+	    DatabaseExportBuilder exportBuilder;
+
 	    @Override
 	    public void run() {
-		DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(
-			extension.getAvailableDrivers().get(
-				format.getSelectedIndex()));
-		String dbUrl = url.getText();
-		if (!dbUrl.contains("/") && !dbUrl.contains("/"))
-		    dbUrl = fileChooser.getCurrentDirectory().getAbsolutePath()
-			    + "/" + dbUrl;
-		exportBuilder.setDatabase(dbUrl.length() == 0 ? fileChooser
-			.getSelectedFile().getAbsolutePath() : dbUrl);
-		exportBuilder.setTableName(tableName.getText());
-		final Cell[][] selectedCells = table.getSelectedCells();
-		final int rowCount = selectedCells.length - 1;
-		if (rowCount < 1)
-		    return;
-		final int columnCount = selectedCells[0].length;
-		String[] columns = new String[columnCount];
-		for (int i = 0; i < columnCount; i++) {
-		    final String columnName = selectedCells[0][i].getValue()
-			    .toString();
-		    columns[i] = columnName.length() == 0 ? "col" + (i + 1)
-			    : columnName;
+		if (exportBuilder == null) {
+		    exportBuilder = new DatabaseExportBuilder(extension
+			    .getAvailableDrivers().get(
+				    format.getSelectedIndex()));
+		    exportBuilder.setCreateTable(true);
+		    String dbUrl = url.getText();
+		    if (!dbUrl.contains("/") && !dbUrl.contains("/"))
+			dbUrl = fileChooser.getCurrentDirectory()
+				.getAbsolutePath() + "/" + dbUrl;
+		    exportBuilder.setDatabase(dbUrl.length() == 0 ? fileChooser
+			    .getSelectedFile().getAbsolutePath() : dbUrl);
+		    exportBuilder.setTableName(tableName.getText());
+		    final Cell[][] selectedCells = table.getSelectedCells();
+		    final int rowCount = selectedCells.length - 1;
+		    if (rowCount < 1)
+			return;
+		    final int columnCount = selectedCells[0].length;
+		    String[] columns = new String[columnCount];
+		    for (int i = 0; i < columnCount; i++) {
+			final String columnName = selectedCells[0][i]
+				.getValue().toString();
+			columns[i] = columnName.length() == 0 ? "col" + (i + 1)
+				: columnName;
+		    }
+		    exportBuilder.setColumns(columns);
+		    String[][] values = new String[rowCount][columnCount];
+		    for (int y = 0; y < rowCount; y++) {
+			for (int x = 0; x < columnCount; x++) {
+			    values[y][x] = selectedCells[y + 1][x].getValue()
+				    .toString();
+			}
+		    }
+		    exportBuilder.setValues(values);
 		}
-		exportBuilder.setColumns(columns);
-		String[][] values = new String[rowCount][columnCount];
-		for (int y = 0; y < rowCount; y++) {
-		    for (int x = 0; x < columnCount; x++) {
-			values[y][x] = selectedCells[y + 1][x].getValue()
-				.toString();
+		try {
+		    exportBuilder.export();
+		} catch (Exception e) {
+		    if (e.getMessage().equals("Table already exists")) {
+			Object[] options = { "Yes", "No" };
+			int n = JOptionPane
+				.showOptionDialog(
+					getContentPane(),
+					"Table already exists, would you like to append your data to the table? ",
+					"Table exists",
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null,
+					options, options[1]);
+			switch (n) {
+			case 0:
+			    exportBuilder.setCreateTable(false);
+			    run();
+			    return;
+			}
+		    } else {
+			JOptionPane.showMessageDialog(getContentPane(),
+				"An error has occured while exporting your table: "
+					+ e.getMessage(), "Error",
+				JOptionPane.PLAIN_MESSAGE);
 		    }
 		}
-		exportBuilder.setValues(values);
-		exportBuilder.export();
+
 		panelButtons.remove(2);
 		setVisible(false);
 	    }

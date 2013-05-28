@@ -31,7 +31,7 @@ public class HSQLdbExporter implements DatabaseExportInterface {
     @Override
     public boolean createTable(String name, String[] columns) {
 	try {
-	    String Statement = "CREATE TABLE IF NOT EXISTS " + name + "(";
+	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
 		Statement += columns[i] + " varchar(512)";
 		if ((i + 1) != columns.length) {

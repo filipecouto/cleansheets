@@ -12,6 +12,7 @@ public class DatabaseExportBuilder {
     private String database; // database name
     private String[] columns; // columns for the table
     private String[][] values; // values for the table
+    private boolean createTable;
 
     public DatabaseExportBuilder(DatabaseExportInterface driver) {
 	setDriver(driver);
@@ -36,6 +37,10 @@ public class DatabaseExportBuilder {
 
     public String getTableName() {
 	return tableName;
+    }
+
+    public boolean getCreateTable() {
+	return createTable;
     }
 
     public void setDriver(DatabaseExportInterface driver) {
@@ -64,11 +69,19 @@ public class DatabaseExportBuilder {
 	this.tableName = tableName;
     }
 
+    public void setCreateTable(boolean createTable) {
+	this.createTable = createTable;
+    }
+
     public void export() {
 	// TODO maybe check if everything is ready to export, throw a
 	// RuntimeException if not
 	driver.openDatabase(database);
-	driver.createTable(tableName, columns);
+	if (getCreateTable()) {
+	    if (!driver.createTable(tableName, columns)) {
+		throw new RuntimeException("Table already exists");
+	    }
+	}
 	for (String[] line : values)
 	    driver.addLine(tableName, line);
 	driver.closeDatabase();
