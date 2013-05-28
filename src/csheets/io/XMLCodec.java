@@ -29,6 +29,12 @@ import csheets.ext.style.StyleExtension;
  */
 public class XMLCodec implements Codec {
 
+    /**
+    * Creates a new XML codec.
+    */
+    public XMLCodec() {}
+    
+    
     @Override
     public Workbook read(InputStream stream) throws IOException,
             ClassNotFoundException {
