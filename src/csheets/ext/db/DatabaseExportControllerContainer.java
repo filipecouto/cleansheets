@@ -15,7 +15,8 @@ public class DatabaseExportControllerContainer {
 	private String url;
 	private String file;
 	private String tableName;
-	private Cell[][] cells;
+	private String[] columns;
+	private String[][] values;
 	private String username;
 	private String password;
 	
@@ -42,8 +43,12 @@ public class DatabaseExportControllerContainer {
 		this.tableName = tableName;
 	}
 	
-	public void setCells(Cell[][] cells) {
-		this.cells = cells;
+	public void setColumns(String[] columns) {
+		this.columns = columns;
+	}
+	
+	public void setValues(String[][] values) {
+		this.values = values;
 	}
 	
 	public void setUsername(String username) {
@@ -74,8 +79,12 @@ public class DatabaseExportControllerContainer {
 		return tableName;
 	}
 	
-	public Cell[][] getCells() {
-		return cells;
+	public String[] getColumns() {
+		return columns;
+	}
+	
+	public String[][] getValues() {
+		return values;
 	}
 	
 	public String getUsername() {
