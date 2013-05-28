@@ -3,7 +3,7 @@ package csheets.ext.db;
 /**
  * An interface to be implemented by many database drivers in order to establish a communication
  * with the application
- * @author Filipe_1110688 % gil_1110484
+ * @author Filipe_1110688 & gil_1110484
  */
 
 public interface DatabaseExportInterface {
