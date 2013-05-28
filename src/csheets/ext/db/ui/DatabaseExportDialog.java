@@ -135,7 +135,7 @@ public class DatabaseExportDialog extends JFrame {
 	format.addItemListener(new ItemListener() {
 	    @Override
 	    public void itemStateChanged(ItemEvent e) {
-		url.setText(e.getItem().toString());
+		onFormatSelected((DatabaseExportInterface) e.getSource());
 	    }
 	});
 
@@ -205,7 +205,17 @@ public class DatabaseExportDialog extends JFrame {
 	group.add(exportSelected);
 	group.add(exportWhole);
 
+	// prepare GUI for this driver
+	if (availableDrivers.size() != 0) {
+	    onFormatSelected(availableDrivers.get(0));
+	}
+
 	return options;
+    }
+
+    private void onFormatSelected(DatabaseExportInterface driver) {
+	username.setEnabled(driver.requiresUsername());
+	password.setEnabled(driver.requiresUsername());
     }
 
     public void prepareDialog(SpreadsheetTable table) {
