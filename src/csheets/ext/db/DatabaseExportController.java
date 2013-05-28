@@ -15,7 +15,7 @@ public class DatabaseExportController {
 		exportBuilder.setDatabase(container.getUrl().length() != 0 ? container.getUrl() : container.getFile());
 		exportBuilder.setTableName(container.getTableName());
 		final Cell[][] selectedCells = container.getCells();
-		final int rowCount = selectedCells.length - 1;
+		/*final int rowCount = selectedCells.length - 1;
 		if (rowCount < 1) return;
 		final int columnCount = selectedCells[0].length;
 		String[] columns = new String[columnCount];
@@ -30,7 +30,7 @@ public class DatabaseExportController {
 			}
 		}
 		exportBuilder.setValues(values);
-		exportBuilder.export();
+		exportBuilder.export();*/
 	}
 	
 }
