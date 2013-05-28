@@ -8,17 +8,16 @@ import csheets.ui.ctrl.UIController;
 import csheets.ui.ext.UIExtension;
 
 public class DatabaseExtension extends Extension {
+    public DatabaseExtension() {
+	super("Database Export");
+    }
 
-	public DatabaseExtension() {
-		super("Database Export");
-	}
+    public List<DatabaseExportInterface> getAvailableDrivers() {
+	return DatabaseDriverManager.getInstance().getAvailableDrivers();
+    }
 
-	public List<DatabaseExportInterface> getAvailableDrivers() {
-		return DatabaseDriverManager.getInstance().getAvailableDrivers();
-	}
-
-	@Override
-	public UIExtension getUIExtension(UIController uiController) {
-		return new DatabaseUIExtension(this, uiController);
-	}
+    @Override
+    public UIExtension getUIExtension(UIController uiController) {
+	return new DatabaseUIExtension(this, uiController);
+    }
 }

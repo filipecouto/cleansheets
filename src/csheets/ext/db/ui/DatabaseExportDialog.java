@@ -162,8 +162,29 @@ public class DatabaseExportDialog extends JFrame {
 	ok.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		DatabaseExportController controller = new DatabaseExportController();
-		// controller.export();
+		DatabaseExportControllerContainer params = new DatabaseExportControllerContainer();
+		params.setUrl(url.getText().length() == 0 ? fileChooser
+			.getSelectedFile().getAbsolutePath() : url.getText());
+		params.setTableName(tableName.getText());
+		final Cell[][] selectedCells = table.getSelectedCells();
+		final int rowCount = selectedCells.length - 1;
+		if (rowCount < 1)
+		    return;
+		final int columnCount = selectedCells[0].length;
+		String[] columns = new String[columnCount];
+		for (int i = 0; i < columnCount; i++) {
+		    columns[i] = selectedCells[0][i].getValue().toString();
+		}
+		params.setColumns(columns);
+		String[][] values = new String[rowCount][columnCount];
+		for (int y = 0; y < rowCount; y++) {
+		    for (int x = 0; x < columnCount; x++) {
+			values[y][x] = selectedCells[y + 1][x].getValue()
+				.toString();
+		    }
+		}
+		params.setValues(values);
+		new DatabaseExportController().export(params);
 	    }
 	});
 	add(ok);
