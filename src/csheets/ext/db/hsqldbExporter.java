@@ -33,12 +33,13 @@ public class hsqldbExporter implements DatabaseExportInterface {
 	try {
 	    String Statement = "CREATE TABLE IF NOT EXISTS " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
-		Statement += columns[i] + " text";
+		Statement += columns[i] + " varchar(512)";
 		if ((i + 1) != columns.length) {
 		    Statement += ",";
 		}
 	    }
 	    Statement += ")";
+	    System.out.println(Statement);
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (SQLException e) {
 	    e.printStackTrace();
@@ -77,7 +78,7 @@ public class hsqldbExporter implements DatabaseExportInterface {
 
     @Override
     public String getName() {
-	return "H2";
+	return "HSQL";
     }
 
     @Override
