@@ -3,19 +3,19 @@ package csheets.ext.db.ui;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import csheets.ui.ctrl.UIController;
+import csheets.ext.db.DatabaseExtension;
 
 public class DatabaseUIMenu extends JMenu {
-	private UIController uiController;
+	//private DatabaseExtension extension;
 
 	private JMenuItem itemExport;
 
-	public DatabaseUIMenu(UIController uiController) {
+	public DatabaseUIMenu(DatabaseExtension extension) {
 		super("Database");
 
-		this.uiController = uiController;
+		//this.extension = extension;
 
-		itemExport = new JMenuItem(new DatabaseExportMenuItem(uiController));
+		itemExport = new JMenuItem(new DatabaseExportMenuItem(extension));
 		add(itemExport);
 	}
 }

@@ -13,6 +13,6 @@ public class DatabaseUIExtension extends UIExtension {
 
 	@Override
 	public JMenu getMenu() {
-		return new DatabaseUIMenu(uiController);
+		return new DatabaseUIMenu((DatabaseExtension) extension);
 	}
 }

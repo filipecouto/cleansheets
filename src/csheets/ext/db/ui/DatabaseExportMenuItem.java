@@ -2,21 +2,21 @@ package csheets.ext.db.ui;
 
 import java.awt.event.ActionEvent;
 
+import csheets.ext.db.DatabaseExtension;
 import csheets.ui.ctrl.FocusOwnerAction;
-import csheets.ui.ctrl.UIController;
 
 public class DatabaseExportMenuItem extends FocusOwnerAction {
-	private UIController uiController;
+	private DatabaseExtension extension;
 
 	private DatabaseExportDialog dialog;
 
-	public DatabaseExportMenuItem(UIController uiController) {
-		this.uiController = uiController;
+	public DatabaseExportMenuItem(DatabaseExtension extension) {
+		this.extension = extension;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (dialog == null) dialog = new DatabaseExportDialog(uiController);
+		if (dialog == null) dialog = new DatabaseExportDialog(extension);
 		dialog.prepareDialog(focusOwner);
 		dialog.setVisible(true);
 	}
