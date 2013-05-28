@@ -1,13 +1,14 @@
 package csheets.ext.db.ui;
 
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -15,147 +16,285 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import csheets.core.Cell;
-import csheets.ext.db.DatabaseExportControllerContainer;
 import csheets.ext.db.DatabaseExportBuilder;
-import csheets.ext.db.DatabaseExportController;
+import csheets.ext.db.DatabaseExportInterface;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.sheet.SpreadsheetTable;
 
 public class DatabaseExportDialog extends JFrame {
-	private JFileChooser fileChooser;
-	private JTextField url;
-	private JTextField tableName;
-	private JComboBox<String> format;
-	private JRadioButton exportWhole;
-	private JRadioButton exportSelected;
-	private JTextField username;
-	private JTextField password;
+    private JFileChooser fileChooser;
+    private JTextField url;
+    private JTextField tableName;
+    private JComboBox<String> format;
+    private JRadioButton exportWhole;
+    private JRadioButton exportSelected;
+    private JTextField username;
+    private JTextField password;
 
-	private DatabaseExtension extension;
+    private JPanel panelButtons;
 
-	private SpreadsheetTable table;
+    private DatabaseExtension extension;
 
-	public DatabaseExportDialog(DatabaseExtension extension) {
-		super("Export to Database");
+    private SpreadsheetTable table;
 
-		this.extension = extension;
+    public DatabaseExportDialog(DatabaseExtension extension) {
+	super("Export to Database");
 
-		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+	this.extension = extension;
 
-		fileChooser = new JFileChooser();
-		fileChooser.remove(fileChooser.getComponentCount() - 1);
-		add(fileChooser);
+	getContentPane().setLayout(
+		new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-		JPanel options = new JPanel();
-		options.setLayout(new GridLayout(6, 2));
+	fileChooser = new JFileChooser();
+	fileChooser.remove(fileChooser.getComponentCount() - 1);
+	add(fileChooser);
 
-		options.add(new JLabel("URL"));
-		url = getTextField();
-		options.add(url);
+	add(createOptionsPanel());
+	add(createButtonsPanel());
 
-		options.add(new JLabel("Table name"));
-		tableName = getTextField();
-		options.add(tableName);
+	pack();
+    }
 
-		options.add(new JLabel("Format"));
-		// TODO show available formats
-		String[] availableDrivers = new String[extension.getAvailableDrivers().length];
-		for (int i = 0; i < availableDrivers.length; i++) {
-			availableDrivers[i] = extension.getAvailableDrivers()[i].getName();
+    private JPanel createButtonsPanel() {
+	panelButtons = new JPanel();
+	panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
+	JButton cancel = new JButton("Cancel");
+	cancel.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		setVisible(false);
+	    }
+	});
+	panelButtons.add(cancel);
+
+	JButton ok = new JButton("Export");
+	ok.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		export();
+	    }
+	});
+	panelButtons.add(ok);
+	return panelButtons;
+    }
+
+    private void export() {
+	JLabel info = new JLabel("Exporting...");
+	panelButtons.add(info);
+	// force the GUI to redraw the window so the label can be seen
+	revalidate();
+	repaint();
+	Thread exportThread = new Thread(new Runnable() {
+	    DatabaseExportBuilder exportBuilder;
+
+	    @Override
+	    public void run() {
+		if (exportBuilder == null) {
+		    exportBuilder = new DatabaseExportBuilder(extension
+			    .getAvailableDrivers().get(
+				    format.getSelectedIndex()));
+		    exportBuilder.setCreateTable(true);
+		    String dbUrl = url.getText();
+		    if (!dbUrl.contains("/") && !dbUrl.contains("/"))
+			dbUrl = fileChooser.getCurrentDirectory()
+				.getAbsolutePath() + "/" + dbUrl;
+		    exportBuilder.setDatabase(dbUrl.length() == 0 ? fileChooser
+			    .getSelectedFile().getAbsolutePath() : dbUrl);
+		    exportBuilder.setTableName(tableName.getText());
+		    final Cell[][] selectedCells = table.getSelectedCells();
+		    final int rowCount = selectedCells.length - 1;
+		    if (rowCount < 1)
+			return;
+		    final int columnCount = selectedCells[0].length;
+		    String[] columns = new String[columnCount];
+		    for (int i = 0; i < columnCount; i++) {
+			final String columnName = selectedCells[0][i]
+				.getValue().toString();
+			columns[i] = columnName.length() == 0 ? "col" + (i + 1)
+				: columnName;
+		    }
+		    exportBuilder.setColumns(columns);
+		    String[][] values = new String[rowCount][columnCount];
+		    for (int y = 0; y < rowCount; y++) {
+			for (int x = 0; x < columnCount; x++) {
+			    values[y][x] = selectedCells[y + 1][x].getValue()
+				    .toString();
+			}
+		    }
+		    exportBuilder.setValues(values);
 		}
-		format = new JComboBox<String>(availableDrivers);
-		format.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				url.setText(e.getItem().toString());
+		try {
+		    exportBuilder.export();
+		} catch (Exception e) {
+		    if (e.getMessage().equals("Table already exists")) {
+			Object[] options = { "Yes", "No" };
+			int n = JOptionPane
+				.showOptionDialog(
+					getContentPane(),
+					"Table already exists, would you like to append your data to the table? ",
+					"Table exists",
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null,
+					options, options[1]);
+			switch (n) {
+			case 0:
+			    exportBuilder.setCreateTable(false);
+			    run();
+			    return;
 			}
-		});
-		options.add(format);
+		    } else {
+			JOptionPane.showMessageDialog(getContentPane(),
+				"An error has occured while exporting your table: "
+					+ e.getMessage(), "Error",
+				JOptionPane.PLAIN_MESSAGE);
+		    }
+		}
 
-		options.add(new JLabel("Export"));
-		JPanel export = new JPanel();
-		export.setLayout(new BoxLayout(export, BoxLayout.Y_AXIS));
+		panelButtons.remove(2);
+		setVisible(false);
+	    }
+	});
+	exportThread.start();
+    }
 
-		exportWhole = new JRadioButton("Whole current sheet");
-		export.add(exportWhole);
-		exportSelected = new JRadioButton("Selected area");
-		export.add(exportSelected);
-		options.add(export);
+    private JPanel createOptionsPanel() {
+	JPanel options = new JPanel();
+	GroupLayout layout = new GroupLayout(options);
+	options.setLayout(layout);
+	layout.setAutoCreateGaps(true);
+	layout.setAutoCreateContainerGaps(true);
 
-		ButtonGroup group = new ButtonGroup();
-		group.add(exportSelected);
-		group.add(exportWhole);
+	final JLabel lUrl = new JLabel("URL");
+	final JLabel lTableName = new JLabel("Table name");
+	final JLabel lFormat = new JLabel("Format");
+	final JLabel lExport = new JLabel("Export");
+	final JLabel lUserName = new JLabel("User name");
+	final JLabel lPassword = new JLabel("Password");
 
-		options.add(new JLabel("Username"));
-		username = getTextField();
-		username.setEnabled(false);
-		options.add(username);
+	url = new JTextField();
+	tableName = new JTextField();
 
-		options.add(new JLabel("Password"));
-		password = getTextField();
-		password.setEnabled(false);
-		options.add(password);
+	final List<DatabaseExportInterface> availableDrivers = extension
+		.getAvailableDrivers();
 
-		add(options);
-
-		JButton ok = new JButton("Export");
-		ok.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					DatabaseExportController controller = new DatabaseExportController();
-					DatabaseExportControllerContainer container = new DatabaseExportControllerContainer();
-					container.setCells(table.getSelectedCells());
-					container.setComboOption(format.getSelectedIndex());
-					container.setExtension(DatabaseExportDialog.this.extension);
-					container.setFile(fileChooser.getSelectedFile().getAbsolutePath());
-					container.setPassword(password.getText());
-					container.setTableName(tableName.getText());
-					container.setUrl(url.getText());
-					container.setUsername(username.getText());
-					controller.export(container);
-				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(getContentPane(), "There was an error while exporting your cells: " + e1.getMessage(), "Error while exporting",
-							JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-		add(ok);
-
-		pack();
+	String[] availableDriverNames = new String[availableDrivers.size()];
+	for (int i = 0; i < availableDriverNames.length; i++) {
+	    availableDriverNames[i] = availableDrivers.get(i).getName();
 	}
 
-	public void prepareDialog(SpreadsheetTable table) {
-		this.table = table;
+	format = new JComboBox<String>(availableDriverNames);
+	format.addItemListener(new ItemListener() {
+	    @Override
+	    public void itemStateChanged(ItemEvent e) {
+		onFormatSelected(extension.getAvailableDrivers().get(
+			format.getSelectedIndex()));
+	    }
+	});
 
-		// check whether the user selected a range of cells
-		// if he/she did: exportSelected will be checked
-		// if he/she didn't: exportWhile will be checked and exportSelected will be disabled
-		final Cell[][] selectedCells = table.getSelectedCells();
-		final int rowCount = selectedCells.length;
-		boolean hasInterestingSelection = true;
+	JPanel export = new JPanel();
+	export.setLayout(new BoxLayout(export, BoxLayout.Y_AXIS));
 
-		if (rowCount != 0) {
-			final int columnCount = selectedCells[0].length;
-			if (rowCount == 1 && columnCount == 1) hasInterestingSelection = false;
-		} else
-			hasInterestingSelection = false;
+	exportWhole = new JRadioButton("Whole current sheet");
+	export.add(exportWhole);
+	exportSelected = new JRadioButton("Selected area");
+	export.add(exportSelected);
 
-		exportSelected.setEnabled(hasInterestingSelection);
-		exportSelected.setSelected(hasInterestingSelection);
-		exportWhole.setSelected(!hasInterestingSelection);
+	username = new JTextField();
+	username.setEnabled(false);
 
-		// BUG swing does not repaint the radio buttons unless some other event updates them
+	password = new JTextField();
+	password.setEnabled(false);
+
+	layout.setHorizontalGroup(layout
+		.createParallelGroup(GroupLayout.Alignment.LEADING)
+		.addGroup(
+			layout.createSequentialGroup().addComponent(lUrl)
+				.addComponent(url))
+		.addGroup(
+			layout.createSequentialGroup().addComponent(lTableName)
+				.addComponent(tableName))
+		.addGroup(
+			layout.createSequentialGroup().addComponent(lFormat)
+				.addComponent(format))
+		.addGroup(
+			layout.createSequentialGroup().addComponent(lExport)
+				.addComponent(export))
+		.addGroup(
+			layout.createSequentialGroup().addComponent(lUserName)
+				.addComponent(username))
+		.addGroup(
+			layout.createSequentialGroup().addComponent(lPassword)
+				.addComponent(password)));
+	layout.setVerticalGroup(layout
+		.createSequentialGroup()
+		.addGroup(
+			layout.createParallelGroup(
+				GroupLayout.Alignment.BASELINE)
+				.addComponent(lUrl).addComponent(url))
+		.addGroup(
+			layout.createParallelGroup(
+				GroupLayout.Alignment.BASELINE)
+				.addComponent(lTableName)
+				.addComponent(tableName))
+		.addGroup(
+			layout.createParallelGroup(
+				GroupLayout.Alignment.BASELINE)
+				.addComponent(lFormat).addComponent(format))
+		.addGroup(
+			layout.createParallelGroup(
+				GroupLayout.Alignment.BASELINE)
+				.addComponent(lExport).addComponent(export))
+		.addGroup(
+			layout.createParallelGroup(
+				GroupLayout.Alignment.BASELINE)
+				.addComponent(lUserName).addComponent(username))
+		.addGroup(
+			layout.createParallelGroup(
+				GroupLayout.Alignment.BASELINE)
+				.addComponent(lPassword).addComponent(password)));
+
+	ButtonGroup group = new ButtonGroup();
+	group.add(exportSelected);
+	group.add(exportWhole);
+
+	// prepare GUI for this driver
+	if (availableDrivers.size() != 0) {
+	    onFormatSelected(availableDrivers.get(0));
 	}
 
-	private JTextField getTextField() {
-		final JTextField field = new JTextField();
-		// field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 12));
-		return field;
-	}
+	return options;
+    }
 
+    private void onFormatSelected(DatabaseExportInterface driver) {
+	username.setEnabled(driver.requiresUsername());
+	password.setEnabled(driver.requiresUsername());
+    }
+
+    public void prepareDialog(SpreadsheetTable table) {
+	this.table = table;
+
+	// check whether the user selected a range of cells
+	// if he/she did: exportSelected will be checked
+	// if he/she didn't: exportWhile will be checked and exportSelected will
+	// be disabled
+	final Cell[][] selectedCells = table.getSelectedCells();
+	final int rowCount = selectedCells.length;
+	boolean hasInterestingSelection = true;
+
+	if (rowCount != 0) {
+	    final int columnCount = selectedCells[0].length;
+	    if (rowCount == 1 && columnCount == 1)
+		hasInterestingSelection = false;
+	} else
+	    hasInterestingSelection = false;
+
+	exportSelected.setEnabled(hasInterestingSelection);
+	exportSelected.setSelected(hasInterestingSelection);
+	exportWhole.setSelected(!hasInterestingSelection);
+    }
 }

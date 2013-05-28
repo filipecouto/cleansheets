@@ -6,16 +6,16 @@ import javax.swing.JMenuItem;
 import csheets.ext.db.DatabaseExtension;
 
 public class DatabaseUIMenu extends JMenu {
-	//private DatabaseExtension extension;
+    private static final long serialVersionUID = 2854862500115559859L;
 
-	private JMenuItem itemExport;
+    private JMenuItem itemExport;
 
-	public DatabaseUIMenu(DatabaseExtension extension) {
-		super("Database");
+    public DatabaseUIMenu(DatabaseExtension extension) {
+	super("Database");
 
-		//this.extension = extension;
+	// this.extension = extension;
 
-		itemExport = new JMenuItem(new DatabaseExportMenuItem(extension));
-		add(itemExport);
-	}
+	itemExport = new JMenuItem(new DatabaseExportMenuItem(extension));
+	add(itemExport);
+    }
 }

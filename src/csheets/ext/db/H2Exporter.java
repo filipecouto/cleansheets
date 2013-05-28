@@ -29,7 +29,7 @@ public class H2Exporter implements DatabaseExportInterface {
 	@Override
 	public boolean createTable(String name, String[] columns) {
 		try {
-			String Statement = "CREATE TABLE IF NOT EXISTS " + name + "(";
+			String Statement = "CREATE TABLE " + name + "(";
 			for (int i = 0; i < columns.length; i++) {
 				Statement += columns[i] + " text";
 				if ((i + 1) != columns.length) {
@@ -82,4 +82,9 @@ public class H2Exporter implements DatabaseExportInterface {
 	public boolean requiresUsername() {
 		return false;
 	}
+	
+	@Override
+	public boolean requiresPassword() {
+	return false;
+    }
 }
