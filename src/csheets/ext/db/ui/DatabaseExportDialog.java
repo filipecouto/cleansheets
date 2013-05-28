@@ -15,6 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
@@ -33,6 +34,8 @@ public class DatabaseExportDialog extends JFrame {
     private JRadioButton exportSelected;
     private JTextField username;
     private JTextField password;
+
+    private JPanel panelButtons;
 
     private DatabaseExtension extension;
 
@@ -57,8 +60,8 @@ public class DatabaseExportDialog extends JFrame {
     }
 
     private JPanel createButtonsPanel() {
-	JPanel buttons = new JPanel();
-	buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+	panelButtons = new JPanel();
+	panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
 	JButton cancel = new JButton("Cancel");
 	cancel.addActionListener(new ActionListener() {
 	    @Override
@@ -66,7 +69,7 @@ public class DatabaseExportDialog extends JFrame {
 		setVisible(false);
 	    }
 	});
-	buttons.add(cancel);
+	panelButtons.add(cancel);
 
 	JButton ok = new JButton("Export");
 	ok.addActionListener(new ActionListener() {
@@ -75,35 +78,54 @@ public class DatabaseExportDialog extends JFrame {
 		export();
 	    }
 	});
-	buttons.add(ok);
-	return buttons;
+	panelButtons.add(ok);
+	return panelButtons;
     }
 
     private void export() {
-	DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(
-		DatabaseExportDialog.this.extension.getAvailableDrivers().get(
-			format.getSelectedIndex()));
-	exportBuilder.setDatabase(url.getText().length() == 0 ? fileChooser
-		.getSelectedFile().getAbsolutePath() : url.getText());
-	exportBuilder.setTableName(tableName.getText());
-	final Cell[][] selectedCells = table.getSelectedCells();
-	final int rowCount = selectedCells.length - 1;
-	if (rowCount < 1)
-	    return;
-	final int columnCount = selectedCells[0].length;
-	String[] columns = new String[columnCount];
-	for (int i = 0; i < columnCount; i++) {
-	    columns[i] = selectedCells[0][i].getValue().toString();
-	}
-	exportBuilder.setColumns(columns);
-	String[][] values = new String[rowCount][columnCount];
-	for (int y = 0; y < rowCount; y++) {
-	    for (int x = 0; x < columnCount; x++) {
-		values[y][x] = selectedCells[y + 1][x].getValue().toString();
+	JLabel info = new JLabel("Exporting...");
+	panelButtons.add(info);
+	// force the GUI to redraw the window so the label can be seen
+	revalidate();
+	repaint();
+	Thread exportThread = new Thread(new Runnable() {
+	    @Override
+	    public void run() {
+		DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(
+			extension.getAvailableDrivers().get(
+				format.getSelectedIndex()));
+		exportBuilder
+			.setDatabase(url.getText().length() == 0 ? fileChooser
+				.getSelectedFile().getAbsolutePath() : url
+				.getText());
+		exportBuilder.setTableName(tableName.getText());
+		final Cell[][] selectedCells = table.getSelectedCells();
+		final int rowCount = selectedCells.length - 1;
+		if (rowCount < 1)
+		    return;
+		final int columnCount = selectedCells[0].length;
+		String[] columns = new String[columnCount];
+		for (int i = 0; i < columnCount; i++) {
+		    final String columnName = selectedCells[0][i].getValue()
+			    .toString();
+		    columns[i] = columnName.length() == 0 ? "col" + (i + 1)
+			    : columnName;
+		}
+		exportBuilder.setColumns(columns);
+		String[][] values = new String[rowCount][columnCount];
+		for (int y = 0; y < rowCount; y++) {
+		    for (int x = 0; x < columnCount; x++) {
+			values[y][x] = selectedCells[y + 1][x].getValue()
+				.toString();
+		    }
+		}
+		exportBuilder.setValues(values);
+		exportBuilder.export();
+		panelButtons.remove(2);
+		setVisible(false);
 	    }
-	}
-	exportBuilder.setValues(values);
-	exportBuilder.export();
+	});
+	exportThread.start();
     }
 
     private JPanel createOptionsPanel() {
@@ -135,7 +157,8 @@ public class DatabaseExportDialog extends JFrame {
 	format.addItemListener(new ItemListener() {
 	    @Override
 	    public void itemStateChanged(ItemEvent e) {
-		onFormatSelected((DatabaseExportInterface) e.getSource());
+		onFormatSelected(extension.getAvailableDrivers().get(
+			format.getSelectedIndex()));
 	    }
 	});
 
