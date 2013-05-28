@@ -25,6 +25,7 @@ import javax.swing.Spring;
 import javax.swing.SpringLayout;
 
 import csheets.core.Cell;
+import csheets.ext.db.DatabaseExportControllerContainer;
 import csheets.ext.db.DatabaseExportBuilder;
 import csheets.ext.db.DatabaseExportController;
 import csheets.ext.db.DatabaseExportInterface;
@@ -75,10 +76,12 @@ public class DatabaseExportDialog extends JFrame {
 
 	final List<DatabaseExportInterface> availableDrivers = extension
 		.getAvailableDrivers();
+
 	String[] availableDriverNames = new String[availableDrivers.size()];
 	for (int i = 0; i < availableDriverNames.length; i++) {
 	    availableDriverNames[i] = availableDrivers.get(i).getName();
 	}
+
 	format = new JComboBox<String>(availableDriverNames);
 	format.addItemListener(new ItemListener() {
 	    @Override
@@ -160,7 +163,7 @@ public class DatabaseExportDialog extends JFrame {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 		DatabaseExportController controller = new DatabaseExportController();
-		controller.export();
+		// controller.export();
 	    }
 	});
 	add(ok);
