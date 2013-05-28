@@ -50,6 +50,63 @@ public class DatabaseExportDialog extends JFrame {
 	fileChooser.remove(fileChooser.getComponentCount() - 1);
 	add(fileChooser);
 
+	add(createOptionsPanel());
+	add(createButtonsPanel());
+
+	pack();
+    }
+
+    private JPanel createButtonsPanel() {
+	JPanel buttons = new JPanel();
+	buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
+	JButton cancel = new JButton("Cancel");
+	cancel.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		setVisible(false);
+	    }
+	});
+	buttons.add(cancel);
+
+	JButton ok = new JButton("Export");
+	ok.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		export();
+	    }
+	});
+	buttons.add(ok);
+	return buttons;
+    }
+
+    private void export() {
+	DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(
+		DatabaseExportDialog.this.extension.getAvailableDrivers().get(
+			format.getSelectedIndex()));
+	exportBuilder.setDatabase(url.getText().length() == 0 ? fileChooser
+		.getSelectedFile().getAbsolutePath() : url.getText());
+	exportBuilder.setTableName(tableName.getText());
+	final Cell[][] selectedCells = table.getSelectedCells();
+	final int rowCount = selectedCells.length - 1;
+	if (rowCount < 1)
+	    return;
+	final int columnCount = selectedCells[0].length;
+	String[] columns = new String[columnCount];
+	for (int i = 0; i < columnCount; i++) {
+	    columns[i] = selectedCells[0][i].getValue().toString();
+	}
+	exportBuilder.setColumns(columns);
+	String[][] values = new String[rowCount][columnCount];
+	for (int y = 0; y < rowCount; y++) {
+	    for (int x = 0; x < columnCount; x++) {
+		values[y][x] = selectedCells[y + 1][x].getValue().toString();
+	    }
+	}
+	exportBuilder.setValues(values);
+	exportBuilder.export();
+    }
+
+    private JPanel createOptionsPanel() {
 	JPanel options = new JPanel();
 	GroupLayout layout = new GroupLayout(options);
 	options.setLayout(layout);
@@ -63,8 +120,8 @@ public class DatabaseExportDialog extends JFrame {
 	final JLabel lUserName = new JLabel("User name");
 	final JLabel lPassword = new JLabel("Password");
 
-	url = getTextField();
-	tableName = getTextField();
+	url = new JTextField();
+	tableName = new JTextField();
 
 	final List<DatabaseExportInterface> availableDrivers = extension
 		.getAvailableDrivers();
@@ -90,10 +147,10 @@ public class DatabaseExportDialog extends JFrame {
 	exportSelected = new JRadioButton("Selected area");
 	export.add(exportSelected);
 
-	username = getTextField();
+	username = new JTextField();
 	username.setEnabled(false);
 
-	password = getTextField();
+	password = new JTextField();
 	password.setEnabled(false);
 
 	layout.setHorizontalGroup(layout
@@ -148,43 +205,7 @@ public class DatabaseExportDialog extends JFrame {
 	group.add(exportSelected);
 	group.add(exportWhole);
 
-	add(options);
-
-	JButton ok = new JButton("Export");
-	ok.addActionListener(new ActionListener() {
-	    @Override
-	    public void actionPerformed(ActionEvent e) {
-		DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(
-			DatabaseExportDialog.this.extension
-				.getAvailableDrivers().get(
-					format.getSelectedIndex()));
-		exportBuilder.setDatabase(url.getText().length() == 0 ? fileChooser
-			.getSelectedFile().getAbsolutePath() : url.getText());
-		exportBuilder.setTableName(tableName.getText());
-		final Cell[][] selectedCells = table.getSelectedCells();
-		final int rowCount = selectedCells.length - 1;
-		if (rowCount < 1)
-		    return;
-		final int columnCount = selectedCells[0].length;
-		String[] columns = new String[columnCount];
-		for (int i = 0; i < columnCount; i++) {
-		    columns[i] = selectedCells[0][i].getValue().toString();
-		}
-		exportBuilder.setColumns(columns);
-		String[][] values = new String[rowCount][columnCount];
-		for (int y = 0; y < rowCount; y++) {
-		    for (int x = 0; x < columnCount; x++) {
-			values[y][x] = selectedCells[y + 1][x].getValue()
-				.toString();
-		    }
-		}
-		exportBuilder.setValues(values);
-		exportBuilder.export();
-	    }
-	});
-	add(ok);
-
-	pack();
+	return options;
     }
 
     public void prepareDialog(SpreadsheetTable table) {
@@ -208,15 +229,5 @@ public class DatabaseExportDialog extends JFrame {
 	exportSelected.setEnabled(hasInterestingSelection);
 	exportSelected.setSelected(hasInterestingSelection);
 	exportWhole.setSelected(!hasInterestingSelection);
-
-	// BUG swing does not repaint the radio buttons unless some other event
-	// updates them
     }
-
-    private JTextField getTextField() {
-	final JTextField field = new JTextField();
-	// field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 12));
-	return field;
-    }
-
 }
