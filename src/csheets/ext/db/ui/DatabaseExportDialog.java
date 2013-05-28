@@ -162,10 +162,13 @@ public class DatabaseExportDialog extends JFrame {
 	ok.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		DatabaseExportControllerContainer params = new DatabaseExportControllerContainer();
-		params.setUrl(url.getText().length() == 0 ? fileChooser
+		DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(
+			DatabaseExportDialog.this.extension
+				.getAvailableDrivers().get(
+					format.getSelectedIndex()));
+		exportBuilder.setDatabase(url.getText().length() == 0 ? fileChooser
 			.getSelectedFile().getAbsolutePath() : url.getText());
-		params.setTableName(tableName.getText());
+		exportBuilder.setTableName(tableName.getText());
 		final Cell[][] selectedCells = table.getSelectedCells();
 		final int rowCount = selectedCells.length - 1;
 		if (rowCount < 1)
@@ -175,7 +178,7 @@ public class DatabaseExportDialog extends JFrame {
 		for (int i = 0; i < columnCount; i++) {
 		    columns[i] = selectedCells[0][i].getValue().toString();
 		}
-		params.setColumns(columns);
+		exportBuilder.setColumns(columns);
 		String[][] values = new String[rowCount][columnCount];
 		for (int y = 0; y < rowCount; y++) {
 		    for (int x = 0; x < columnCount; x++) {
@@ -183,8 +186,8 @@ public class DatabaseExportDialog extends JFrame {
 				.toString();
 		    }
 		}
-		params.setValues(values);
-		new DatabaseExportController().export(params);
+		exportBuilder.setValues(values);
+		exportBuilder.export();
 	    }
 	});
 	add(ok);
