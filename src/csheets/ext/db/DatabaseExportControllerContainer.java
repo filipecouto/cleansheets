@@ -4,49 +4,86 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 
+import csheets.core.Cell;
 import csheets.ext.db.ui.DatabaseExportDialog;
 import csheets.ui.sheet.SpreadsheetTable;
 
 public class DatabaseExportControllerContainer {
 	
 	private DatabaseExtension extension;
-	private JComboBox<String> format;
-	private JTextField url;
-	private JFileChooser fileChooser;
-	private JTextField tableName;
-	private SpreadsheetTable table;
+	private int comboOption;
+	private String url;
+	private String file;
+	private String tableName;
+	private Cell[][] cells;
+	private String username;
+	private String password;
 	
-	public DatabaseExportControllerContainer(DatabaseExtension extensin, JComboBox<String> format, JTextField url, JFileChooser fileChooser, JTextField tableName, SpreadsheetTable table) {
+	public DatabaseExportControllerContainer() {
+	}
+	
+	public void setExtension(DatabaseExtension extension) {
 		this.extension = extension;
-		this.format = format;
+	}
+	
+	public void setComboOption(int comboOption) {
+		this.comboOption = comboOption;
+	}
+	
+	public void setUrl(String url) {
 		this.url = url;
-		this.fileChooser = fileChooser;
+	}
+	
+	public void setFile(String file) {
+		this.file = file;
+	}
+	
+	public void setTableName(String tableName) {
 		this.tableName = tableName;
-		this.table = table;
+	}
+	
+	public void setCells(Cell[][] cells) {
+		this.cells = cells;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 	public DatabaseExtension getExtension() {
 		return extension;
 	}
 	
-	public JComboBox<String> getFormat() {
-		return format;
+	public int getComboOption() {
+		return comboOption;
 	}
 	
-	public JTextField getUrl() {
+	public String getUrl() {
 		return url;
 	}
 	
-	public JFileChooser getFileChooser() {
-		return fileChooser;
+	public String getFile() {
+		return file;
 	}
 	
-	public JTextField getTableName() {
+	public String getTableName() {
 		return tableName;
 	}
 	
-	public SpreadsheetTable getTable() {
-		return table;
+	public Cell[][] getCells() {
+		return cells;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	public String getPassword() {
+		return password;
 	}
 	
 }

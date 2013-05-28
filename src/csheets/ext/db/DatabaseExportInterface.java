@@ -40,4 +40,10 @@ public interface DatabaseExportInterface {
 	 * @return the name of this driver in a user-friendly mode
 	 */
 	public String getName();
+	
+	/**
+	 * Invoked by the user interface to find if this exporter requires an username to login
+	 * @return true if it requires username false if it does not
+	 */
+	public boolean requiresUsername();
 }

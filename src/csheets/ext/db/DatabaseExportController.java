@@ -11,10 +11,10 @@ public class DatabaseExportController {
 	}
 	
 	public void export(DatabaseExportControllerContainer container) {
-		DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(container.getExtension().getAvailableDrivers()[container.getFormat().getSelectedIndex()]);
-		exportBuilder.setDatabase(container.getUrl().getText().length() != 0 ? container.getUrl().getText() : container.getFileChooser().getSelectedFile().getAbsolutePath());
-		exportBuilder.setTableName(container.getTableName().getText());
-		final Cell[][] selectedCells = container.getTable().getSelectedCells();
+		DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(container.getExtension().getAvailableDrivers()[container.getComboOption()]);
+		exportBuilder.setDatabase(container.getUrl().length() != 0 ? container.getUrl() : container.getFile());
+		exportBuilder.setTableName(container.getTableName());
+		final Cell[][] selectedCells = container.getCells();
 		final int rowCount = selectedCells.length - 1;
 		if (rowCount < 1) return;
 		final int columnCount = selectedCells[0].length;

@@ -75,4 +75,9 @@ public class H2Exporter implements DatabaseExportInterface {
 	public String getName() {
 		return "H2";
 	}
+
+	@Override
+	public boolean requiresUsername() {
+		return false;
+	}
 }

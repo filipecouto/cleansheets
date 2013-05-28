@@ -108,7 +108,15 @@ public class DatabaseExportDialog extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					DatabaseExportController controller = new DatabaseExportController();
-					DatabaseExportControllerContainer container = new DatabaseExportControllerContainer(DatabaseExportDialog.this.extension, format, url, fileChooser, tableName, table);
+					DatabaseExportControllerContainer container = new DatabaseExportControllerContainer();
+					container.setCells(table.getSelectedCells());
+					container.setComboOption(format.getSelectedIndex());
+					container.setExtension(DatabaseExportDialog.this.extension);
+					container.setFile(fileChooser.getSelectedFile().getAbsolutePath());
+					container.setPassword(password.getText());
+					container.setTableName(tableName.getText());
+					container.setUrl(url.getText());
+					container.setUsername(username.getText());
 					controller.export(container);
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(getContentPane(), "There was an error while exporting your cells: " + e1.getMessage(), "Error while exporting",
