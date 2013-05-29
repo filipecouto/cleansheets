@@ -94,12 +94,11 @@ public class DatabaseExportDialog extends JFrame {
 	revalidate();
 	repaint();
 	Thread exportThread = new Thread(new Runnable() {
-	    DatabaseExportBuilder exportBuilder;
 	    DatabaseExportController exportController;
 
 	    @Override
 	    public void run() {
-		if (exportBuilder == null) {
+		if (exportController == null) {
 		    exportController = new DatabaseExportController();
 		    exportController.setCells(table.getSelectedCells());
 		    exportController.setCreateTable(true);
@@ -126,7 +125,7 @@ public class DatabaseExportDialog extends JFrame {
 					options, options[1]);
 			switch (n) {
 			case 0:
-			    exportBuilder.setCreateTable(false);
+			    exportController.setCreateTable(false);
 			    run();
 			    return;
 			}
