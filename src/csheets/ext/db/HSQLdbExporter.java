@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
+
+import javax.management.RuntimeErrorException;
 
 /**
  * Class responsible for working with HSQL Databases
@@ -42,6 +45,9 @@ public class HSQLdbExporter implements DatabaseExportInterface {
 	    Statement += ")";
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (SQLException e) {
+	    if(e.getMessage().contains("object name already exists")) {
+		throw new RuntimeException("Table name already exists");
+	    }
 	    e.printStackTrace();
 	    return false;
 	}

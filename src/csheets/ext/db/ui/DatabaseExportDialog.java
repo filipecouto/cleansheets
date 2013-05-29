@@ -1,7 +1,10 @@
 package csheets.ext.db.ui;
 
+import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
@@ -11,6 +14,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,7 +31,7 @@ import csheets.ext.db.DatabaseExportInterface;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.sheet.SpreadsheetTable;
 
-public class DatabaseExportDialog extends JFrame {
+public class DatabaseExportDialog extends JDialog {
     private JFileChooser fileChooser;
     private JTextField url;
     private JTextField tableName;
@@ -44,10 +48,11 @@ public class DatabaseExportDialog extends JFrame {
     private SpreadsheetTable table;
 
     public DatabaseExportDialog(DatabaseExtension extension) {
-	super("Export to Database");
+	super((JFrame)null, "Export to Database", true);
 
 	this.extension = extension;
 
+	
 	getContentPane().setLayout(
 		new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
@@ -83,10 +88,11 @@ public class DatabaseExportDialog extends JFrame {
 	panelButtons.add(ok);
 	return panelButtons;
     }
-    
+
     /**
      * enables buttons depending on parameter
-     * @param value 
+     * 
+     * @param value
      */
     public void enableButtons(boolean value) {
 	panelButtons.getComponent(0).setEnabled(value);
@@ -94,7 +100,8 @@ public class DatabaseExportDialog extends JFrame {
     }
 
     /**
-     * Creates a Dialog that is used to retrieve the exportation data from the user in order to proceed to the exportation
+     * Creates a Dialog that is used to retrieve the exportation data from the
+     * user in order to proceed to the exportation
      */
     private void export() {
 	panelButtons.getComponent(0).setEnabled(false);
@@ -109,10 +116,11 @@ public class DatabaseExportDialog extends JFrame {
 	    public void run() {
 		if (exportController == null) {
 		    exportController = new DatabaseExportController();
-		    exportController.setDriver(extension.getAvailableDrivers().get(format.getSelectedIndex()));
-		    if(exportWhole.isSelected()) {
+		    exportController.setDriver(extension.getAvailableDrivers()
+			    .get(format.getSelectedIndex()));
+		    if (exportWhole.isSelected()) {
 			exportController.setCells(table.getSpreadsheet());
-		    } else if(exportSelected.isSelected()) {
+		    } else if (exportSelected.isSelected()) {
 			exportController.setCells(table.getSelectedCells());
 		    }
 		    exportController.setCreateTable(true);
@@ -127,7 +135,8 @@ public class DatabaseExportDialog extends JFrame {
 		try {
 		    exportController.export();
 		} catch (Exception e) {
-		    if (e.getMessage() != null && e.getMessage().equals("Table already exists")) {
+		    if (e.getMessage() != null
+			    && e.getMessage().equals("Table already exists")) {
 			Object[] options = { "Yes", "No" };
 			int n = JOptionPane
 				.showOptionDialog(
@@ -146,7 +155,8 @@ public class DatabaseExportDialog extends JFrame {
 			    enableButtons(true);
 			    return;
 			}
-		    } else {e.printStackTrace();
+		    } else {
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(getContentPane(),
 				"An error has occured while exporting your table: "
 					+ e.getMessage(), "Error",
@@ -175,6 +185,17 @@ public class DatabaseExportDialog extends JFrame {
 	final JLabel lPassword = new JLabel("Password");
 
 	url = new JTextField();
+	url.setText("Choose a file from above or type here a new file or the URL of the database");
+	url.addFocusListener(new FocusListener() {
+	    @Override
+	    public void focusLost(FocusEvent arg0) {
+	    }
+
+	    @Override
+	    public void focusGained(FocusEvent arg0) {
+		url.selectAll();
+	    }
+	});
 	tableName = new JTextField();
 
 	final List<DatabaseExportInterface> availableDrivers = extension

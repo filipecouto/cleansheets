@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 
 /**
  * Class responsible for working with H2 databases
@@ -41,6 +42,10 @@ public class H2Exporter implements DatabaseExportInterface {
 	    }
 	    Statement += ")";
 	    databaseConnection.prepareStatement(Statement).execute();
+	} catch (SQLSyntaxErrorException e) {
+	    if(e.getMessage().contains("already exists")) {
+		throw new RuntimeException("Table already exists");
+	    }
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	    return false;
@@ -62,7 +67,7 @@ public class H2Exporter implements DatabaseExportInterface {
 	    Statement += ")";
 	    preparedStatement = databaseConnection.prepareStatement(Statement);
 	    for (int i = 1; i <= values.length; i++) {
-		preparedStatement.setString(1, values[i - 1]);
+		preparedStatement.setString(i, "'" + values[i - 1] + "'");
 	    }
 	    preparedStatement.execute();
 	} catch (SQLException e) {
