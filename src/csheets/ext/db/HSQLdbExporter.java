@@ -32,20 +32,15 @@ public class HSQLdbExporter implements DatabaseExportInterface {
     @Override
     public boolean createTable(String name, String[] columns) {
 	try {
-	    PreparedStatement preparedStatement = null;
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
-		Statement += " ? varchar(512)";
+		Statement += columns[i] + " varchar(512)";
 		if ((i + 1) != columns.length) {
 		    Statement += ",";
 		}
 	    }
 	    Statement += ")";
-	    preparedStatement = databaseConnection.prepareStatement(Statement);
-	    for (int i = 0; i < columns.length; i++) {
-		preparedStatement.setString((i + 1), columns[i]);
-	    }
-	    preparedStatement.execute();
+	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	    return false;
@@ -56,7 +51,7 @@ public class HSQLdbExporter implements DatabaseExportInterface {
     @Override
     public boolean addLine(String table, String[] values) {
 	try {
-	    PreparedStatement preparedStatement = null;
+	    PreparedStatement preparedStatement;
 	    String Statement = "INSERT INTO " + table + " VALUES(";
 	    for (int i = 0; i < values.length; i++) {
 		Statement += "?";
@@ -66,8 +61,8 @@ public class HSQLdbExporter implements DatabaseExportInterface {
 	    }
 	    Statement += ")";
 	    preparedStatement = databaseConnection.prepareStatement(Statement);
-	    for (int i = 0; i < values.length; i++) {
-		preparedStatement.setString((i + 1), values[i]);
+	    for (int i = 1; i <= values.length; i++) {
+		preparedStatement.setString(i, values[i-1]);
 	    }
 	    preparedStatement.execute();
 	} catch (SQLException e) {
