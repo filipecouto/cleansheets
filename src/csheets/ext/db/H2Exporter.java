@@ -34,7 +34,7 @@ public class H2Exporter implements DatabaseExportInterface {
 	try {
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
-		Statement += columns[i] + " text";
+		Statement += DatabaseExportHelper.PrepareColumnName(columns[i], i) + " text";
 		if ((i + 1) != columns.length) {
 		    Statement += ",";
 		}
@@ -60,7 +60,6 @@ public class H2Exporter implements DatabaseExportInterface {
 		}
 	    }
 	    Statement += ")";
-	    System.out.println(Statement);
 	    preparedStatement = databaseConnection.prepareStatement(Statement);
 	    for (int i = 1; i <= values.length; i++) {
 		preparedStatement.setString(1, values[i - 1]);
