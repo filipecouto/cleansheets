@@ -4,8 +4,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,6 +21,8 @@ import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.io.CLSCodec;
 
 public class ApplicationLayerTests {
+    private static final String TABLE_NAME = "testTable";
+    private static final String DATABASE_NAME = "testDatabase";
     private static Workbook workbook;
     private static Spreadsheet spreadsheet;
 
@@ -45,17 +52,19 @@ public class ApplicationLayerTests {
 
 	dbDriver = DatabaseDriverManager.getInstance().getAvailableDrivers()
 		.get(0);
+
 	System.out.println("Done creating a " + columns + "x" + rows
 		+ " table to export using " + dbDriver.getName() + " driver!");
+
+	export();
     }
 
-    @Test
-    public void export() {
+    public static void export() {
 	try {
 	    DatabaseExportController controller = new DatabaseExportController();
 	    controller.setDriver(dbDriver);
-	    controller.setDatabase("testDatabase");
-	    controller.setTableName("testTable");
+	    controller.setDatabase(DATABASE_NAME);
+	    controller.setTableName(TABLE_NAME);
 	    controller.setCreateTable(true);
 	    Cell[][] cells = new Cell[rows][columns];
 	    for (int y = 0; y < rows; y++) {
@@ -65,10 +74,10 @@ public class ApplicationLayerTests {
 	    }
 	    controller.setCells(cells);
 	    controller.export();
-	    assertTrue("Table was exported successfully", true);
+	    System.out.println("Table was exported successfully");
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    assertTrue("Table was exported successfully", false);
+	    System.out.println("Table failed to export");
 	}
     }
 
@@ -128,12 +137,47 @@ public class ApplicationLayerTests {
     }
 
     @Test
+    public void testTableCreation() {
+	try {
+	    Class.forName("org.hsqldb.jdbcDriver");
+	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
+		    + DATABASE_NAME);
+	    ResultSet rs = conn.getMetaData().getTables(null, "PUBLIC", "%",
+		    null);
+	    while (rs.next()) {
+		if (TABLE_NAME.equalsIgnoreCase(rs.getString(3))) {
+		    assertTrue("Table was created successfully", true);
+		    rs.close();
+		    conn.close();
+		    return;
+		}
+	    }
+	    assertTrue("Table was created successfully", false);
+	    rs.close();
+	    conn.close();
+	    return;
+	} catch (ClassNotFoundException e) {
+	    e.printStackTrace();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+	assertTrue("Table was created successfully", false);
+    }
+
+    @Test
     public void compareAllRows() {
 	assertTrue("All \"cells\" in the database match the worksheet", true);
     }
 
-    @After
-    public void cleanUp() {
+    @AfterClass
+    public static void cleanUp() {
 	// TODO maybe remove database or table?
+	try {
+	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
+		    + DATABASE_NAME);
+	    conn.prepareStatement("DROP TABLE testTable").execute();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
     }
 }
