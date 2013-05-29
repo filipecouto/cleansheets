@@ -26,6 +26,8 @@ import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import csheets.CleanSheets;
 import csheets.core.Workbook;
@@ -33,49 +35,65 @@ import csheets.ui.FileChooser;
 
 /**
  * An action for saving a spreadsheet to the current working file.
+ * 
  * @author Einar Pehrson
  */
 @SuppressWarnings("serial")
 public class SaveAction extends SaveAsAction {
 
-	/**
-	 * Creates a new save command
-	 * @param app the CleanSheets application
-	 * @param uiController the user interface controller
-	 * @param chooser the file chooser to use when prompting the user for the file to save
-	 */
-	public SaveAction(CleanSheets app, UIController uiController, FileChooser chooser) {
-		super(app, uiController, chooser);
-	}
+    /**
+     * Creates a new save command
+     * 
+     * @param app
+     *            the CleanSheets application
+     * @param uiController
+     *            the user interface controller
+     * @param chooser
+     *            the file chooser to use when prompting the user for the file
+     *            to save
+     */
+    public SaveAction(CleanSheets app, UIController uiController,
+	    FileChooser chooser) {
+	super(app, uiController, chooser);
+    }
 
-	protected String getName() {
-		return "Save";
-	}
+    protected String getName() {
+	return "Save";
+    }
 
-	protected void defineProperties() {
-		putValue(MNEMONIC_KEY, KeyEvent.VK_S);
-		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-		putValue(SMALL_ICON, new ImageIcon(CleanSheets.class.getResource("res/img/save.gif")));
-	}
+    protected void defineProperties() {
+	putValue(MNEMONIC_KEY, KeyEvent.VK_S);
+	putValue(ACCELERATOR_KEY,
+		KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+	putValue(
+		SMALL_ICON,
+		new ImageIcon(CleanSheets.class.getResource("res/img/save.gif")));
+    }
 
-	public void actionPerformed(ActionEvent e) {
-		Workbook workbook = uiController.getActiveWorkbook();
-		if (app.isWorkbookStored(workbook))
-			try {
-				app.save(workbook);
-			} catch (IOException ex) {
-				showErrorDialog("An I/O error occurred when saving the file.");
-				return;
-			}
-		else
-			super.actionPerformed(e);
-	}
+    public void actionPerformed(ActionEvent e) {
+	Workbook workbook = uiController.getActiveWorkbook();
+	if (app.isWorkbookStored(workbook))
+	    try {
+		app.save(workbook);
+	    } catch (IOException ex) {
+		showErrorDialog("An I/O error occurred when saving the file.");
+		return;
+	    } catch (TransformerException e1) {
+		showErrorDialog("An I/O error occurred when tranforming the file.");
+		return;
+	    } catch (ParserConfigurationException e1) {
+		showErrorDialog("An I/O error occurred when configurating the file");
+		return;
+	    }
+	else
+	    super.actionPerformed(e);
+    }
 
-	protected boolean requiresModification() {
-		return true;
-	}
+    protected boolean requiresModification() {
+	return true;
+    }
 
-	protected boolean requiresFile() {
-		return false;
-	}
+    protected boolean requiresFile() {
+	return false;
+    }
 }

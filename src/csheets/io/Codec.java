@@ -24,7 +24,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
+
 import csheets.core.Workbook;
+import csheets.core.formula.compiler.FormulaCompilationException;
 
 /**
  * An interface for classes capable of reading and writing workbooks.
@@ -37,13 +44,19 @@ public interface Codec {
 	 * @param stream the input stream from which the workbook should be read
 	 * @throws IOException if the workbook could not be read correctly
 	 * @throws ClassNotFoundException If the class of a serialized object could not be found
+	 * @throws ParserConfigurationException 
+	 * @throws SAXException 
+	 * @throws FormulaCompilationException 
+	 * @throws DOMException 
 	 */
-	public Workbook read(InputStream stream) throws IOException, ClassNotFoundException;
+	public Workbook read(InputStream stream) throws IOException, ClassNotFoundException, ParserConfigurationException, SAXException, DOMException, FormulaCompilationException;
 
 	/**
 	 * Writes a workbook to the given output stream.
 	 * @param stream the output stream to which the workbook should be written
 	 * @throws IOException if the workbook could not be written correctly
+	 * @throws TransformerException 
+	 * @throws ParserConfigurationException 
 	 */
-	public void write(Workbook workbook, OutputStream stream) throws IOException;
+	public void write(Workbook workbook, OutputStream stream) throws IOException, TransformerException, ParserConfigurationException;
 }

@@ -36,8 +36,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.SwingUtilities;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
 
 import csheets.core.Workbook;
+import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.core.formula.compiler.FormulaCompiler;
 import csheets.core.formula.lang.Language;
 import csheets.ext.ExtensionManager;
@@ -168,8 +174,12 @@ public class CleanSheets {
 	 * Loads a workbook from the given file.
 	 * @param file the file in which the workbook is stored
 	 * @throws IOException if the file could not be loaded correctly
+	 * @throws FormulaCompilationException 
+	 * @throws SAXException 
+	 * @throws ParserConfigurationException 
+	 * @throws DOMException 
 	 */
-	public void load(File file) throws IOException, ClassNotFoundException {
+	public void load(File file) throws IOException, ClassNotFoundException, DOMException, ParserConfigurationException, SAXException, FormulaCompilationException {
 		Codec codec = new CodecFactory().getCodec(file);
 		if (codec != null) {
 			FileInputStream stream = null;
@@ -206,8 +216,10 @@ public class CleanSheets {
 	 * or to which it was most recently saved.
 	 * @param workbook the workbook to save
 	 * @throws IOException if the file could not be saved correctly
+	 * @throws ParserConfigurationException 
+	 * @throws TransformerException 
 	 */
-	public void save(Workbook workbook) throws IOException {
+	public void save(Workbook workbook) throws IOException, TransformerException, ParserConfigurationException {
 		File file = workbooks.get(workbook);
 		if (file != null)
 			saveAs(workbook, file);
@@ -220,8 +232,10 @@ public class CleanSheets {
 	 * @param workbook the workbook to save
 	 * @param file the file to which the workbook should be saved
 	 * @throws IOException if the file could not be saved correctly
+	 * @throws ParserConfigurationException 
+	 * @throws TransformerException 
 	 */
-	public void saveAs(Workbook workbook, File file) throws IOException {
+	public void saveAs(Workbook workbook, File file) throws IOException, TransformerException, ParserConfigurationException {
 		Codec codec = new CodecFactory().getCodec(file);
 		if (codec != null) {
 			FileOutputStream stream = null;
