@@ -2,6 +2,8 @@ package csheets.ext.db.ui;
 
 import java.awt.event.ActionEvent;
 
+import csheets.core.Spreadsheet;
+import csheets.core.Workbook;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.ctrl.FocusOwnerAction;
 
@@ -16,8 +18,11 @@ public class DatabaseExportMenuItem extends FocusOwnerAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-	if (dialog == null)
+	//TODO 
+	//make sure if grid is not empty
+	if (dialog == null) {
 	    dialog = new DatabaseExportDialog(extension);
+	}
 	dialog.prepareDialog(focusOwner);
 	dialog.setVisible(true);
     }

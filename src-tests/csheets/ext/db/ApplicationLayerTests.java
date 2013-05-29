@@ -2,6 +2,7 @@ package csheets.ext.db;
 
 import static org.junit.Assert.assertTrue;
 
+import java.beans.Statement;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -58,7 +59,7 @@ public class ApplicationLayerTests {
 
 	export();
     }
-
+    
     public static void export() {
 	try {
 	    DatabaseExportController controller = new DatabaseExportController();
@@ -163,11 +164,62 @@ public class ApplicationLayerTests {
 	}
 	assertTrue("Table was created successfully", false);
     }
+    
 
     @Test
     public void compareAllRows() {
+	try {
+	    Class.forName("org.hsqldb.jdbcDriver");
+	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
+		    + DATABASE_NAME);
+	    String statement = "SELECT * FROM " + TABLE_NAME;
+	    ResultSet res = conn.prepareStatement(statement).executeQuery();
+	    int rowCount = spreadsheet.getRowCount();
+	    int columnCount = spreadsheet.getColumnCount();
+	    int row = 0;
+	    while(res.next()) {
+		for(int column = 1; column <= columnCount; column ++) {
+		    if(!(spreadsheet.getCell(column-1, row).getValue().toString().equalsIgnoreCase(res.getString(column)))) {
+			assertTrue("Match was not verified", false);
+		    }
+		}
+		row++;
+	    }
+	} catch (ClassNotFoundException e) {
+	    e.printStackTrace();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
 	assertTrue("All \"cells\" in the database match the worksheet", true);
     }
+    
+    @Test
+    public void compareNumberOfRows() {
+	try {
+	    Class.forName("org.hsqldb.jdbcDriver");
+	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
+		    + DATABASE_NAME);
+	    String statement = "SELECT * FROM " + TABLE_NAME;
+	    ResultSet res = conn.prepareStatement(statement).executeQuery();
+	    int rowCount = spreadsheet.getRowCount();
+	    int columnCount = spreadsheet.getColumnCount();
+	    int row = 0;
+	    while(res.next()) {
+		row++;
+	    }
+	    System.out.println("Rows : " + row);
+	    System.out.println("Count : " + rowCount);
+	    if(row != rowCount) {
+		assertTrue("Match not verified" , false);
+	    }
+	} catch (ClassNotFoundException e) {
+	    e.printStackTrace();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+	assertTrue("Match verified", true);
+    }
+
 
     @AfterClass
     public static void cleanUp() {
@@ -180,4 +232,5 @@ public class ApplicationLayerTests {
 	    e.printStackTrace();
 	}
     }
+    
 }

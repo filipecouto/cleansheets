@@ -74,15 +74,16 @@ public class DatabaseExportBuilder {
     }
 
     /**
-     * Proceeds to the exportation to the database, checks if creation of table is required
+     * Proceeds to the exportation to the database, checks if creation of table
+     * is required
      */
     public void export() {
 	// TODO maybe check if everything is ready to export, throw a
 	// RuntimeException if not
 	driver.openDatabase(database);
-	if (getCreateTable()) {
+	if (createTable) {
 	    if (!driver.createTable(tableName, columns)) {
-		throw new RuntimeException("Table already exists");
+		throw new RuntimeException("Error inserting");
 	    }
 	}
 	for (String[] line : values)
