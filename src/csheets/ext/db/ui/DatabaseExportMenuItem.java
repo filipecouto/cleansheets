@@ -18,6 +18,8 @@ public class DatabaseExportMenuItem extends FocusOwnerAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+	//TODO 
+	//make sure if grid is not empty
 	if (dialog == null) {
 	    dialog = new DatabaseExportDialog(extension);
 	}
