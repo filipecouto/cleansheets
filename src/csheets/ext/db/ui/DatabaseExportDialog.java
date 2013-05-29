@@ -100,7 +100,11 @@ public class DatabaseExportDialog extends JFrame {
 	    public void run() {
 		if (exportController == null) {
 		    exportController = new DatabaseExportController();
-		    exportController.setCells(table.getSelectedCells());
+		    if(exportWhole.isSelected()) {
+			exportController.setCells(table.getSpreadsheet());
+		    } else if(exportSelected.isSelected()) {
+			exportController.setCells(table.getSelectedCells());
+		    }
 		    exportController.setCreateTable(true);
 		    String dbUrl = url.getText();
 		    if (!dbUrl.contains("/") && !dbUrl.contains("/"))
