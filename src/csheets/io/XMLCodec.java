@@ -1,11 +1,17 @@
 package csheets.io;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 
+import javax.swing.BorderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,6 +26,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
@@ -42,7 +49,6 @@ public class XMLCodec implements Codec {
     @Override
     public Workbook read(InputStream stream) throws IOException,
 	    ClassNotFoundException {
-	Workbook workbook = new Workbook();
 	try {
 
 	    DocumentBuilderFactory dbFactory = DocumentBuilderFactory
@@ -57,31 +63,95 @@ public class XMLCodec implements Codec {
 
 	    NodeList nList = doc.getElementsByTagName("SpreadSheet");
 	    int totalSheets = nList.getLength();
-	    System.out.println("----------------------------");
+	    Workbook wb = new Workbook(totalSheets);
 
 	    for (int i = 0; i < totalSheets; i++) {
-
+		Spreadsheet sheet = wb.getSpreadsheet(i);
 		Node nNode = nList.item(i);
 
 		System.out.println("\nCurrent Element :" + nNode.getNodeName());
 
 		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
 		    Element eElement = (Element) nNode;
+		    StylableCell sc = (StylableCell) sheet.getCell(
+			    Integer.parseInt(eElement.getAttribute("Column")),
+			    Integer.parseInt(eElement.getAttribute("Row")));
 
-		    System.out.println("Staff id : "
-			    + eElement.getAttribute("Column"));
-		    System.out.println("Salary : "
-			    + eElement.getElementsByTagName("salary").item(0)
-				    .getTextContent());
-
+		    sc.setBackgroundColor(new Color(Integer.parseInt(eElement
+			    .getAttribute("BackgroundColor"))));
+		    sc.setForegroundColor(new Color(Integer.parseInt(eElement
+			    .getAttribute("ForegroundColor"))));
+		    sc.setHorizontalAlignment(getIntCellAlign(eElement
+			    .getAttribute("CellAlign")));
+		    sc.setVerticalAlignment(getIntTextAlign(eElement
+			    .getAttribute("TextAlign")));
+		    sc.setFont(new Font(eElement.getAttribute("FontFamily"),
+			    getBoldAndItalic(eElement.getAttribute("Bold"),
+				    eElement.getAttribute("Italic")), Integer
+				    .parseInt(eElement.getAttribute("Size"))));
+		    sc.setBorder(BorderFactory.createMatteBorder(
+			    getIntBorder(eElement.getAttribute("BorderTop")),
+			    getIntBorder(eElement.getAttribute("BorderLeft")),
+			    getIntBorder(eElement.getAttribute("BorderBottom")),
+			    getIntBorder(eElement.getAttribute("BorderRight")),
+			    new Color(Integer.parseInt(eElement
+				    .getAttribute("BorderColor")))));
 		}
 	    }
+	    return wb;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
 	return null;
+    }
 
+    private int getIntBorder(String border) {
+	if (border.compareTo("True") == 0) {
+	    return 1;
+	}
+	return 0;
+    }
+
+    private int getBoldAndItalic(String bold, String italic) {
+	if ((bold.compareTo("True") == 0) && (italic.compareTo("True") == 0)) {
+	    return (Font.BOLD | Font.ITALIC);
+	}
+
+	if (bold.compareTo("True") == 0) {
+	    return (Font.BOLD);
+	}
+
+	if (italic.compareTo("True") == 0) {
+	    return (Font.ITALIC);
+	}
+	return 0;
+    }
+
+    private int getIntTextAlign(String textAlign) {
+	if (textAlign.compareTo("Center") == 0) {
+	    return 0;
+	}
+	if (textAlign.compareTo("Left") == 0) {
+	    return 2;
+	}
+	if (textAlign.compareTo("Right") == 0) {
+	    return 4;
+	}
+	return 2;
+    }
+
+    private int getIntCellAlign(String cellAlign) {
+
+	if (cellAlign.compareTo("Center") == 0) {
+	    return 0;
+	}
+	if (cellAlign.compareTo("Top") == 0) {
+	    return 1;
+	}
+	if (cellAlign.compareTo("Bottom") == 0) {
+	    return 3;
+	}
+	return 0;
     }
 
     @Override
@@ -122,12 +192,12 @@ public class XMLCodec implements Codec {
 					    StyleExtension.NAME);
 			    // get the horizontal alignment value and define a
 			    // string to it
-			    textAlignString = getTextAlign(stylableCell
+			    textAlignString = getStringTextAlign(stylableCell
 				    .getHorizontalAlignment());
 
 			    // get the vertical alignment value and define a
 			    // string to it
-			    cellAlignString = getCellAlign(stylableCell
+			    cellAlignString = getStringCellAlign(stylableCell
 				    .getVerticalAlignment());
 
 			    // define the use of bold and/or italic
@@ -228,7 +298,7 @@ public class XMLCodec implements Codec {
 	return (font.isItalic() ? "True" : "False");
     }
 
-    private String getCellAlign(int cellAlign) {
+    private String getStringCellAlign(int cellAlign) {
 	switch (cellAlign) {
 	case 0:
 	    return "Center";
@@ -241,7 +311,7 @@ public class XMLCodec implements Codec {
 	}
     }
 
-    private String getTextAlign(int textAlign) {
+    private String getStringTextAlign(int textAlign) {
 	switch (textAlign) {
 	case 0:
 	    return "Center";
