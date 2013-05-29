@@ -38,7 +38,7 @@ public class DatabaseExportController {
 	String[] columns = new String[columnCount];
 	for (int i = 0; i < columnCount; i++) {
 	    final String columnName = selectedCells[0][i].getValue().toString();
-	    columns[i] = columnName.length() == 0 ? "col" + (i + 1)
+	    columns[i] = columnName.length() == 0 ? "Column" + (i + 1)
 		    : columnName;
 	}
 	setColumns(columns);
@@ -56,12 +56,12 @@ public class DatabaseExportController {
 	if(rowCount < 1) {
 	    return;
 	}
-	final int columnCount = sheet.getColumnCount();
+	final int columnCount = sheet.getColumnCount() + 1;
 	String [] columns = new String[columnCount];
 	String [][] values = new String[rowCount][columnCount];
 	for(int i=0;i < columnCount; i++) {
 	    final String columnName = sheet.getCell(i, 0).getValue().toString();
-	    columns[i] = columnName.length() == 0 ? "col" + (i + 1)
+	    columns[i] = columnName.length() == 0 ? "Column" + (i + 1)
 		    : columnName;
 	}
 	setColumns(columns);
@@ -118,12 +118,12 @@ public class DatabaseExportController {
     }
 
     public void export() {
-	DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(getDriver());
-	exportBuilder.setCreateTable(getCreateTable());
-	exportBuilder.setDatabase(getDatabase());
-	exportBuilder.setTableName(getTableName());
-	exportBuilder.setColumns(getColumns());
-	exportBuilder.setValues(getValues());
+	DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(driver);
+	exportBuilder.setCreateTable(createTable);
+	exportBuilder.setDatabase(database);
+	exportBuilder.setTableName(tableName);
+	exportBuilder.setColumns(columns);
+	exportBuilder.setValues(values);
 	exportBuilder.export();
 
     }

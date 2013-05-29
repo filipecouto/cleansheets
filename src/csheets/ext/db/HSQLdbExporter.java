@@ -2,6 +2,7 @@ package csheets.ext.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
@@ -31,15 +32,20 @@ public class HSQLdbExporter implements DatabaseExportInterface {
     @Override
     public boolean createTable(String name, String[] columns) {
 	try {
+	    PreparedStatement preparedStatement = null;
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
-		Statement += columns[i] + " varchar(512)";
+		Statement += " ? varchar(512)";
 		if ((i + 1) != columns.length) {
 		    Statement += ",";
 		}
 	    }
 	    Statement += ")";
-	    databaseConnection.prepareStatement(Statement).execute();
+	    preparedStatement = databaseConnection.prepareStatement(Statement);
+	    for (int i = 0; i < columns.length; i++) {
+		preparedStatement.setString((i + 1), columns[i]);
+	    }
+	    preparedStatement.execute();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	    return false;
@@ -50,15 +56,20 @@ public class HSQLdbExporter implements DatabaseExportInterface {
     @Override
     public boolean addLine(String table, String[] values) {
 	try {
+	    PreparedStatement preparedStatement = null;
 	    String Statement = "INSERT INTO " + table + " VALUES(";
 	    for (int i = 0; i < values.length; i++) {
-		Statement += "'" + values[i] + "'";
+		Statement += "?";
 		if ((i + 1) != values.length) {
 		    Statement += ",";
 		}
 	    }
 	    Statement += ")";
-	    databaseConnection.prepareStatement(Statement).execute();
+	    preparedStatement = databaseConnection.prepareStatement(Statement);
+	    for (int i = 0; i < values.length; i++) {
+		preparedStatement.setString((i + 1), values[i]);
+	    }
+	    preparedStatement.execute();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	    return false;
