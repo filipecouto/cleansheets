@@ -55,7 +55,8 @@ public class XMLCodec implements Codec {
 
     @Override
     public Workbook read(InputStream stream) throws IOException,
-	    ClassNotFoundException, ParserConfigurationException, SAXException, DOMException, FormulaCompilationException {
+	    ClassNotFoundException, ParserConfigurationException, SAXException,
+	    DOMException, FormulaCompilationException {
 	int totalCells = 0;
 	int totalSheets = 0;
 
@@ -82,7 +83,18 @@ public class XMLCodec implements Codec {
 	return wb;
     }
 
-    private StylableCell getStylabeCell(Node nNode, Spreadsheet sheet) throws DOMException, FormulaCompilationException {
+    /**
+     * Method to get the stored information in an XML file for a StylabeCell
+     * 
+     * @param nNode
+     * @param sheet
+     * @return
+     * @throws DOMException
+     * @throws FormulaCompilationException
+     * 
+     */
+    private StylableCell getStylabeCell(Node nNode, Spreadsheet sheet)
+	    throws DOMException, FormulaCompilationException {
 	if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 	    Element eElement = (Element) nNode;
 	    StylableCell sc = (StylableCell) sheet.getCell(
@@ -112,13 +124,13 @@ public class XMLCodec implements Codec {
 
     }
 
-    // private int getIntBorder(String border) {
-    // if (border.compareTo("True") == 0) {
-    // return 1;
-    // }
-    // return 0;
-    // }
-
+    /**
+     * Method to test if text is bold and italic
+     * 
+     * @param bold
+     * @param italic
+     * @return
+     */
     private int getBoldAndItalic(String bold, String italic) {
 	if ((bold.compareTo("True") == 0) && (italic.compareTo("True") == 0)) {
 	    return (Font.BOLD | Font.ITALIC);
@@ -134,6 +146,12 @@ public class XMLCodec implements Codec {
 	return 0;
     }
 
+    /**
+     * Method for testing the alignment of the text
+     * 
+     * @param textAlign
+     * @return
+     */
     private int getIntTextAlign(String textAlign) {
 	if (textAlign.compareTo("Center") == 0) {
 	    return SwingConstants.CENTER;
@@ -147,6 +165,12 @@ public class XMLCodec implements Codec {
 	return 2;
     }
 
+    /**
+     * Method for testing the alignment of the cell
+     * 
+     * @param cellAlign
+     * @return
+     */
     private int getIntCellAlign(String cellAlign) {
 
 	if (cellAlign.compareTo("Center") == 0) {
@@ -163,31 +187,35 @@ public class XMLCodec implements Codec {
 
     @Override
     public void write(Workbook workbook, OutputStream stream)
-	    throws IOException, TransformerException, ParserConfigurationException {
+	    throws IOException, TransformerException,
+	    ParserConfigurationException {
 
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory
 		.newInstance();
 
-	    DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-	    // root element
-	    Document doc = docBuilder.newDocument();
-	    createXMLContent(doc, workbook);
+	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	// root element
+	Document doc = docBuilder.newDocument();
+	createXMLContent(doc, workbook);
 
-	    TransformerFactory transformerFactory = TransformerFactory
-		    .newInstance();
-	    Transformer transformer = transformerFactory.newTransformer();
-	    DOMSource source = new DOMSource(doc);
-	    StreamResult result = new StreamResult(stream);
+	TransformerFactory transformerFactory = TransformerFactory
+		.newInstance();
+	Transformer transformer = transformerFactory.newTransformer();
+	DOMSource source = new DOMSource(doc);
+	StreamResult result = new StreamResult(stream);
 
-	    // Output to console for testing
-	    // StreamResult result = new
-	    // StreamResult(System.out);
-
-	    transformer.transform(source, result);
+	transformer.transform(source, result);
 	// Frees resources
 	stream.close();
     }
 
+    /**
+     * Method to create the location and the variables to receive information to
+     * be stored
+     * 
+     * @param doc
+     * @param workbook
+     */
     private void createXMLContent(Document doc, Workbook workbook) {
 	int iS = 0;
 	int countSpreadsheet;
@@ -227,6 +255,15 @@ public class XMLCodec implements Codec {
 
     }
 
+    /**
+     * Method to put the information in the document
+     * 
+     * @param sheet
+     * @param column
+     * @param row
+     * @param doc
+     * @param spreadSheet
+     */
     private void setXMLContent(Spreadsheet sheet, int column, int row,
 	    Document doc, Element spreadSheet) {
 	String textAlignString;
@@ -235,13 +272,7 @@ public class XMLCodec implements Codec {
 	String styleItalic = "False";
 	Attr attr = null;
 
-	if ((sheet.getCell(column, row).getContent()).length() != 0) { // restrict
-	    // to
-	    // catch
-	    // only
-	    // cells
-	    // with
-	    // content
+	if ((sheet.getCell(column, row).getContent()).length() != 0) {
 	    System.out.println("Col = " + (column + 1) + " Row = " + (row + 1)
 		    + " Content = " + sheet.getCell(column, row).getContent());
 	    // create StylableCell to access cell styles
@@ -303,20 +334,39 @@ public class XMLCodec implements Codec {
 	    cell.setAttributeNode(attr);
 	    cell.appendChild(doc.createTextNode(sheet.getCell(column, row)
 		    .getContent()));
-	    // output
-
 	}
 
     }
 
+    /**
+     * Method to determine whether the cell is in bold and prepare the
+     * information for the file
+     * 
+     * @param font
+     * @return
+     */
     private String getBold(Font font) {
 	return (font.isBold() ? "True" : "False");
     }
 
+    /**
+     * Method to determine whether the cell is in italic and prepare the
+     * information for the file
+     * 
+     * @param font
+     * @return
+     */
     private String getItalic(Font font) {
 	return (font.isItalic() ? "True" : "False");
     }
 
+    /**
+     * Method for determining the alignment of the cell and prepare the
+     * information for the file
+     * 
+     * @param cellAlign
+     * @return
+     */
     private String getStringCellAlign(int cellAlign) {
 	switch (cellAlign) {
 	case SwingConstants.CENTER:
@@ -330,6 +380,13 @@ public class XMLCodec implements Codec {
 	}
     }
 
+    /**
+     * Method for determining the alignment of the text and prepare the
+     * information for the file
+     * 
+     * @param textAlign
+     * @return
+     */
     private String getStringTextAlign(int textAlign) {
 	switch (textAlign) {
 	case SwingConstants.CENTER:
