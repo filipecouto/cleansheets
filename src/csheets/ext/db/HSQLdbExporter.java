@@ -2,6 +2,7 @@ package csheets.ext.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
@@ -50,15 +51,20 @@ public class HSQLdbExporter implements DatabaseExportInterface {
     @Override
     public boolean addLine(String table, String[] values) {
 	try {
+	    PreparedStatement preparedStatement;
 	    String Statement = "INSERT INTO " + table + " VALUES(";
 	    for (int i = 0; i < values.length; i++) {
-		Statement += "'" + values[i] + "'";
+		Statement += "?";
 		if ((i + 1) != values.length) {
 		    Statement += ",";
 		}
 	    }
 	    Statement += ")";
-	    databaseConnection.prepareStatement(Statement).execute();
+	    preparedStatement = databaseConnection.prepareStatement(Statement);
+	    for (int i = 1; i <= values.length; i++) {
+		preparedStatement.setString(i, values[i-1]);
+	    }
+	    preparedStatement.execute();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	    return false;

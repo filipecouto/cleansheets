@@ -83,13 +83,22 @@ public class DatabaseExportDialog extends JFrame {
 	panelButtons.add(ok);
 	return panelButtons;
     }
+    
+    /**
+     * enables buttons depending on parameter
+     * @param value 
+     */
+    public void enableButtons(boolean value) {
+	panelButtons.getComponent(0).setEnabled(value);
+	panelButtons.getComponent(1).setEnabled(value);
+    }
 
     /**
      * Creates a Dialog that is used to retrieve the exportation data from the user in order to proceed to the exportation
      */
     private void export() {
-	JLabel info = new JLabel("Exporting...");
-	panelButtons.add(info);
+	panelButtons.getComponent(0).setEnabled(false);
+	panelButtons.getComponent(1).setEnabled(false);
 	// force the GUI to redraw the window so the label can be seen
 	revalidate();
 	repaint();
@@ -100,7 +109,12 @@ public class DatabaseExportDialog extends JFrame {
 	    public void run() {
 		if (exportController == null) {
 		    exportController = new DatabaseExportController();
-		    exportController.setCells(table.getSelectedCells());
+		    exportController.setDriver(extension.getAvailableDrivers().get(format.getSelectedIndex()));
+		    if(exportWhole.isSelected()) {
+			exportController.setCells(table.getSpreadsheet());
+		    } else if(exportSelected.isSelected()) {
+			exportController.setCells(table.getSelectedCells());
+		    }
 		    exportController.setCreateTable(true);
 		    String dbUrl = url.getText();
 		    if (!dbUrl.contains("/") && !dbUrl.contains("/"))
@@ -113,7 +127,7 @@ public class DatabaseExportDialog extends JFrame {
 		try {
 		    exportController.export();
 		} catch (Exception e) {
-		    if (e.getMessage().equals("Table already exists")) {
+		    if (e.getMessage() != null && e.getMessage().equals("Table already exists")) {
 			Object[] options = { "Yes", "No" };
 			int n = JOptionPane
 				.showOptionDialog(
@@ -128,16 +142,18 @@ public class DatabaseExportDialog extends JFrame {
 			    exportController.setCreateTable(false);
 			    run();
 			    return;
+			case 1:
+			    enableButtons(true);
+			    return;
 			}
-		    } else {
+		    } else {e.printStackTrace();
 			JOptionPane.showMessageDialog(getContentPane(),
 				"An error has occured while exporting your table: "
 					+ e.getMessage(), "Error",
 				JOptionPane.PLAIN_MESSAGE);
 		    }
 		}
-
-		panelButtons.remove(2);
+		enableButtons(true);
 		setVisible(false);
 	    }
 	});

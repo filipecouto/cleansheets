@@ -1,12 +1,16 @@
 package csheets.ext.db;
 
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 import csheets.core.Cell;
+import csheets.core.Spreadsheet;
 
 public class DatabaseExportController {
     private DatabaseExportInterface driver; // database driver
     private String tableName; // table name
     private String database; // database name
-    private Cell[][] cells; // cells
+    private String[] columns;
+    private String[][] values;
     private boolean createTable;
     private boolean justSelection;
 
@@ -26,8 +30,55 @@ public class DatabaseExportController {
 	this.database = database;
     }
 
-    public void setCells(Cell[][] cells) {
-	this.cells = cells;
+    public void setCells(Cell[][] selectedCells) {
+	final int rowCount = selectedCells.length - 1;
+	if (rowCount < 1)
+	    return;
+	final int columnCount = selectedCells[0].length;
+	String[] columns = new String[columnCount];
+	for (int i = 0; i < columnCount; i++) {
+	    final String columnName = selectedCells[0][i].getValue().toString();
+	    columns[i] = columnName.length() == 0 ? "Column" + (i + 1)
+		    : columnName;
+	}
+	setColumns(columns);
+	String[][] values = new String[rowCount][columnCount];
+	for (int y = 0; y < rowCount; y++) {
+	    for (int x = 0; x < columnCount; x++) {
+		values[y][x] = selectedCells[y + 1][x].getValue().toString();
+	    }
+	}
+	setValues(values);
+    }
+    
+    public void setCells(Spreadsheet sheet) {
+	final int rowCount = sheet.getRowCount() - 1;
+	if(rowCount < 1) {
+	    return;
+	}
+	final int columnCount = sheet.getColumnCount() + 1;
+	String [] columns = new String[columnCount];
+	String [][] values = new String[rowCount][columnCount];
+	for(int i=0;i < columnCount; i++) {
+	    final String columnName = sheet.getCell(i, 0).getValue().toString();
+	    columns[i] = columnName.length() == 0 ? "Column" + (i + 1)
+		    : columnName;
+	}
+	setColumns(columns);
+	for(int y = 0; y < rowCount; y++) {
+	    for(int x = 0; x < columnCount; x++) {
+		values[y][x] = sheet.getCell(x, y+1).getValue().toString();
+	    }
+	}
+	setValues(values);
+    }
+    
+    public void setValues(String[][] values) {
+	this.values = values;
+    }
+    
+    public void setColumns(String[] columns) {
+	this.columns = columns;
     }
 
     public void setCreateTable(boolean createTable) {
@@ -49,9 +100,13 @@ public class DatabaseExportController {
     public String getDatabase() {
 	return database;
     }
+    
+    public String[] getColumns() {
+	return columns;
+    }
 
-    public Cell[][] getCells() {
-	return cells;
+    public String[][] getValues() {
+	return values;
     }
 
     public boolean getCreateTable() {
@@ -63,28 +118,11 @@ public class DatabaseExportController {
     }
 
     public void export() {
-	DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(getDriver());
-	exportBuilder.setCreateTable(getCreateTable());
-	exportBuilder.setDatabase(getDatabase());
-	exportBuilder.setTableName(getTableName());
-	final Cell[][] selectedCells = getCells();
-	final int rowCount = selectedCells.length - 1;
-	if (rowCount < 1)
-	    return;
-	final int columnCount = selectedCells[0].length;
-	String[] columns = new String[columnCount];
-	for (int i = 0; i < columnCount; i++) {
-	    final String columnName = selectedCells[0][i].getValue().toString();
-	    columns[i] = columnName.length() == 0 ? "col" + (i + 1)
-		    : columnName;
-	}
+	DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(driver);
+	exportBuilder.setCreateTable(createTable);
+	exportBuilder.setDatabase(database);
+	exportBuilder.setTableName(tableName);
 	exportBuilder.setColumns(columns);
-	String[][] values = new String[rowCount][columnCount];
-	for (int y = 0; y < rowCount; y++) {
-	    for (int x = 0; x < columnCount; x++) {
-		values[y][x] = selectedCells[y + 1][x].getValue().toString();
-	    }
-	}
 	exportBuilder.setValues(values);
 	exportBuilder.export();
 
