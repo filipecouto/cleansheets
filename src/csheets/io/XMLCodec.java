@@ -1,5 +1,6 @@
 package csheets.io;
 
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,29 +34,29 @@ import csheets.ext.style.StyleExtension;
 public class XMLCodec implements Codec {
 
     /**
-    * Creates a new XML codec.
-    */
-    public XMLCodec() {}
-    
-    
+     * Creates a new XML codec.
+     */
+    public XMLCodec() {
+    }
+
     @Override
     public Workbook read(InputStream stream) throws IOException,
 	    ClassNotFoundException {
-	Workbook workbook= new Workbook();
+	Workbook workbook = new Workbook();
 	try {
 
 	    DocumentBuilderFactory dbFactory = DocumentBuilderFactory
 		    .newInstance();
 	    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 	    Document doc = dBuilder.parse(stream);
-	    
+
 	    doc.getDocumentElement().normalize();
 
 	    System.out.println("Root element :"
 		    + doc.getDocumentElement().getNodeName());
 
 	    NodeList nList = doc.getElementsByTagName("SpreadSheet");
-            int totalSheets = nList.getLength();
+	    int totalSheets = nList.getLength();
 	    System.out.println("----------------------------");
 
 	    for (int i = 0; i < totalSheets; i++) {
@@ -88,10 +89,10 @@ public class XMLCodec implements Codec {
 	    throws IOException {
 	int textAlign, cellAlign;
 	String textAlignString, cellAlignString, styleBold = "False", styleItalic = "False";
+	DocumentBuilderFactory docFactory = DocumentBuilderFactory
+		.newInstance();
 
 	try {
-	    DocumentBuilderFactory docFactory = DocumentBuilderFactory
-		    .newInstance();
 	    DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 	    // root element
 	    Document doc = docBuilder.newDocument();
@@ -121,53 +122,17 @@ public class XMLCodec implements Codec {
 					    StyleExtension.NAME);
 			    // get the horizontal alignment value and define a
 			    // string to it
-			    textAlign = stylableCell.getHorizontalAlignment();
-			    switch (textAlign) {
-			    case 0:
-				textAlignString = "Center";
-				break;
-			    case 2:
-				textAlignString = "Left";
-				break;
-			    case 4:
-				textAlignString = "Right";
-				break;
-			    default:
-				textAlignString = "Left";
-				break;
-			    }
+			    textAlignString = getTextAlign(stylableCell
+				    .getHorizontalAlignment());
+
 			    // get the vertical alignment value and define a
 			    // string to it
-			    cellAlign = stylableCell.getVerticalAlignment();
-			    switch (cellAlign) {
-			    case 0:
-				cellAlignString = "Center";
-				break;
-			    case 1:
-				cellAlignString = "Top";
-				break;
-			    case 3:
-				cellAlignString = "Bottom";
-				break;
-			    default:
-				cellAlignString = "Center";
-				break;
-			    }
+			    cellAlignString = getCellAlign(stylableCell
+				    .getVerticalAlignment());
+
 			    // define the use of bold and/or italic
-			    if (stylableCell.getFont().isPlain()) {
-				styleBold = "False";
-				styleItalic = "False";
-			    } else if (stylableCell.getFont().isBold()
-				    && stylableCell.getFont().isItalic()) {
-				styleBold = "True";
-				styleItalic = "True";
-			    } else if (stylableCell.getFont().isBold()) {
-				styleBold = "True";
-				styleItalic = "False";
-			    } else if (stylableCell.getFont().isItalic()) {
-				styleBold = "False";
-				styleItalic = "True";
-			    }
+			    styleBold = getBold(stylableCell.getFont());
+			    styleItalic = getItalic(stylableCell.getFont());
 
 			    // cell element
 			    Element cell = doc.createElement("Cell");
@@ -253,5 +218,39 @@ public class XMLCodec implements Codec {
 	}
 	// Frees resources
 	stream.close();
+    }
+
+    private String getBold(Font font) {
+	return (font.isBold() ? "True" : "False");
+    }
+
+    private String getItalic(Font font) {
+	return (font.isItalic() ? "True" : "False");
+    }
+
+    private String getCellAlign(int cellAlign) {
+	switch (cellAlign) {
+	case 0:
+	    return "Center";
+	case 1:
+	    return "Top";
+	case 3:
+	    return "Bottom";
+	default:
+	    return "Center";
+	}
+    }
+
+    private String getTextAlign(int textAlign) {
+	switch (textAlign) {
+	case 0:
+	    return "Center";
+	case 2:
+	    return "Left";
+	case 4:
+	    return "Right";
+	default:
+	    return "Left";
+	}
     }
 }
