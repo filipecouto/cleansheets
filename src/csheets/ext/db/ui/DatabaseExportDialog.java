@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 
 import csheets.core.Cell;
 import csheets.ext.db.DatabaseExportBuilder;
+import csheets.ext.db.DatabaseExportController;
 import csheets.ext.db.DatabaseExportInterface;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.sheet.SpreadsheetTable;
@@ -94,45 +95,24 @@ public class DatabaseExportDialog extends JFrame {
 	repaint();
 	Thread exportThread = new Thread(new Runnable() {
 	    DatabaseExportBuilder exportBuilder;
+	    DatabaseExportController exportController;
 
 	    @Override
 	    public void run() {
 		if (exportBuilder == null) {
-		    exportBuilder = new DatabaseExportBuilder(extension
-			    .getAvailableDrivers().get(
-				    format.getSelectedIndex()));
-		    exportBuilder.setCreateTable(true);
+		    exportController = new DatabaseExportController();
+		    exportController.setCells(table.getSelectedCells());
+		    exportController.setCreateTable(true);
 		    String dbUrl = url.getText();
 		    if (!dbUrl.contains("/") && !dbUrl.contains("/"))
 			dbUrl = fileChooser.getCurrentDirectory()
 				.getAbsolutePath() + "/" + dbUrl;
-		    exportBuilder.setDatabase(dbUrl.length() == 0 ? fileChooser
+		    exportController.setDatabase(dbUrl.length() == 0 ? fileChooser
 			    .getSelectedFile().getAbsolutePath() : dbUrl);
-		    exportBuilder.setTableName(tableName.getText());
-		    final Cell[][] selectedCells = table.getSelectedCells();
-		    final int rowCount = selectedCells.length - 1;
-		    if (rowCount < 1)
-			return;
-		    final int columnCount = selectedCells[0].length;
-		    String[] columns = new String[columnCount];
-		    for (int i = 0; i < columnCount; i++) {
-			final String columnName = selectedCells[0][i]
-				.getValue().toString();
-			columns[i] = columnName.length() == 0 ? "col" + (i + 1)
-				: columnName;
-		    }
-		    exportBuilder.setColumns(columns);
-		    String[][] values = new String[rowCount][columnCount];
-		    for (int y = 0; y < rowCount; y++) {
-			for (int x = 0; x < columnCount; x++) {
-			    values[y][x] = selectedCells[y + 1][x].getValue()
-				    .toString();
-			}
-		    }
-		    exportBuilder.setValues(values);
+		    exportController.setTableName(tableName.getText());
 		}
 		try {
-		    exportBuilder.export();
+		    exportController.export();
 		} catch (Exception e) {
 		    if (e.getMessage().equals("Table already exists")) {
 			Object[] options = { "Yes", "No" };
