@@ -221,8 +221,20 @@ public class ApplicationLayerTests {
     }
 
 
-    @AfterClass
+    @BeforeClass
     public static void cleanUp() {
+	// TODO maybe remove database or table?
+	try {
+	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
+		    + DATABASE_NAME);
+	    conn.prepareStatement("DROP TABLE testTable").execute();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+    }
+    
+    @AfterClass
+    public static void cleanUp1() {
 	// TODO maybe remove database or table?
 	try {
 	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
