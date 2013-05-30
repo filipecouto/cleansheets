@@ -178,8 +178,9 @@ public class CleanSheets {
 	 * @throws SAXException 
 	 * @throws ParserConfigurationException 
 	 * @throws DOMException 
+         * @throws Exception
 	 */
-	public void load(File file) throws IOException, ClassNotFoundException, DOMException, ParserConfigurationException, SAXException, FormulaCompilationException {
+	public void load(File file) throws IOException, ClassNotFoundException, DOMException, ParserConfigurationException, SAXException, FormulaCompilationException, Exception {
 		Codec codec = new CodecFactory().getCodec(file);
 		if (codec != null) {
 			FileInputStream stream = null;
