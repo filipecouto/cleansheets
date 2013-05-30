@@ -5,3 +5,4 @@ csheets.ext.test.TestExtension
 csheets.ext.simple.ExtensionExample
 csheets.ext.comments.CommentsExtension
 csheets.ext.db.DatabaseExtension
+csheets.ext.rtc.RealTimeCollaboration
