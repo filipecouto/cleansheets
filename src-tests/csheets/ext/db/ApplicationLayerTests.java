@@ -1,5 +1,6 @@
 package csheets.ext.db;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.beans.Statement;
@@ -36,6 +37,9 @@ public class ApplicationLayerTests {
 
     @BeforeClass
     public static void setUp() throws Exception {
+	// remove old test stuff just in case
+	cleanUp();
+
 	// let's choose to create our random data in a range of up to 99 rows
 	// and columns, starting on a row from 1 to 10 and a column from A to E
 	columns = (int) (Math.random() * 60);
@@ -59,7 +63,7 @@ public class ApplicationLayerTests {
 
 	export();
     }
-    
+
     public static void export() {
 	try {
 	    DatabaseExportController controller = new DatabaseExportController();
@@ -126,9 +130,7 @@ public class ApplicationLayerTests {
 	String result = new String();
 	final int len = (int) (Math.random() * 100 + 1);
 	for (int i = 0; i < len; i++) {
-	    // TODO use this one instead of the "anti-SQL injection" workaround
-	    // result += (char) ((Math.random() * (0x7e - 0x20)) + 0x20);
-	    result += (char) ((Math.random() * (0x5a - 0x41)) + 0x41);
+	    result += (char) ((Math.random() * (0x7e - 0x20)) + 0x20);
 	}
 	if (result.startsWith("=")) {
 	    // avoid creating a bad formula
@@ -164,7 +166,6 @@ public class ApplicationLayerTests {
 	}
 	assertTrue("Table was created successfully", false);
     }
-    
 
     @Test
     public void compareAllRows() {
@@ -174,13 +175,14 @@ public class ApplicationLayerTests {
 		    + DATABASE_NAME);
 	    String statement = "SELECT * FROM " + TABLE_NAME;
 	    ResultSet res = conn.prepareStatement(statement).executeQuery();
-	    int rowCount = spreadsheet.getRowCount();
-	    int columnCount = spreadsheet.getColumnCount();
-	    int row = 0;
-	    while(res.next()) {
-		for(int column = 1; column <= columnCount; column ++) {
-		    if(!(spreadsheet.getCell(column-1, row).getValue().toString().equalsIgnoreCase(res.getString(column)))) {
-			assertTrue("Match was not verified", false);
+	    int columnCount = columns;
+	    int row = yOffset + 1;
+	    while (res.next()) {
+		for (int column = 0; column < columnCount; column++) {
+		    if (!(spreadsheet.getCell(column + xOffset + 1, row).getValue()
+			    .toString().equals(res.getString(column + 1)))) {
+			assertEquals(spreadsheet.getCell(column + xOffset, row).getValue()
+			    .toString(), res.getString(column + 1));
 		    }
 		}
 		row++;
@@ -192,57 +194,39 @@ public class ApplicationLayerTests {
 	}
 	assertTrue("All \"cells\" in the database match the worksheet", true);
     }
-    
+
     @Test
     public void compareNumberOfRows() {
+	int rowCount = ApplicationLayerTests.rows - 1;
+	int row = 0;
 	try {
 	    Class.forName("org.hsqldb.jdbcDriver");
 	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
 		    + DATABASE_NAME);
 	    String statement = "SELECT * FROM " + TABLE_NAME;
 	    ResultSet res = conn.prepareStatement(statement).executeQuery();
-	    int rowCount = spreadsheet.getRowCount();
-	    int columnCount = spreadsheet.getColumnCount();
-	    int row = 0;
-	    while(res.next()) {
+
+	    while (res.next()) {
 		row++;
-	    }
-	    System.out.println("Rows : " + row);
-	    System.out.println("Count : " + rowCount);
-	    if(row != rowCount) {
-		assertTrue("Match not verified" , false);
 	    }
 	} catch (ClassNotFoundException e) {
 	    e.printStackTrace();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}
-	assertTrue("Match verified", true);
+	assertEquals("Row comparison", row, rowCount);
     }
 
-
-    @BeforeClass
+    @AfterClass
     public static void cleanUp() {
 	// TODO maybe remove database or table?
 	try {
 	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
-		    + DATABASE_NAME);
+		    + DATABASE_NAME, "SA", "");
 	    conn.prepareStatement("DROP TABLE testTable").execute();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}
     }
-    
-    @AfterClass
-    public static void cleanUp1() {
-	// TODO maybe remove database or table?
-	try {
-	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
-		    + DATABASE_NAME);
-	    conn.prepareStatement("DROP TABLE testTable").execute();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-    }
-    
+
 }
