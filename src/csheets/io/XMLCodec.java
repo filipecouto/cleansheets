@@ -53,13 +53,6 @@ public class XMLCodec implements Codec {
     public Workbook read(InputStream stream) throws IOException,
 	    ClassNotFoundException, ParserConfigurationException, SAXException,
 	    DOMException, FormulaCompilationException, Exception {
-        try{XMLValidator val = new XMLValidator();
-        // call xml validator
-        try{
-            val.validate(stream);
-        } catch (Exception e){
-            System.out.println("Isto é erro!"+e);
-        }
 	int totalCells = 0;
 	int totalSheets = 0;
 
@@ -83,7 +76,7 @@ public class XMLCodec implements Codec {
 		getStylabeCell(nNode, sheet);
 	    }
 	}
-	return wb;}catch(IOException e){ System.out.println(e);}return null;
+	return wb;
     }
 
     /**
@@ -117,12 +110,31 @@ public class XMLCodec implements Codec {
 		    getBoldAndItalic(eElement.getAttribute("Bold"),
 			    eElement.getAttribute("Italic")), Integer
 			    .parseInt(eElement.getAttribute("FontSize"))));
+	    sc.setBorder(BorderFactory.createMatteBorder(
+		    getIntBorder(eElement.getAttribute("BorderTop")),
+		    getIntBorder(eElement.getAttribute("BorderLeft")),
+		    getIntBorder(eElement.getAttribute("BorderBottom")),
+		    getIntBorder(eElement.getAttribute("BorderRight")),
+		    new Color(Integer.parseInt(eElement
+			    .getAttribute("BorderColor")))));
 
 	    sc.setContent(eElement.getTextContent());
 	    return sc;
 	}
 	return null;
 
+    }
+
+    /**
+     * Method for testing if there is a border lign
+     * @param border
+     * @return
+     */
+    private int getIntBorder(String border) {
+	if (border.compareTo("True") == 0) {
+	    return 1;
+	}
+	return 0;
     }
 
     /**
@@ -186,6 +198,10 @@ public class XMLCodec implements Codec {
 	return 0;
     }
 
+    /**
+     * Border is not fully supported in XML because CleanSheets doesn't have
+     * access methods to it
+     */
     @Override
     public void write(Workbook workbook, OutputStream stream)
 	    throws IOException, TransformerException,
@@ -229,12 +245,12 @@ public class XMLCodec implements Codec {
 	Attr attr = doc.createAttribute("name");
 	attr.setValue("Ficheiro");
 	workBook.setAttributeNode(attr);
-        attr = doc.createAttribute("xmlns:xsi");
+	attr = doc.createAttribute("xmlns:xsi");
 	attr.setValue("http://www.w3.org/2001/XMLSchema-instance");
-        workBook.setAttributeNode(attr);
-        attr = doc.createAttribute("xsi:noNamespaceSchemaLocation");
+	workBook.setAttributeNode(attr);
+	attr = doc.createAttribute("xsi:noNamespaceSchemaLocation");
 	attr.setValue("XMLSchema.xsd");
-        workBook.setAttributeNode(attr);
+	workBook.setAttributeNode(attr);
 	// going through the spreadsheets
 	// for (Spreadsheet sheet : workbook) {
 	countSpreadsheet = workbook.getSpreadsheetCount();
@@ -326,6 +342,21 @@ public class XMLCodec implements Codec {
 	    cell.setAttributeNode(attr);
 	    attr = doc.createAttribute("FontSize");
 	    attr.setValue("" + stylableCell.getFont().getSize());
+	    cell.setAttributeNode(attr);
+	    attr = doc.createAttribute("BorderTop");
+	    attr.setValue("False");
+	    cell.setAttributeNode(attr);
+	    attr = doc.createAttribute("BorderBottom");
+	    attr.setValue("False");
+	    cell.setAttributeNode(attr);
+	    attr = doc.createAttribute("BorderLeft");
+	    attr.setValue("False");
+	    cell.setAttributeNode(attr);
+	    attr = doc.createAttribute("BorderRight");
+	    attr.setValue("False");
+	    cell.setAttributeNode(attr);
+	    attr = doc.createAttribute("BorderColor");
+	    attr.setValue("000000");
 	    cell.setAttributeNode(attr);
 	    attr = doc.createAttribute("Bold");
 	    attr.setValue(styleBold);
