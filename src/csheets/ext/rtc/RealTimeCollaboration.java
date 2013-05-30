@@ -22,44 +22,19 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import csheets.ext.Extension;
+import csheets.ext.rtc.ui.ClientsListAdapter;
+import csheets.ext.rtc.ui.RtcSidebar;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
 import csheets.ui.ctrl.SelectionEvent;
 import csheets.ui.ctrl.SelectionListener;
 import csheets.ui.ctrl.UIController;
 import csheets.ui.ext.CellDecorator;
+import csheets.ui.ext.SideBarAction;
 import csheets.ui.ext.UIExtension;
 
 public class RealTimeCollaboration extends Extension {
-    private class ClientsListAdapter implements ListModel<String> {
-	ListDataListener listener;
-
-	@Override
-	public int getSize() {
-	    return 0; // clients.size();
-	}
-
-	@Override
-	public String getElementAt(int index) {
-	    return ""; // clients.get(index).getInfo().getName();
-	}
-
-	@Override
-	public void addListDataListener(ListDataListener l) {
-	    listener = l;
-	}
-
-	@Override
-	public void removeListDataListener(ListDataListener l) {
-	}
-
-	public void update() {
-	    if (listener != null) {
-		listener.contentsChanged(new ListDataEvent(this,
-			ListDataEvent.CONTENTS_CHANGED, 0, getSize()));
-	    }
-	}
-    }
+    
 
     RtcInterface communicator;
     ClientInfo identity;
@@ -67,12 +42,28 @@ public class RealTimeCollaboration extends Extension {
     RtcCellDecorator cellDecorator;
 
     ClientsListAdapter adapter;
+    RtcSidebar sidebar;
 
     // ArrayList<Client> clients = new ArrayList<Client>();
     // private ServerSocket server;
-
+    
     public RealTimeCollaboration() {
 	super("Real Time Collaboration");
+    }
+
+    public ClientInfo createServer(ClientInfo client, UIController uiController) throws IOException {
+	ServerInterface server = new ServerInterface(client);
+	identity = server.getServerInfo();
+	server.setListener(new RtcEventsResponder(uiController));
+	communicator = server;
+	return identity;
+    }
+
+    public ClientInfo createClient(ClientInfo client, String ipAddress, UIController uiController) throws IOException {
+	identity = client;
+	communicator = new ClientInterface(ipAddress, identity);
+	communicator.setListener(new RtcEventsResponder(uiController));
+	return identity;
     }
 
     @Override
@@ -102,67 +93,13 @@ public class RealTimeCollaboration extends Extension {
 		    cellDecorator = new RtcCellDecorator();
 		}
 		return cellDecorator;
-	    }
-
-	    @Override
+	    }	    @Override
 	    public JComponent getSideBar() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		final JButton bShare = new JButton("Share");
-		bShare.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-		panel.add(bShare);
-		bShare.addActionListener(new ActionListener() {
-		    @Override
-		    public void actionPerformed(ActionEvent e) {
-			try {
-			    ServerInterface server = new ServerInterface(
-				    new ClientInfo("Servidor"));
-			    identity = server.getServerInfo();
-			    server.setListener(new RtcEventsResponder(
-				    uiController));
-			    communicator = server;
-			} catch (IOException e1) {
-			    e1.printStackTrace();
-			}
-		    }
-		});
-		final JButton bConnect = new JButton("Connect");
-		bConnect.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-		final JTextField ipAddress = new JTextField();
-		ipAddress.setText("IP ADDRESS");
-		ipAddress.addFocusListener(new FocusListener() {
-		    
-		    @Override
-		    public void focusLost(FocusEvent arg0) {
-		    }
-		    
-		    @Override
-		    public void focusGained(FocusEvent arg0) {
-			ipAddress.selectAll();
-		    }
-		});
-		panel.add(bConnect);
-		panel.add(ipAddress);
-		bConnect.addActionListener(new ActionListener() {
-		    @Override
-		    public void actionPerformed(ActionEvent e) {
-			try {
-			    identity = new ClientInfo("Gil");
-			    communicator = new ClientInterface(ipAddress.getText(),
-				    identity);
-			    communicator.setListener(new RtcEventsResponder(
-				    uiController));
-			} catch (UnknownHostException e1) {
-			    e1.printStackTrace();
-			} catch (IOException e1) {
-			    e1.printStackTrace();
-			}
-		    }
-		});
-		adapter = new ClientsListAdapter();
-		JList<String> list = new JList<String>(adapter);
-		panel.add(list);
-		return panel;
+	        if(sidebar==null) {
+	            sidebar = new RtcSidebar(RealTimeCollaboration.this, uiController);
+	            sidebar.setName("Real Time Collaboration");
+	        }
+	        return sidebar;
 	    }
 	};
     }
