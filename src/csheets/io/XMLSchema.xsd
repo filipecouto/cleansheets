@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<xsd:schema version="1.0"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified">
+    <xsd:element name="Workbook">
+
+        <xsd:complexType>
+
+            <xsd:sequence>
+
+                <xsd:element name="SpreadSheet" type="TSpreadSheet" maxOccurs="unbounded"/>
+
+            </xsd:sequence>
+
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+
+        </xsd:complexType>
+
+    </xsd:element>
+
+    <xsd:complexType name="TSpreadSheet">
+
+        <xsd:sequence>
+
+            <xsd:element name="Cell" type="TCell" minOccurs="0" maxOccurs="unbounded"/>
+
+        </xsd:sequence>
+
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+
+    </xsd:complexType>
+
+
+    <xsd:complexType name="TCell">
+        
+        <xsd:simpleContent>
+            
+            <xsd:extension base="xsd:string">
+
+                <xsd:attribute name="Column" type="xsd:string" use="required"/>
+
+                <xsd:attribute name="Row" type="xsd:int" use="required"/>
+
+                <xsd:attribute name="BackgroundColor" type="xsd:int" default="000000"/>
+
+                <xsd:attribute name="Border" type="xsd:string" default="False"/>
+
+                <xsd:attribute name="TextAlign" type="TAlign" default="Left"/>
+
+                <xsd:attribute name="CellAlign" type="TAlign" default="Center"/>
+
+                <xsd:attribute name="ForegroundColor" type="xsd:int" default="000000"/>
+
+                <xsd:attribute name="FontFamily" type="xsd:string" default="Dialog"/>
+
+                <xsd:attribute name="FontSize" type="xsd:int" default="12"/>
+
+                <xsd:attribute name="Bold" type="TBoolean" default="False"/>
+
+                <xsd:attribute name="Italic" type="TBoolean" default="False"/>
+
+                <xsd:attribute name="Underline" type="TBoolean" default ="False"/>
+                
+            </xsd:extension>
+            
+        </xsd:simpleContent>
+
+    </xsd:complexType>
+
+    <xsd:simpleType name="TBoolean">
+
+        <xsd:restriction base="xsd:string">
+
+            <xsd:enumeration value="True"/>
+
+            <xsd:enumeration value="False"/>
+
+        </xsd:restriction>
+
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TAlign">
+
+        <xsd:restriction base="xsd:string">
+
+            <xsd:enumeration value="Left"/>
+
+            <xsd:enumeration value="Center"/>
+
+            <xsd:enumeration value="Right"/>
+
+        </xsd:restriction>
+
+    </xsd:simpleType>
+</xsd:schema>
