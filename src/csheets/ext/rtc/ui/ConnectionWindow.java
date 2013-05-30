@@ -17,23 +17,35 @@ import javax.swing.JTextField;
 public class ConnectionWindow extends JDialog {
 
     private JTextField ipAddress;
+    private JTextField userName;
     private JButton buttonCancel;
     private JButton buttonAccept;
     private OnIPSelectListener listener;
     private JPanel panelButtons;
 
     public ConnectionWindow(RtcSidebar sidebar) {
-	super((JFrame) null, "Connection (this title doesn't make much sense)",
+	super((JFrame) null, "Connection Form",
 		true);
 
 	setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-	// JPanel panel = new JPanel();
-	// panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
 	// creates textfield for insertion
+	userName = new JTextField();
+	userName.setText("Insert username");
+	userName.addFocusListener(new FocusListener() {
+	    
+	    @Override
+	    public void focusLost(FocusEvent arg0) {
+	    }
+	    
+	    @Override
+	    public void focusGained(FocusEvent arg0) {
+		ConnectionWindow.this.userName.selectAll();
+	    }
+	});
 	ipAddress = new JTextField();
-	ipAddress.setText("INSERT IP ADDRESS OR URL"); // YEAH LET'S YELL!
+	ipAddress.setText("Insert IP address or URL");
 	ipAddress.addFocusListener(new FocusListener() {
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
@@ -41,7 +53,7 @@ public class ConnectionWindow extends JDialog {
 
 	    @Override
 	    public void focusGained(FocusEvent arg0) {
-		ipAddress.selectAll();
+		ConnectionWindow.this.ipAddress.selectAll();
 	    }
 	});
 
@@ -49,7 +61,10 @@ public class ConnectionWindow extends JDialog {
 	buttonAccept.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		listener.onIPSelected(ipAddress.getText());
+		System.out.println(ConnectionWindow.this.ipAddress.getText());
+		System.out.println(ConnectionWindow.this.userName.getText());
+		listener.onIPSelected(ConnectionWindow.this.ipAddress.getText() , ConnectionWindow.this.userName.getText());
+		ConnectionWindow.this.setVisible(false);
 	    }
 	});
 
@@ -57,11 +72,10 @@ public class ConnectionWindow extends JDialog {
 	buttonCancel.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		listener.onIPSelected("CANCELED");// YEAH LET'S YELL AND SEND A
-						  // FALSE ALARM TO THE OWNER OF
-						  // THIS DIALOG!
+		ConnectionWindow.this.setVisible(false);
 	    }
 	});
+	add(userName);
 	add(ipAddress);
 	panelButtons = new JPanel();
 	panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));

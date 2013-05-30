@@ -70,25 +70,26 @@ public class RtcSidebar extends JPanel {
 
 		ConnectionWindow ipDialog = new ConnectionWindow(
 			RtcSidebar.this);
-		ipDialog.setVisible(true);
-		ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
 
+		ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
 		    @Override
-		    public void onIPSelected(String address) {
-			//try {
-			    //ip = extension.createClient(new ClientInfo("Gil"), address, uiController).getAddress().toString();
-			//} catch (UnknownHostException e1) {
-			//    e1.printStackTrace();
-			//} catch (IOException e1) {
-			//    e1.printStackTrace();
-			//} finally {
+		    public void onIPSelected(String address, String username) {
+			try {
+			    extension.createClient(new ClientInfo(username),
+				    address, uiController);
+			} catch (UnknownHostException e1) {
+			    e1.printStackTrace();
+			} catch (IOException e1) {
+			    e1.printStackTrace();
+			} finally {
 			    ipAddress.setText("Your ip address: " + address);
 			    bShare.setVisible(false);
 			    bConnect.setVisible(false);
 			    bDisconnect.setVisible(true);
-			//}
+			}
 		    }
 		});
+		ipDialog.setVisible(true);
 	    }
 	});
 	bDisconnect = new JButton("Disconnect");
