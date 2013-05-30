@@ -81,7 +81,7 @@ public class RealTimeCollaboration extends Extension {
 	    @Override
 	    public void workbookModified(EditEvent event) {
 		if (communicator != null) {
-		    communicator.onCellChanged(identity,
+		    communicator.onCellChanged(null,
 			    uiController.getActiveCell());
 		}
 	    }
@@ -90,7 +90,7 @@ public class RealTimeCollaboration extends Extension {
 	    @Override
 	    public void selectionChanged(SelectionEvent event) {
 		if (communicator != null) {
-		    communicator.onCellSelected(identity, uiController
+		    communicator.onCellSelected(null, uiController
 			    .getActiveCell().getAddress());
 		}
 	    }
