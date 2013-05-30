@@ -19,7 +19,10 @@ public class ClientInterface implements RtcInterface {
     private ClientInfo info;
     private Socket server;
     private ObjectOutputStream out;
+    private ObjectInputStream in;
     private RtcListener listener;
+
+    private ClientInfo[] otherUsers;
 
     public ClientInterface(String address, ClientInfo clientInfo)
 	    throws UnknownHostException, IOException {
@@ -31,23 +34,31 @@ public class ClientInterface implements RtcInterface {
 	    @Override
 	    public void run() {
 		try {
-		    ObjectInputStream in = new ObjectInputStream(
-			    server.getInputStream());
-		    Object o;
+		    in = new ObjectInputStream(server.getInputStream());
 		    RtcMessage message;
+		    message = getMessage();
+		    if (message.getMessage() == MessageTypes.infoList) {
+			otherUsers = (ClientInfo[]) message.getArgument();
+		    } else {
+			// ERROR server didn't send what it should,
+			// diconnecting...
+			listener.onDisconnected(null);
+			server.close();
+		    }
+		    sendMessage(new RtcMessage(info.getAddress(),
+			    MessageTypes.info, info));
 		    while (true) {
-			o = in.readObject();
-			message = (RtcMessage) o;
+			message = getMessage();
 			switch (message.getMessage()) {
-			case RtcMessage.MESSAGE_EVENT_CELLCHANGED:
+			case eventCellChanged:
 			    RemoteCell c = (RemoteCell) message.getArgument();
 			    listener.onCellChanged(null, c);
 			    break;
-			case RtcMessage.MESSAGE_EVENT_CELLSELECTED:
+			case eventCellSelected:
 			    Address a = (Address) message.getArgument();
 			    listener.onCellSelected(null, a);
 			    break;
-			case RtcMessage.MESSAGE_DISCONNECT:
+			case disconnect:
 			    listener.onDisconnected(info);
 			    server.close();
 			    return;
@@ -62,6 +73,11 @@ public class ClientInterface implements RtcInterface {
 		}
 	    }
 	}).start();
+    }
+
+    private RtcMessage getMessage() throws IOException, ClassNotFoundException {
+	Object o = in.readObject();
+	return (RtcMessage) o;
     }
 
     private void sendMessage(RtcMessage message) {
@@ -80,13 +96,13 @@ public class ClientInterface implements RtcInterface {
     @Override
     public void onCellSelected(ClientInfo source, Address address) {
 	sendMessage(new RtcMessage(server.getInetAddress(),
-		RtcMessage.MESSAGE_EVENT_CELLSELECTED, address));
+		MessageTypes.eventCellSelected, address));
     }
 
     @Override
     public void onCellChanged(ClientInfo source, Cell cell) {
 	sendMessage(new RtcMessage(server.getInetAddress(),
-		RtcMessage.MESSAGE_EVENT_CELLCHANGED, new RemoteCell(cell)));
+		MessageTypes.eventCellChanged, new RemoteCell(cell)));
     }
 
     @Override
@@ -96,5 +112,10 @@ public class ClientInterface implements RtcInterface {
     @Override
     public void setListener(RtcListener listener) {
 	this.listener = listener;
+    }
+
+    @Override
+    public ClientInfo[] getConnectedUsers() {
+	return otherUsers;
     }
 }

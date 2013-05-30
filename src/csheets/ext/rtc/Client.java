@@ -9,13 +9,15 @@ import java.net.Socket;
 import csheets.core.Address;
 import csheets.core.Cell;
 
-public class Client implements RtcInterface {
+public class Client implements RtcListener {
     private ClientInfo info;
+    private ServerInterface server;
     private Socket client;
     private ObjectOutputStream out;
-    private RtcListener listener;
+    //private RtcListener listener;
 
-    public Client(Socket client) {
+    public Client(ServerInterface server, Socket client) {
+	this.server = server;
 	this.client = client;
 	info = new ClientInfo(client.getInetAddress());
 	try {
@@ -32,22 +34,25 @@ public class Client implements RtcInterface {
 		try {
 		    InputStream in = client.getInputStream();
 		    ObjectInputStream oin = new ObjectInputStream(in);
+		    sendMessage(new RtcMessage(server.getServerInfo()
+			    .getAddress(), MessageTypes.infoList,
+			    server.getConnectedUsers()));
 		    Object o;
 		    RtcMessage message;
 		    while (true) {
 			o = oin.readObject();
 			message = (RtcMessage) o;
 			switch (message.getMessage()) {
-			case RtcMessage.MESSAGE_EVENT_CELLCHANGED:
+			case eventCellChanged:
 			    RemoteCell c = (RemoteCell) message.getArgument();
-			    listener.onCellChanged(info, c);
+			    server.onCellChanged(info, c);
 			    break;
-			case RtcMessage.MESSAGE_EVENT_CELLSELECTED:
+			case eventCellSelected:
 			    Address a = (Address) message.getArgument();
-			    listener.onCellSelected(info, a);
+			    server.onCellSelected(info, a);
 			    break;
-			case RtcMessage.MESSAGE_DISCONNECT:
-			    listener.onDisconnected(info);
+			case disconnect:
+			    server.onDisconnected(info);
 			    client.close();
 			    return;
 			}
@@ -92,21 +97,21 @@ public class Client implements RtcInterface {
     @Override
     public void onCellSelected(ClientInfo source, Address address) {
 	sendMessage(new RtcMessage(source.getAddress(),
-		RtcMessage.MESSAGE_EVENT_CELLSELECTED, address));
+		MessageTypes.eventCellSelected, address));
     }
 
     @Override
     public void onCellChanged(ClientInfo source, Cell cell) {
 	sendMessage(new RtcMessage(source.getAddress(),
-		RtcMessage.MESSAGE_EVENT_CELLCHANGED, new RemoteCell(cell)));
+		MessageTypes.eventCellChanged, new RemoteCell(cell)));
     }
 
     @Override
     public void onDisconnected(ClientInfo client) {
     }
 
-    @Override
-    public void setListener(RtcListener listener) {
-	this.listener = listener;
-    }
+//    @Override
+//    public void setListener(RtcListener listener) {
+//	this.listener = listener;
+//    }
 }

@@ -41,9 +41,21 @@ public class ServerInterface implements RtcInterface {
 	return info;
     }
 
+    @Override
+    public synchronized ClientInfo[] getConnectedUsers() {
+	synchronized (clients) {
+	    final int len = clients.size();
+	    ClientInfo[] info = new ClientInfo[len];
+	    for (int i = 0; i < len; i++) {
+		info[i] = clients.get(i).getInfo();
+	    }
+	    return info;
+	}
+    }
+
     public void onClientConnected(Socket client) {
-	final Client newClient = new Client(client);
-	newClient.setListener(clientsListener);
+	final Client newClient = new Client(this, client);
+	// newClient.setListener(clientsListener);
 	synchronized (clients) {
 	    clients.add(newClient);
 	    newClient.run();

@@ -1,9 +1,10 @@
 package csheets.ext.rtc;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.net.InetAddress;
 
-public class ClientInfo {
+public class ClientInfo implements Serializable {
     private InetAddress address;
     private String name;
     private Color color;
@@ -33,7 +34,7 @@ public class ClientInfo {
     public String getName() {
 	return name;
     }
-    
+
     public boolean isSameIP(InetAddress address) {
 	return this.address.equals(address);
     }

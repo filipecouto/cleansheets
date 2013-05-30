@@ -16,4 +16,13 @@ public interface RtcInterface extends RtcListener {
      *            another implementation of RtcListener
      */
     public void setListener(RtcListener listener);
+
+    /**
+     * Gets all connected users. A server would simply return the list of
+     * connected clients, a client would return a list provided by the server
+     * (which may not be up-to-date)
+     * 
+     * @return an array of ClientInfo's with their name and color
+     */
+    public ClientInfo[] getConnectedUsers();
 }

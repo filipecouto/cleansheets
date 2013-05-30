@@ -60,21 +60,22 @@ import java.net.InetAddress;
 public class RtcMessage implements Serializable {
     private static final long serialVersionUID = -1845883260814635491L;
 
-    public static final int MESSAGE_DISCONNECT = 0, MESSAGE_INFO = 1,
-	    MESSAGE_EVENT_CELLSELECTED = 4, MESSAGE_EVENT_CELLCHANGED = 8,
-	    MESSAGE_GET_CELL = 16;
+    // public static final int MESSAGE_DISCONNECT = 0, MESSAGE_INFO = 1,
+    // MESSAGE_EVENT_CELLSELECTED = 4, MESSAGE_EVENT_CELLCHANGED = 8,
+    // MESSAGE_GET_CELL = 16;
 
     private byte[] from;
-    private int message;
+    private MessageTypes message;
     private Serializable argument;
 
-    public RtcMessage(InetAddress from, int message, Serializable argument) {
+    public RtcMessage(InetAddress from, MessageTypes message,
+	    Serializable argument) {
 	this.from = from.getAddress();
 	this.message = message;
 	this.argument = argument;
     }
 
-    public int getMessage() {
+    public MessageTypes getMessage() {
 	return message;
     }
 
