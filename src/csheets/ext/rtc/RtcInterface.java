@@ -1,28 +1,20 @@
 package csheets.ext.rtc;
 
+import csheets.core.Address;
+import csheets.core.Cell;
+
 /**
- * This interface is the bridge between clients and server
+ * This interface contains all the methods needed for both ends to communicate
+ * and let the UI know about events
  * 
- * @author gil_1110484
+ * @author gil_1110484 
  */
-public interface RtcInterface extends RtcListener {
-    static int PORT = 12345;
+public interface RtcInterface {
+    public void onConnected(ClientInfo client);
 
-    /**
-     * Used by each side of the communication, another RtcListener must be
-     * implemented in order to react to events on the other side
-     * 
-     * @param listener
-     *            another implementation of RtcListener
-     */
-    public void setListener(RtcListener listener);
+    public void onCellSelected(ClientInfo source, Address address);
 
-    /**
-     * Gets all connected users. A server would simply return the list of
-     * connected clients, a client would return a list provided by the server
-     * (which may not be up-to-date)
-     * 
-     * @return an array of ClientInfo's with their name and color
-     */
-    public ClientInfo[] getConnectedUsers();
+    public void onCellChanged(ClientInfo source, Cell cell);
+
+    public void onDisconnected(ClientInfo client);
 }

@@ -1,4 +1,4 @@
-package csheets.ext.rtc;
+package csheets.ext.rtc.messages;
 
 import java.util.SortedSet;
 

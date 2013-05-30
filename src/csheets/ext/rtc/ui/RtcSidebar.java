@@ -35,7 +35,7 @@ public class RtcSidebar extends JPanel {
 	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	JPanel buttonPanel = new JPanel();
 	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-	
+
 	bShare = new JButton("Share");
 	bShare.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	buttonPanel.add(bShare);
@@ -44,8 +44,9 @@ public class RtcSidebar extends JPanel {
 	    public void actionPerformed(ActionEvent e) {
 		String ip = "";
 		try {
-		    ip = extension.createServer(new ClientInfo("Servidor"),
-			    uiController).getAddress().toString();
+		    ip = extension
+			    .createServer(new ClientInfo("Servidor"),
+				    uiController).getAddress().toString();
 		} catch (IOException e1) {
 		    e1.printStackTrace();
 		} finally {
@@ -66,20 +67,29 @@ public class RtcSidebar extends JPanel {
 	bConnect.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		String ip = "";
-		try {
-		    ip = extension.createClient(new ClientInfo("Gil"),
-			    ipAddress.getText(), uiController).getAddress().toString();
-		} catch (UnknownHostException e1) {
-		    e1.printStackTrace();
-		} catch (IOException e1) {
-		    e1.printStackTrace();
-		} finally {
-		    ipAddress.setText("Your ip address: " + ip);
-		    bShare.setVisible(false);
-		    bConnect.setVisible(false);
-		    bDisconnect.setVisible(true);
-		}
+
+		ConnectionWindow ipDialog = new ConnectionWindow(
+			RtcSidebar.this);
+
+		ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
+		    @Override
+		    public void onIPSelected(String address, String username) {
+			try {
+			    extension.createClient(new ClientInfo(username),
+				    address, uiController);
+			} catch (UnknownHostException e1) {
+			    e1.printStackTrace();
+			} catch (IOException e1) {
+			    e1.printStackTrace();
+			} finally {
+			    ipAddress.setText("Your ip address: " + address);
+			    bShare.setVisible(false);
+			    bConnect.setVisible(false);
+			    bDisconnect.setVisible(true);
+			}
+		    }
+		});
+		ipDialog.setVisible(true);
 	    }
 	});
 	bDisconnect = new JButton("Disconnect");
@@ -92,7 +102,7 @@ public class RtcSidebar extends JPanel {
 		bShare.setVisible(true);
 		bConnect.setVisible(true);
 		bDisconnect.setVisible(false);
-		
+
 	    }
 	});
 	buttonPanel.add(bDisconnect);

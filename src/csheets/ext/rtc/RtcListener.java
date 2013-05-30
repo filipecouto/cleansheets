@@ -1,14 +1,19 @@
 package csheets.ext.rtc;
 
-import csheets.core.Address;
 import csheets.core.Cell;
+import csheets.core.Spreadsheet;
+import csheets.core.Workbook;
 
-public interface RtcListener {
-    public void onConnected(ClientInfo client);
+/**
+ * This interface contains all the methods (including those from its
+ * super-interface) needed to make the UI show remote data
+ * 
+ * @author gil_1110484
+ */
+public interface RtcListener extends RtcInterface {
+    //public void onWorkbookReceived(ClientInfo source, Workbook workbook);
 
-    public void onCellSelected(ClientInfo source, Address address);
+    public void onSpreadsheetReceived(ClientInfo source, Spreadsheet spreadsheet);
 
-    public void onCellChanged(ClientInfo source, Cell cell);
-
-    public void onDisconnected(ClientInfo client);
+    public void onCellReceived(ClientInfo source, Cell cell);
 }

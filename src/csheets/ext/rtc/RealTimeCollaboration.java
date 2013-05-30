@@ -34,9 +34,7 @@ import csheets.ui.ext.SideBarAction;
 import csheets.ui.ext.UIExtension;
 
 public class RealTimeCollaboration extends Extension {
-    
-
-    RtcInterface communicator;
+    RtcCommunicator communicator;
     ClientInfo identity;
 
     RtcCellDecorator cellDecorator;
@@ -44,14 +42,12 @@ public class RealTimeCollaboration extends Extension {
     ClientsListAdapter adapter;
     RtcSidebar sidebar;
 
-    // ArrayList<Client> clients = new ArrayList<Client>();
-    // private ServerSocket server;
-    
     public RealTimeCollaboration() {
 	super("Real Time Collaboration");
     }
 
-    public ClientInfo createServer(ClientInfo client, UIController uiController) throws IOException {
+    public ClientInfo createServer(ClientInfo client, UIController uiController)
+	    throws IOException {
 	ServerInterface server = new ServerInterface(client);
 	identity = server.getServerInfo();
 	server.setListener(new RtcEventsResponder(uiController));
@@ -59,7 +55,8 @@ public class RealTimeCollaboration extends Extension {
 	return identity;
     }
 
-    public ClientInfo createClient(ClientInfo client, String ipAddress, UIController uiController) throws IOException {
+    public ClientInfo createClient(ClientInfo client, String ipAddress,
+	    UIController uiController) throws IOException {
 	identity = client;
 	communicator = new ClientInterface(ipAddress, identity);
 	communicator.setListener(new RtcEventsResponder(uiController));
@@ -72,7 +69,7 @@ public class RealTimeCollaboration extends Extension {
 	    @Override
 	    public void workbookModified(EditEvent event) {
 		if (communicator != null) {
-		    communicator.onCellChanged(identity,
+		    communicator.onCellChanged(null,
 			    uiController.getActiveCell());
 		}
 	    }
@@ -81,7 +78,7 @@ public class RealTimeCollaboration extends Extension {
 	    @Override
 	    public void selectionChanged(SelectionEvent event) {
 		if (communicator != null) {
-		    communicator.onCellSelected(identity, uiController
+		    communicator.onCellSelected(null, uiController
 			    .getActiveCell().getAddress());
 		}
 	    }
@@ -93,13 +90,16 @@ public class RealTimeCollaboration extends Extension {
 		    cellDecorator = new RtcCellDecorator();
 		}
 		return cellDecorator;
-	    }	    @Override
+	    }
+
+	    @Override
 	    public JComponent getSideBar() {
-	        if(sidebar==null) {
-	            sidebar = new RtcSidebar(RealTimeCollaboration.this, uiController);
-	            sidebar.setName("Real Time Collaboration");
-	        }
-	        return sidebar;
+		if (sidebar == null) {
+		    sidebar = new RtcSidebar(RealTimeCollaboration.this,
+			    uiController);
+		    sidebar.setName("Real Time Collaboration");
+		}
+		return sidebar;
 	    }
 	};
     }
