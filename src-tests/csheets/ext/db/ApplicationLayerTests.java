@@ -35,6 +35,10 @@ public class ApplicationLayerTests {
     private static int xOffset;
     private static int yOffset;
 
+    /**
+     * Starts up the tests, creating a random spreadsheet.
+     * @throws Exception
+     */
     @BeforeClass
     public static void setUp() throws Exception {
 	// remove old test stuff just in case
@@ -55,8 +59,7 @@ public class ApplicationLayerTests {
 	// let's save this workbook, it may contain precious info
 	saveTestWorkbook();
 
-	dbDriver = DatabaseDriverManager.getInstance().getAvailableDrivers()
-		.get(0);
+	dbDriver = new HSQLdbExporter();
 
 	System.out.println("Done creating a " + columns + "x" + rows
 		+ " table to export using " + dbDriver.getName() + " driver!");
@@ -64,6 +67,9 @@ public class ApplicationLayerTests {
 	export();
     }
 
+    /**
+     * Exports to database
+     */
     public static void export() {
 	try {
 	    DatabaseExportController controller = new DatabaseExportController();
@@ -100,6 +106,10 @@ public class ApplicationLayerTests {
 	}
     }
 
+    /**
+     * generates random data
+     * @param sheet the spreadsheet
+     */
     private static void generateData(Spreadsheet sheet) {
 	for (int y = yOffset; y < rows + yOffset; y++) {
 	    for (int x = xOffset; x < columns + xOffset; x++) {
@@ -126,6 +136,10 @@ public class ApplicationLayerTests {
 	}
     }
 
+    /**
+     * generate random strings
+     * @return a random string
+     */
     private static String makeRandomString() {
 	String result = new String();
 	final int len = (int) (Math.random() * 100 + 1);
@@ -139,6 +153,9 @@ public class ApplicationLayerTests {
 	return result;
     }
 
+    /**
+     * Tests the creation of the table
+     */
     @Test
     public void testTableCreation() {
 	try {
@@ -167,6 +184,9 @@ public class ApplicationLayerTests {
 	assertTrue("Table was created successfully", false);
     }
 
+    /**
+     * Compares the rows from the spreadsheet with the rows from the table
+     */
     @Test
     public void compareAllRows() {
 	try {
@@ -195,6 +215,9 @@ public class ApplicationLayerTests {
 	assertTrue("All \"cells\" in the database match the worksheet", true);
     }
 
+    /**
+     * Compares the number of rows in the table
+     */
     @Test
     public void compareNumberOfRows() {
 	int rowCount = ApplicationLayerTests.rows - 1;
@@ -217,10 +240,14 @@ public class ApplicationLayerTests {
 	assertEquals("Row comparison", row, rowCount);
     }
 
+    /**
+     * Cleans the database
+     */
     @AfterClass
     public static void cleanUp() {
 	// TODO maybe remove database or table?
 	try {
+	    // connects to the database with the username and password
 	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
 		    + DATABASE_NAME, "SA", "");
 	    conn.prepareStatement("DROP TABLE testTable").execute();
