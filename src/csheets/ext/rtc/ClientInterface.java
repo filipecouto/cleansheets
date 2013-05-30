@@ -43,6 +43,7 @@ public class ClientInterface implements RtcCommunicator {
 		    // wait for the list of already connected users
 		    if ((message = getMessageOrFail(MessageTypes.infoList)) != null) {
 			otherUsers = (ClientInfo[]) message.getArgument();
+			System.out.println("There are " + otherUsers.length + " users connected");
 		    } else {
 			return;
 		    }
@@ -54,6 +55,7 @@ public class ClientInterface implements RtcCommunicator {
 		    if ((message = getMessageOrFail(MessageTypes.workbook)) != null) {
 			Workbook wb = ((RemoteWorkbook) message.getArgument())
 				.getWorkbook();
+			System.out.println("The shared workbook has " + otherUsers.length + " spreadsheets");
 			if(wb.getSpreadsheetCount() > 0) {
 			    sendMessage(new RtcMessage(info.getAddress(), MessageTypes.getSpreadsheet, 0));
 			}

@@ -47,11 +47,16 @@ public class Client implements RtcInterface {
 		    message = getMessage();
 		    if (message.getMessage() == MessageTypes.info) {
 			info = (ClientInfo) message.getArgument();
+			System.out.println(info.getName() + " just connected");
 		    } else {
 			// ERROR server didn't send what it should,
 			// diconnecting...
 			server.onDisconnected(null);
 		    }
+
+		    sendMessage(new RtcMessage(server.getServerInfo()
+			    .getAddress(), MessageTypes.workbook,
+			    server.getWorkbookToSend()));
 
 		    while (true) {
 			message = getMessage();

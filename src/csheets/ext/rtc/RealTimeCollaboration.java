@@ -48,7 +48,7 @@ public class RealTimeCollaboration extends Extension {
 
     public ClientInfo createServer(ClientInfo client, UIController uiController)
 	    throws IOException {
-	ServerInterface server = new ServerInterface(client);
+	ServerInterface server = new ServerInterface(client, uiController);
 	identity = server.getServerInfo();
 	server.setListener(new RtcEventsResponder(uiController));
 	communicator = server;

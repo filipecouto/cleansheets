@@ -8,6 +8,9 @@ import java.util.ArrayList;
 
 import csheets.core.Address;
 import csheets.core.Cell;
+import csheets.ext.rtc.messages.RemoteWorkbook;
+import csheets.ui.ctrl.UIController;
+import csheets.ui.ext.UIExtension;
 
 public class ServerInterface implements RtcCommunicator {
     private ClientInfo info;
@@ -15,9 +18,13 @@ public class ServerInterface implements RtcCommunicator {
     private ObjectOutputStream out;
     private RtcListener listener;
 
+    private UIController uiController;
+
     private ArrayList<Client> clients;
 
-    public ServerInterface(ClientInfo clientInfo) throws IOException {
+    public ServerInterface(ClientInfo clientInfo, UIController uiController)
+	    throws IOException {
+	this.uiController = uiController;
 	clients = new ArrayList<Client>();
 	server = new ServerSocket(PORT);
 	info = new ClientInfo(server.getInetAddress());
@@ -35,6 +42,10 @@ public class ServerInterface implements RtcCommunicator {
 		}
 	    }
 	}).start();
+    }
+    
+    public RemoteWorkbook getWorkbookToSend() {
+	return new RemoteWorkbook(uiController.getActiveWorkbook());
     }
 
     public ClientInfo getServerInfo() {
