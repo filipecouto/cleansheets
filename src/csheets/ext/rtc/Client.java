@@ -14,7 +14,9 @@ public class Client implements RtcListener {
     private ServerInterface server;
     private Socket client;
     private ObjectOutputStream out;
-    //private RtcListener listener;
+    private ObjectInputStream in;
+
+    // private RtcListener listener;
 
     public Client(ServerInterface server, Socket client) {
 	this.server = server;
@@ -32,16 +34,26 @@ public class Client implements RtcListener {
 	    @Override
 	    public void run() {
 		try {
-		    InputStream in = client.getInputStream();
-		    ObjectInputStream oin = new ObjectInputStream(in);
+		    RtcMessage message;
+		    in = new ObjectInputStream(client.getInputStream());
+
+		    // let this client know who is already connected
 		    sendMessage(new RtcMessage(server.getServerInfo()
 			    .getAddress(), MessageTypes.infoList,
 			    server.getConnectedUsers()));
-		    Object o;
-		    RtcMessage message;
+
+		    // wait for its identity
+		    message = getMessage();
+		    if (message.getMessage() == MessageTypes.info) {
+			info = (ClientInfo) message.getArgument();
+		    } else {
+			// ERROR server didn't send what it should,
+			// diconnecting...
+			server.onDisconnected(null);
+		    }
+
 		    while (true) {
-			o = oin.readObject();
-			message = (RtcMessage) o;
+			message = getMessage();
 			switch (message.getMessage()) {
 			case eventCellChanged:
 			    RemoteCell c = (RemoteCell) message.getArgument();
@@ -64,6 +76,11 @@ public class Client implements RtcListener {
 		}
 	    }
 	}).start();
+    }
+
+    private RtcMessage getMessage() throws IOException, ClassNotFoundException {
+	Object o = in.readObject();
+	return (RtcMessage) o;
     }
 
     public boolean isSameClient(ClientInfo info) {
@@ -110,8 +127,8 @@ public class Client implements RtcListener {
     public void onDisconnected(ClientInfo client) {
     }
 
-//    @Override
-//    public void setListener(RtcListener listener) {
-//	this.listener = listener;
-//    }
+    // @Override
+    // public void setListener(RtcListener listener) {
+    // this.listener = listener;
+    // }
 }

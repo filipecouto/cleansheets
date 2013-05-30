@@ -70,7 +70,8 @@ public class RtcMessage implements Serializable {
 
     public RtcMessage(InetAddress from, MessageTypes message,
 	    Serializable argument) {
-	this.from = from.getAddress();
+	if (from != null)
+	    this.from = from.getAddress();
 	this.message = message;
 	this.argument = argument;
     }

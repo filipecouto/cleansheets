@@ -64,6 +64,11 @@ public class ServerInterface implements RtcInterface {
 
     @Override
     public void onConnected(ClientInfo client) {
+	if (client == null) {
+	    client = info;
+	} else {
+	    listener.onConnected(client);
+	}
 	synchronized (clients) {
 	    for (Client c : clients) {
 		c.onConnected(client);
@@ -73,6 +78,11 @@ public class ServerInterface implements RtcInterface {
 
     @Override
     public void onCellSelected(ClientInfo source, Address address) {
+	if (source == null) {
+	    source = info;
+	} else {
+	    listener.onCellSelected(source, address);
+	}
 	synchronized (clients) {
 	    for (Client c : clients) {
 		c.onCellSelected(source, address);
@@ -82,6 +92,11 @@ public class ServerInterface implements RtcInterface {
 
     @Override
     public void onCellChanged(ClientInfo source, Cell cell) {
+	if (source == null) {
+	    source = info;
+	} else {
+	    listener.onCellChanged(source, cell);
+	}
 	synchronized (clients) {
 	    for (Client c : clients) {
 		c.onCellChanged(source, cell);
@@ -91,6 +106,11 @@ public class ServerInterface implements RtcInterface {
 
     @Override
     public void onDisconnected(ClientInfo client) {
+	if (client == null) {
+	    client = info;
+	} else {
+	    listener.onDisconnected(client);
+	}
 	synchronized (clients) {
 	    for (Client c : clients) {
 		c.onDisconnected(client);
@@ -103,53 +123,53 @@ public class ServerInterface implements RtcInterface {
 	this.listener = listener;
     }
 
-    private RtcListener clientsListener = new RtcListener() {
-	@Override
-	public void onConnected(ClientInfo client) {
-	    listener.onConnected(client);
-	    synchronized (clients) {
-		for (Client c : clients) {
-		    // if (!c.isSameClient(client)) {
-		    c.onConnected(client);
-		    // }
-		}
-	    }
-	}
-
-	@Override
-	public void onCellSelected(ClientInfo source, Address address) {
-	    listener.onCellSelected(source, address);
-	    synchronized (clients) {
-		for (Client c : clients) {
-		    // if (!c.isSameClient(source)) {
-		    c.onCellSelected(source, address);
-		    // }
-		}
-	    }
-	}
-
-	@Override
-	public void onCellChanged(ClientInfo source, Cell cell) {
-	    listener.onCellChanged(source, cell);
-	    synchronized (clients) {
-		for (Client c : clients) {
-		    // if (!c.isSameClient(source)) {
-		    c.onCellChanged(source, cell);
-		    // }
-		}
-	    }
-	}
-
-	@Override
-	public void onDisconnected(ClientInfo client) {
-	    listener.onDisconnected(client);
-	    synchronized (clients) {
-		for (Client c : clients) {
-		    // if (!c.isSameClient(client)) {
-		    c.onDisconnected(client);
-		    // }
-		}
-	    }
-	}
-    };
+//    private RtcListener clientsListener = new RtcListener() {
+//	@Override
+//	public void onConnected(ClientInfo client) {
+//	    listener.onConnected(client);
+//	    synchronized (clients) {
+//		for (Client c : clients) {
+//		    // if (!c.isSameClient(client)) {
+//		    c.onConnected(client);
+//		    // }
+//		}
+//	    }
+//	}
+//
+//	@Override
+//	public void onCellSelected(ClientInfo source, Address address) {
+//	    listener.onCellSelected(source, address);
+//	    synchronized (clients) {
+//		for (Client c : clients) {
+//		    // if (!c.isSameClient(source)) {
+//		    c.onCellSelected(source, address);
+//		    // }
+//		}
+//	    }
+//	}
+//
+//	@Override
+//	public void onCellChanged(ClientInfo source, Cell cell) {
+//	    listener.onCellChanged(source, cell);
+//	    synchronized (clients) {
+//		for (Client c : clients) {
+//		    // if (!c.isSameClient(source)) {
+//		    c.onCellChanged(source, cell);
+//		    // }
+//		}
+//	    }
+//	}
+//
+//	@Override
+//	public void onDisconnected(ClientInfo client) {
+//	    listener.onDisconnected(client);
+//	    synchronized (clients) {
+//		for (Client c : clients) {
+//		    // if (!c.isSameClient(client)) {
+//		    c.onDisconnected(client);
+//		    // }
+//		}
+//	    }
+//	}
+//    };
 }

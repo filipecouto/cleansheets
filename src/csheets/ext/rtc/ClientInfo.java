@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 public class ClientInfo implements Serializable {
+    private static final long serialVersionUID = 6614659918137265454L;
+    
     private InetAddress address;
     private String name;
     private Color color;

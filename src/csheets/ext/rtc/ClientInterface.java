@@ -34,19 +34,26 @@ public class ClientInterface implements RtcInterface {
 	    @Override
 	    public void run() {
 		try {
-		    in = new ObjectInputStream(server.getInputStream());
 		    RtcMessage message;
-		    message = getMessage();
-		    if (message.getMessage() == MessageTypes.infoList) {
+		    in = new ObjectInputStream(server.getInputStream());
+
+		    // wait for the list of already connected users
+		    if ((message = getMessageOrFail(MessageTypes.infoList)) != null) {
 			otherUsers = (ClientInfo[]) message.getArgument();
 		    } else {
-			// ERROR server didn't send what it should,
-			// diconnecting...
-			listener.onDisconnected(null);
-			server.close();
+			return;
 		    }
+
+		    // the server needs to know who we are
 		    sendMessage(new RtcMessage(info.getAddress(),
 			    MessageTypes.info, info));
+
+		    if ((message = getMessageOrFail(MessageTypes.workbook)) != null) {
+			//otherUsers = (ClientInfo[]) message.getArgument();
+		    } else {
+			return;
+		    }
+
 		    while (true) {
 			message = getMessage();
 			switch (message.getMessage()) {
@@ -78,6 +85,20 @@ public class ClientInterface implements RtcInterface {
     private RtcMessage getMessage() throws IOException, ClassNotFoundException {
 	Object o = in.readObject();
 	return (RtcMessage) o;
+    }
+
+    private RtcMessage getMessageOrFail(MessageTypes type) throws IOException,
+	    ClassNotFoundException {
+	Object o = in.readObject();
+	final RtcMessage message = (RtcMessage) o;
+	if (message.getMessage() == type) {
+	    return message;
+	} else {
+	    // something is wrong, we better disconnect
+	    listener.onDisconnected(null);
+	    server.close();
+	    return null;
+	}
     }
 
     private void sendMessage(RtcMessage message) {
