@@ -8,8 +8,9 @@ import java.net.Socket;
 
 import csheets.core.Address;
 import csheets.core.Cell;
+import csheets.ext.rtc.messages.RemoteCell;
 
-public class Client implements RtcListener {
+public class Client implements RtcInterface {
     private ClientInfo info;
     private ServerInterface server;
     private Socket client;

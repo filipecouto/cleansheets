@@ -8,6 +8,9 @@ import java.net.UnknownHostException;
 
 import csheets.core.Address;
 import csheets.core.Cell;
+import csheets.core.Workbook;
+import csheets.ext.rtc.messages.RemoteCell;
+import csheets.ext.rtc.messages.RemoteWorkbook;
 
 /**
  * This class will be the client-side bridge of the connection (therefore the
@@ -15,7 +18,7 @@ import csheets.core.Cell;
  * 
  * @author gil_1110484
  */
-public class ClientInterface implements RtcInterface {
+public class ClientInterface implements RtcCommunicator {
     private ClientInfo info;
     private Socket server;
     private ObjectOutputStream out;
@@ -49,7 +52,11 @@ public class ClientInterface implements RtcInterface {
 			    MessageTypes.info, info));
 
 		    if ((message = getMessageOrFail(MessageTypes.workbook)) != null) {
-			//otherUsers = (ClientInfo[]) message.getArgument();
+			Workbook wb = ((RemoteWorkbook) message.getArgument())
+				.getWorkbook();
+			if(wb.getSpreadsheetCount() > 0) {
+			    sendMessage(new RtcMessage(info.getAddress(), MessageTypes.getSpreadsheet, 0));
+			}
 		    } else {
 			return;
 		    }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import csheets.core.Address;
 import csheets.core.Cell;
 
-public class ServerInterface implements RtcInterface {
+public class ServerInterface implements RtcCommunicator {
     private ClientInfo info;
     private ServerSocket server;
     private ObjectOutputStream out;
@@ -123,53 +123,53 @@ public class ServerInterface implements RtcInterface {
 	this.listener = listener;
     }
 
-//    private RtcListener clientsListener = new RtcListener() {
-//	@Override
-//	public void onConnected(ClientInfo client) {
-//	    listener.onConnected(client);
-//	    synchronized (clients) {
-//		for (Client c : clients) {
-//		    // if (!c.isSameClient(client)) {
-//		    c.onConnected(client);
-//		    // }
-//		}
-//	    }
-//	}
-//
-//	@Override
-//	public void onCellSelected(ClientInfo source, Address address) {
-//	    listener.onCellSelected(source, address);
-//	    synchronized (clients) {
-//		for (Client c : clients) {
-//		    // if (!c.isSameClient(source)) {
-//		    c.onCellSelected(source, address);
-//		    // }
-//		}
-//	    }
-//	}
-//
-//	@Override
-//	public void onCellChanged(ClientInfo source, Cell cell) {
-//	    listener.onCellChanged(source, cell);
-//	    synchronized (clients) {
-//		for (Client c : clients) {
-//		    // if (!c.isSameClient(source)) {
-//		    c.onCellChanged(source, cell);
-//		    // }
-//		}
-//	    }
-//	}
-//
-//	@Override
-//	public void onDisconnected(ClientInfo client) {
-//	    listener.onDisconnected(client);
-//	    synchronized (clients) {
-//		for (Client c : clients) {
-//		    // if (!c.isSameClient(client)) {
-//		    c.onDisconnected(client);
-//		    // }
-//		}
-//	    }
-//	}
-//    };
+    // private RtcListener clientsListener = new RtcListener() {
+    // @Override
+    // public void onConnected(ClientInfo client) {
+    // listener.onConnected(client);
+    // synchronized (clients) {
+    // for (Client c : clients) {
+    // // if (!c.isSameClient(client)) {
+    // c.onConnected(client);
+    // // }
+    // }
+    // }
+    // }
+    //
+    // @Override
+    // public void onCellSelected(ClientInfo source, Address address) {
+    // listener.onCellSelected(source, address);
+    // synchronized (clients) {
+    // for (Client c : clients) {
+    // // if (!c.isSameClient(source)) {
+    // c.onCellSelected(source, address);
+    // // }
+    // }
+    // }
+    // }
+    //
+    // @Override
+    // public void onCellChanged(ClientInfo source, Cell cell) {
+    // listener.onCellChanged(source, cell);
+    // synchronized (clients) {
+    // for (Client c : clients) {
+    // // if (!c.isSameClient(source)) {
+    // c.onCellChanged(source, cell);
+    // // }
+    // }
+    // }
+    // }
+    //
+    // @Override
+    // public void onDisconnected(ClientInfo client) {
+    // listener.onDisconnected(client);
+    // synchronized (clients) {
+    // for (Client c : clients) {
+    // // if (!c.isSameClient(client)) {
+    // c.onDisconnected(client);
+    // // }
+    // }
+    // }
+    // }
+    // };
 }
