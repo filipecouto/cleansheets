@@ -47,9 +47,10 @@ public interface Codec {
 	 * @throws ParserConfigurationException 
 	 * @throws SAXException 
 	 * @throws FormulaCompilationException 
-	 * @throws DOMException 
+	 * @throws DOMException
+         * @throws Exception
 	 */
-	public Workbook read(InputStream stream) throws IOException, ClassNotFoundException, ParserConfigurationException, SAXException, DOMException, FormulaCompilationException;
+	public Workbook read(InputStream stream) throws IOException, ClassNotFoundException, ParserConfigurationException, SAXException, DOMException, FormulaCompilationException, Exception;
 
 	/**
 	 * Writes a workbook to the given output stream.
