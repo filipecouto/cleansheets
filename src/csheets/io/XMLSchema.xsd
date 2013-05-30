@@ -1,100 +1,116 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<!--
-To change this template, choose Tools | Templates
-and open the template in the editor.
--->
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- To change this template, choose Tools | Templates and open the template 
+	in the editor. -->
 
-<xsd:schema version="1.0"
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            elementFormDefault="qualified">
-    <xsd:element name="Workbook">
+<xsd:schema version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+	<xsd:element name="Workbook">
 
-        <xsd:complexType>
+		<xsd:complexType>
 
-            <xsd:sequence>
+			<xsd:sequence>
 
-                <xsd:element name="SpreadSheet" type="TSpreadSheet" maxOccurs="unbounded"/>
+				<xsd:element name="SpreadSheet" type="TSpreadSheet"
+					maxOccurs="unbounded" />
 
-            </xsd:sequence>
+			</xsd:sequence>
 
-            <xsd:attribute name="name" type="xsd:string" use="required"/>
+			<xsd:attribute name="name" type="xsd:string" use="required" />
 
-        </xsd:complexType>
+		</xsd:complexType>
 
-    </xsd:element>
+	</xsd:element>
 
-    <xsd:complexType name="TSpreadSheet">
+	<xsd:complexType name="TSpreadSheet">
 
-        <xsd:sequence>
+		<xsd:sequence>
 
-            <xsd:element name="Cell" type="TCell" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Cell" type="TCell" minOccurs="0"
+				maxOccurs="unbounded" />
 
-        </xsd:sequence>
+		</xsd:sequence>
 
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
 
-    </xsd:complexType>
+	</xsd:complexType>
 
 
-    <xsd:complexType name="TCell">
-        
-        <xsd:simpleContent>
-            
-            <xsd:extension base="xsd:string">
+	<xsd:complexType name="TCell">
 
-                <xsd:attribute name="Column" type="xsd:string" use="required"/>
+		<xsd:simpleContent>
 
-                <xsd:attribute name="Row" type="xsd:int" use="required"/>
+			<xsd:extension base="xsd:string">
 
-                <xsd:attribute name="BackgroundColor" type="xsd:int" default="000000"/>
+				<xsd:attribute name="Column" type="xsd:string" use="required" />
 
-                <xsd:attribute name="Border" type="xsd:string" default="False"/>
+				<xsd:attribute name="Row" type="xsd:int" use="required" />
 
-                <xsd:attribute name="TextAlign" type="TAlign" default="Left"/>
+				<xsd:attribute name="BackgroundColor" type="xsd:long"
+					default="4294967295" />
 
-                <xsd:attribute name="CellAlign" type="TAlign" default="Center"/>
+				<xsd:attribute name="Border" type="xsd:string"
+					default="False" />
 
-                <xsd:attribute name="ForegroundColor" type="xsd:int" default="000000"/>
+				<xsd:attribute name="TextAlign" type="TAlign" default="Left" />
 
-                <xsd:attribute name="FontFamily" type="xsd:string" default="Dialog"/>
+				<xsd:attribute name="CellAlign" type="TAlign" default="Center" />
 
-                <xsd:attribute name="FontSize" type="xsd:int" default="12"/>
+				<xsd:attribute name="BorderTop" type="TBoolean"
+					default="False" />
+				<xsd:attribute name="BorderBottom" type="TBoolean"
+					default="False" />
+				<xsd:attribute name="BorderLeft" type="TBoolean"
+					default="False" />
+				<xsd:attribute name="BorderRight" type="TBoolean"
+					default="False" />
+				<xsd:attribute name="BorderColor" type="xsd:int"
+					default="000000" />
 
-                <xsd:attribute name="Bold" type="TBoolean" default="False"/>
 
-                <xsd:attribute name="Italic" type="TBoolean" default="False"/>
+				<xsd:attribute name="ForegroundColor" type="xsd:int"
+					default="000000" />
 
-                <xsd:attribute name="Underline" type="TBoolean" default ="False"/>
-                
-            </xsd:extension>
-            
-        </xsd:simpleContent>
+				<xsd:attribute name="FontFamily" type="xsd:string"
+					default="Dialog" />
 
-    </xsd:complexType>
+				<xsd:attribute name="FontSize" type="xsd:int" default="12" />
 
-    <xsd:simpleType name="TBoolean">
+				<xsd:attribute name="Bold" type="TBoolean" default="False" />
 
-        <xsd:restriction base="xsd:string">
+				<xsd:attribute name="Italic" type="TBoolean" default="False" />
 
-            <xsd:enumeration value="True"/>
+				<xsd:attribute name="Underline" type="TBoolean"
+					default="False" />
 
-            <xsd:enumeration value="False"/>
+			</xsd:extension>
 
-        </xsd:restriction>
+		</xsd:simpleContent>
 
-    </xsd:simpleType>
+	</xsd:complexType>
 
-    <xsd:simpleType name="TAlign">
+	<xsd:simpleType name="TBoolean">
 
-        <xsd:restriction base="xsd:string">
+		<xsd:restriction base="xsd:string">
 
-            <xsd:enumeration value="Left"/>
+			<xsd:enumeration value="True" />
 
-            <xsd:enumeration value="Center"/>
+			<xsd:enumeration value="False" />
 
-            <xsd:enumeration value="Right"/>
+		</xsd:restriction>
 
-        </xsd:restriction>
+	</xsd:simpleType>
 
-    </xsd:simpleType>
+	<xsd:simpleType name="TAlign">
+
+		<xsd:restriction base="xsd:string">
+
+			<xsd:enumeration value="Left" />
+
+			<xsd:enumeration value="Center" />
+
+			<xsd:enumeration value="Right" />
+
+		</xsd:restriction>
+
+	</xsd:simpleType>
 </xsd:schema>
