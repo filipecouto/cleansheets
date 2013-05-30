@@ -28,11 +28,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import com.sun.corba.se.spi.orbutil.threadpool.Work;
-import com.sun.xml.internal.fastinfoset.stax.events.AttributeBase;
 
 import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
@@ -56,7 +52,14 @@ public class XMLCodec implements Codec {
     @Override
     public Workbook read(InputStream stream) throws IOException,
 	    ClassNotFoundException, ParserConfigurationException, SAXException,
-	    DOMException, FormulaCompilationException {
+	    DOMException, FormulaCompilationException, Exception {
+        try{XMLValidator val = new XMLValidator();
+        // call xml validator
+        try{
+            val.validate(stream);
+        } catch (Exception e){
+            System.out.println("Isto é erro!"+e);
+        }
 	int totalCells = 0;
 	int totalSheets = 0;
 
@@ -80,7 +83,7 @@ public class XMLCodec implements Codec {
 		getStylabeCell(nNode, sheet);
 	    }
 	}
-	return wb;
+	return wb;}catch(IOException e){ System.out.println(e);}return null;
     }
 
     /**
@@ -114,8 +117,6 @@ public class XMLCodec implements Codec {
 		    getBoldAndItalic(eElement.getAttribute("Bold"),
 			    eElement.getAttribute("Italic")), Integer
 			    .parseInt(eElement.getAttribute("FontSize"))));
-	    sc.setBorder(BorderFactory.createTitledBorder(eElement
-		    .getAttribute("Border")));
 
 	    sc.setContent(eElement.getTextContent());
 	    return sc;
@@ -228,6 +229,12 @@ public class XMLCodec implements Codec {
 	Attr attr = doc.createAttribute("name");
 	attr.setValue("Ficheiro");
 	workBook.setAttributeNode(attr);
+        attr = doc.createAttribute("xmlns:xsi");
+	attr.setValue("http://www.w3.org/2001/XMLSchema-instance");
+        workBook.setAttributeNode(attr);
+        attr = doc.createAttribute("xsi:noNamespaceSchemaLocation");
+	attr.setValue("XMLSchema.xsd");
+        workBook.setAttributeNode(attr);
 	// going through the spreadsheets
 	// for (Spreadsheet sheet : workbook) {
 	countSpreadsheet = workbook.getSpreadsheetCount();
@@ -304,9 +311,6 @@ public class XMLCodec implements Codec {
 	    cell.setAttributeNode(attr);
 	    attr = doc.createAttribute("BackgroundColor");
 	    attr.setValue("" + stylableCell.getBackgroundColor().getRGB());
-	    cell.setAttributeNode(attr);
-	    attr = doc.createAttribute("Border");
-	    attr.setValue("" + stylableCell.getBorder());
 	    cell.setAttributeNode(attr);
 	    attr = doc.createAttribute("TextAlign");
 	    attr.setValue(textAlignString);
