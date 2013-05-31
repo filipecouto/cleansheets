@@ -1,21 +1,21 @@
 package csheets.ext.rtc;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
 import csheets.core.Address;
 import csheets.core.Cell;
+import csheets.core.Spreadsheet;
+import csheets.ext.rtc.messages.RemoteCell;
+import csheets.ext.rtc.messages.RemoteSpreadsheet;
 import csheets.ext.rtc.messages.RemoteWorkbook;
 import csheets.ui.ctrl.UIController;
-import csheets.ui.ext.UIExtension;
 
 public class ServerInterface implements RtcCommunicator {
     private ClientInfo info;
     private ServerSocket server;
-    private ObjectOutputStream out;
     private RtcListener listener;
 
     private UIController uiController;
@@ -43,9 +43,34 @@ public class ServerInterface implements RtcCommunicator {
 	    }
 	}).start();
     }
-    
+
+    public RemoteCell[] getCellsToSend(int spreadsheet, Address[] range) {
+	int xOffset = range[0].getColumn();
+	int yOffset = range[0].getRow();
+	int columnCount = range[1].getColumn() - xOffset + 1;
+	int rowCount = range[1].getRow() - yOffset + 1;
+	int i = 0;
+
+	RemoteCell[] cells = new RemoteCell[columnCount * rowCount];
+	final Spreadsheet sheet = uiController.getActiveWorkbook()
+		.getSpreadsheet(spreadsheet);
+
+	for (int y = yOffset; y < yOffset + rowCount; y++) {
+	    for (int x = xOffset; x < xOffset + columnCount; x++) {
+		cells[i++] = new RemoteCell(sheet.getCell(x, y));
+	    }
+	}
+
+	return cells;
+    }
+
     public RemoteWorkbook getWorkbookToSend() {
 	return new RemoteWorkbook(uiController.getActiveWorkbook());
+    }
+
+    public RemoteSpreadsheet getSpreadsheetToSend(int index) {
+	return new RemoteSpreadsheet(uiController.getActiveWorkbook()
+		.getSpreadsheet(index), index);
     }
 
     public ClientInfo getServerInfo() {
@@ -65,11 +90,14 @@ public class ServerInterface implements RtcCommunicator {
     }
 
     public void onClientConnected(Socket client) {
-	final Client newClient = new Client(this, client);
-	// newClient.setListener(clientsListener);
-	synchronized (clients) {
-	    clients.add(newClient);
-	    newClient.run();
+	try {
+	    Client newClient = new Client(this, client);
+	    synchronized (clients) {
+		clients.add(newClient);
+		newClient.run();
+	    }
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
     }
 
@@ -133,54 +161,4 @@ public class ServerInterface implements RtcCommunicator {
     public void setListener(RtcListener listener) {
 	this.listener = listener;
     }
-
-    // private RtcListener clientsListener = new RtcListener() {
-    // @Override
-    // public void onConnected(ClientInfo client) {
-    // listener.onConnected(client);
-    // synchronized (clients) {
-    // for (Client c : clients) {
-    // // if (!c.isSameClient(client)) {
-    // c.onConnected(client);
-    // // }
-    // }
-    // }
-    // }
-    //
-    // @Override
-    // public void onCellSelected(ClientInfo source, Address address) {
-    // listener.onCellSelected(source, address);
-    // synchronized (clients) {
-    // for (Client c : clients) {
-    // // if (!c.isSameClient(source)) {
-    // c.onCellSelected(source, address);
-    // // }
-    // }
-    // }
-    // }
-    //
-    // @Override
-    // public void onCellChanged(ClientInfo source, Cell cell) {
-    // listener.onCellChanged(source, cell);
-    // synchronized (clients) {
-    // for (Client c : clients) {
-    // // if (!c.isSameClient(source)) {
-    // c.onCellChanged(source, cell);
-    // // }
-    // }
-    // }
-    // }
-    //
-    // @Override
-    // public void onDisconnected(ClientInfo client) {
-    // listener.onDisconnected(client);
-    // synchronized (clients) {
-    // for (Client c : clients) {
-    // // if (!c.isSameClient(client)) {
-    // c.onDisconnected(client);
-    // // }
-    // }
-    // }
-    // }
-    // };
 }

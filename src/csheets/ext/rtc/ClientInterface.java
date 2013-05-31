@@ -1,8 +1,6 @@
 package csheets.ext.rtc;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -10,6 +8,7 @@ import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.core.Workbook;
 import csheets.ext.rtc.messages.RemoteCell;
+import csheets.ext.rtc.messages.RemoteSpreadsheet;
 import csheets.ext.rtc.messages.RemoteWorkbook;
 
 /**
@@ -18,11 +17,9 @@ import csheets.ext.rtc.messages.RemoteWorkbook;
  * 
  * @author gil_1110484
  */
-public class ClientInterface implements RtcCommunicator {
+public class ClientInterface extends Communicator implements RtcCommunicator {
     private ClientInfo info;
     private Socket server;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
     private RtcListener listener;
 
     private ClientInfo[] otherUsers;
@@ -30,20 +27,18 @@ public class ClientInterface implements RtcCommunicator {
     public ClientInterface(String address, ClientInfo clientInfo)
 	    throws UnknownHostException, IOException {
 	server = new Socket(address, PORT);
+	setSocket(server);
 	info = clientInfo;
-	out = new ObjectOutputStream(server.getOutputStream());
 
 	new Thread(new Runnable() {
 	    @Override
 	    public void run() {
 		try {
 		    RtcMessage message;
-		    in = new ObjectInputStream(server.getInputStream());
 
 		    // wait for the list of already connected users
 		    if ((message = getMessageOrFail(MessageTypes.infoList)) != null) {
 			otherUsers = (ClientInfo[]) message.getArgument();
-			System.out.println("There are " + otherUsers.length + " users connected");
 		    } else {
 			return;
 		    }
@@ -55,10 +50,28 @@ public class ClientInterface implements RtcCommunicator {
 		    if ((message = getMessageOrFail(MessageTypes.workbook)) != null) {
 			Workbook wb = ((RemoteWorkbook) message.getArgument())
 				.getWorkbook();
-			System.out.println("The shared workbook has " + otherUsers.length + " spreadsheets");
-			if(wb.getSpreadsheetCount() > 0) {
-			    sendMessage(new RtcMessage(info.getAddress(), MessageTypes.getSpreadsheet, 0));
+			if (wb.getSpreadsheetCount() > 0) {
+			    sendMessage(new RtcMessage(info.getAddress(),
+				    MessageTypes.getSpreadsheet, 0));
+			    if ((message = getMessageOrFail(MessageTypes.spreadsheet)) != null) {
+				RemoteSpreadsheet sheet = (RemoteSpreadsheet) message
+					.getArgument();
+				sheet.getSpreadsheet(wb);
+				sendMessage(new RtcMessage(info.getAddress(),
+					MessageTypes.getCells, new Address[] {
+						new Address(0, 0),
+						new Address(sheet
+							.getColumnCount(),
+							sheet.getRowCount()) }));
+			    } else {
+				return;
+			    }
+			} else {
+			    // TODO support more than one spreadsheet, protocol
+			    // and interfaces are ready for it
+			    // TODO what if the workbook is empty?
 			}
+			listener.onWorkbookReceived(info, wb);
 		    } else {
 			return;
 		    }
@@ -67,12 +80,18 @@ public class ClientInterface implements RtcCommunicator {
 			message = getMessage();
 			switch (message.getMessage()) {
 			case eventCellChanged:
-			    RemoteCell c = (RemoteCell) message.getArgument();
+			    final RemoteCell c = (RemoteCell) message
+				    .getArgument();
 			    listener.onCellChanged(null, c);
 			    break;
 			case eventCellSelected:
-			    Address a = (Address) message.getArgument();
+			    final Address a = (Address) message.getArgument();
 			    listener.onCellSelected(null, a);
+			    break;
+			case cells:
+			    final RemoteCell[] cells = (RemoteCell[]) message
+				    .getArgument();
+			    listener.onCellsReceived(null, cells);
 			    break;
 			case disconnect:
 			    listener.onDisconnected(info);
@@ -89,33 +108,6 @@ public class ClientInterface implements RtcCommunicator {
 		}
 	    }
 	}).start();
-    }
-
-    private RtcMessage getMessage() throws IOException, ClassNotFoundException {
-	Object o = in.readObject();
-	return (RtcMessage) o;
-    }
-
-    private RtcMessage getMessageOrFail(MessageTypes type) throws IOException,
-	    ClassNotFoundException {
-	Object o = in.readObject();
-	final RtcMessage message = (RtcMessage) o;
-	if (message.getMessage() == type) {
-	    return message;
-	} else {
-	    // something is wrong, we better disconnect
-	    listener.onDisconnected(null);
-	    server.close();
-	    return null;
-	}
-    }
-
-    private void sendMessage(RtcMessage message) {
-	try {
-	    out.writeObject(message);
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
     }
 
     @Override
@@ -147,5 +139,15 @@ public class ClientInterface implements RtcCommunicator {
     @Override
     public ClientInfo[] getConnectedUsers() {
 	return otherUsers;
+    }
+
+    @Override
+    protected void close() {
+	try {
+	    server.close();
+	    listener.onDisconnected(null);
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
     }
 }

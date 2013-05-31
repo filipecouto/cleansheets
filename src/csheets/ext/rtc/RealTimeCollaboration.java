@@ -1,26 +1,10 @@
 package csheets.ext.rtc;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
+import csheets.core.Address;
 import csheets.ext.Extension;
 import csheets.ext.rtc.ui.ClientsListAdapter;
 import csheets.ext.rtc.ui.RtcSidebar;
@@ -30,7 +14,6 @@ import csheets.ui.ctrl.SelectionEvent;
 import csheets.ui.ctrl.SelectionListener;
 import csheets.ui.ctrl.UIController;
 import csheets.ui.ext.CellDecorator;
-import csheets.ui.ext.SideBarAction;
 import csheets.ui.ext.UIExtension;
 
 public class RealTimeCollaboration extends Extension {
@@ -46,8 +29,8 @@ public class RealTimeCollaboration extends Extension {
 	super("Real Time Collaboration");
     }
 
-    public ClientInfo createServer(ClientInfo client, UIController uiController)
-	    throws IOException {
+    public ClientInfo createServer(ClientInfo client,
+	    UIController uiController, Address[] range) throws IOException {
 	ServerInterface server = new ServerInterface(client, uiController);
 	identity = server.getServerInfo();
 	server.setListener(new RtcEventsResponder(uiController));
@@ -77,6 +60,9 @@ public class RealTimeCollaboration extends Extension {
 	uiController.addSelectionListener(new SelectionListener() {
 	    @Override
 	    public void selectionChanged(SelectionEvent event) {
+		if (uiController.getActiveCell() == null) {
+		    return;
+		}
 		if (communicator != null) {
 		    communicator.onCellSelected(null, uiController
 			    .getActiveCell().getAddress());

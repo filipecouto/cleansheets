@@ -16,7 +16,7 @@ public class RemoteWorkbook implements Serializable {
     private int spreadsheetCount;
 
     public RemoteWorkbook(Workbook workbook) {
-	workbook.getSpreadsheetCount();
+	spreadsheetCount = workbook.getSpreadsheetCount();
     }
 
     public Workbook getWorkbook() {

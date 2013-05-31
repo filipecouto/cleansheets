@@ -1,33 +1,22 @@
 package csheets.ext.rtc;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.ext.rtc.messages.RemoteCell;
 
-public class Client implements RtcInterface {
+public class Client extends Communicator implements RtcInterface {
     private ClientInfo info;
     private ServerInterface server;
     private Socket client;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
 
-    // private RtcListener listener;
-
-    public Client(ServerInterface server, Socket client) {
+    public Client(ServerInterface server, Socket client) throws IOException {
+	super(client);
 	this.server = server;
 	this.client = client;
 	info = new ClientInfo(client.getInetAddress());
-	try {
-	    out = new ObjectOutputStream(client.getOutputStream());
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
     }
 
     public void run() {
@@ -36,27 +25,24 @@ public class Client implements RtcInterface {
 	    public void run() {
 		try {
 		    RtcMessage message;
-		    in = new ObjectInputStream(client.getInputStream());
 
 		    // let this client know who is already connected
 		    sendMessage(new RtcMessage(server.getServerInfo()
-			    .getAddress(), MessageTypes.infoList,
-			    server.getConnectedUsers()));
+			    .getAddress(), MessageTypes.infoList, server
+			    .getConnectedUsers()));
 
 		    // wait for its identity
-		    message = getMessage();
-		    if (message.getMessage() == MessageTypes.info) {
+		    if ((message = getMessageOrFail(MessageTypes.info)) != null) {
 			info = (ClientInfo) message.getArgument();
 			System.out.println(info.getName() + " just connected");
 		    } else {
-			// ERROR server didn't send what it should,
-			// diconnecting...
-			server.onDisconnected(null);
+			return;
 		    }
 
+		    // send our workbook
 		    sendMessage(new RtcMessage(server.getServerInfo()
-			    .getAddress(), MessageTypes.workbook,
-			    server.getWorkbookToSend()));
+			    .getAddress(), MessageTypes.workbook, server
+			    .getWorkbookToSend()));
 
 		    while (true) {
 			message = getMessage();
@@ -68,6 +54,19 @@ public class Client implements RtcInterface {
 			case eventCellSelected:
 			    Address a = (Address) message.getArgument();
 			    server.onCellSelected(info, a);
+			    break;
+			case getSpreadsheet:
+			    sendMessage(new RtcMessage(
+				    server.getServerInfo().getAddress(),
+				    MessageTypes.spreadsheet,
+				    server.getSpreadsheetToSend((Integer) message
+					    .getArgument())));
+			    break;
+			case getCells:
+			    Address[] range = (Address[]) message.getArgument();
+			    sendMessage(new RtcMessage(server.getServerInfo()
+				    .getAddress(), MessageTypes.cells, server
+				    .getCellsToSend(0, range)));
 			    break;
 			case disconnect:
 			    server.onDisconnected(info);
@@ -84,11 +83,6 @@ public class Client implements RtcInterface {
 	}).start();
     }
 
-    private RtcMessage getMessage() throws IOException, ClassNotFoundException {
-	Object o = in.readObject();
-	return (RtcMessage) o;
-    }
-
     public boolean isSameClient(ClientInfo info) {
 	return this.info.isSameIP(info.getAddress());
     }
@@ -97,17 +91,11 @@ public class Client implements RtcInterface {
 	return info;
     }
 
-    private void sendMessage(RtcMessage message) {
-	try {
-	    out.writeObject(message);
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
-    }
-
+    @Override
     public void close() {
 	try {
-	    out.close();
+	    client.close();
+	    onDisconnected(info);
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
@@ -132,9 +120,4 @@ public class Client implements RtcInterface {
     @Override
     public void onDisconnected(ClientInfo client) {
     }
-
-    // @Override
-    // public void setListener(RtcListener listener) {
-    // this.listener = listener;
-    // }
 }
