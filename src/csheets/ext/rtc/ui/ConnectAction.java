@@ -10,12 +10,14 @@ import csheets.ui.ctrl.FocusOwnerAction;
 import csheets.ui.ctrl.UIController;
 
 public class ConnectAction extends FocusOwnerAction {
-    
+
     private RealTimeCollaboration extension;
     private UIController uiController;
     private DataListener dataListener;
-    
-    public ConnectAction(RealTimeCollaboration extension, UIController uiController) {
+    private ConnectionWindow ipDialog;
+
+    public ConnectAction(RealTimeCollaboration extension,
+	    UIController uiController) {
 	this.extension = extension;
 	this.uiController = uiController;
     }
@@ -23,23 +25,31 @@ public class ConnectAction extends FocusOwnerAction {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-	ConnectionWindow ipDialog = new ConnectionWindow();
-	ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
-	    @Override
-	    public void onIPSelected(String address, String username) {
-		try {
-		    extension.createClient(new ClientInfo(username),
-			    address, uiController);
-		} catch (UnknownHostException e1) {
-		    e1.printStackTrace();
-		} catch (IOException e1) {
-		    e1.printStackTrace();
-		} finally {
-		    dataListener.onSendData("Connect", "");
+	if (ipDialog == null) {
+	    ipDialog = new ConnectionWindow();
+	    ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
+		@Override
+		public void onIPSelected(String address, String username) {
+		    ClientInfo client = null;
+		    String ip = "";
+		    try {
+			client = extension
+				.createClient(new ClientInfo(username),
+					address, uiController);
+			ip = client.getAddress().toString();
+		    } catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		    } catch (IOException e1) {
+			e1.printStackTrace();
+		    } finally {
+			dataListener.onSendData(client, ip);
+		    }
 		}
-	    }
-	});
-	ipDialog.setVisible(true);
+	    });
+	    ipDialog.setVisible(true);
+	} else {
+	    ipDialog.setVisible(true);
+	}
     }
 
     @Override
