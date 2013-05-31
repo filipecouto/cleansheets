@@ -15,6 +15,7 @@ import csheets.core.Value;
 import csheets.core.Workbook;
 import csheets.core.formula.Formula;
 import csheets.core.formula.compiler.FormulaCompilationException;
+import csheets.ext.rtc.RtcShareProperties;
 import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
 
@@ -62,5 +63,10 @@ public class RemoteCell implements Serializable {
 	sc.setForegroundColor(foregroundColor);
 	sc.setHorizontalAlignment(horizontalAlignment);
 	sc.setVerticalAlignment(verticalAlignment);
+    }
+
+    public boolean isValid(RtcShareProperties properties) {
+	return properties.isInsideRange(address)
+		&& properties.getSpreadsheet() == spreadsheet;
     }
 }

@@ -7,7 +7,10 @@ import javax.swing.JComponent;
 import csheets.core.Address;
 import csheets.ext.Extension;
 import csheets.ext.rtc.messages.RemoteCell;
+import csheets.ext.rtc.ui.ConnectAction;
+import csheets.ext.rtc.ui.DataListener;
 import csheets.ext.rtc.ui.RtcSidebar;
+import csheets.ext.rtc.ui.ShareAction;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
 import csheets.ui.ctrl.SelectionEvent;
@@ -24,6 +27,9 @@ public class RealTimeCollaboration extends Extension {
     RtcCellDecorator cellDecorator;
 
     RtcSidebar sidebar;
+
+    ShareAction shareAction;
+    ConnectAction connectAction;
 
     public RealTimeCollaboration() {
 	super("Real Time Collaboration");
@@ -92,8 +98,22 @@ public class RealTimeCollaboration extends Extension {
 	    @Override
 	    public JComponent getSideBar() {
 		if (sidebar == null) {
-		    sidebar = new RtcSidebar(RealTimeCollaboration.this,
+		    shareAction = new ShareAction(RealTimeCollaboration.this,
 			    uiController);
+		    shareAction.setListener(new DataListener() {
+			@Override
+			public void onSendData(ClientInfo info, String address) {
+			}
+		    });
+		    connectAction = new ConnectAction(
+			    RealTimeCollaboration.this, uiController);
+		    connectAction.setListener(new DataListener() {
+			@Override
+			public void onSendData(ClientInfo info, String address) {
+			}
+		    });
+		    sidebar = new RtcSidebar(RealTimeCollaboration.this,
+			    uiController, shareAction, connectAction);
 		    sidebar.setName("Real Time Collaboration");
 		}
 		return sidebar;
