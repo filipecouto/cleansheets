@@ -29,8 +29,11 @@ public class RtcEventsResponder implements RtcListener {
     @Override
     public void onConnected(ClientInfo client) {
 	properties = communicator.getShareProperties();
+	if (extension.isOwner()) {
+	    extension.updateUsersList();
+	}
     }
-    
+
     public RtcShareProperties getShareProperties() {
 	return properties;
     }

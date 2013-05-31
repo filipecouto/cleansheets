@@ -2,7 +2,6 @@ package csheets.ext.rtc;
 
 import java.io.IOException;
 
-import javax.print.attribute.standard.MediaSize.ISO;
 import javax.swing.JComponent;
 
 import csheets.core.Address;
@@ -10,6 +9,7 @@ import csheets.ext.Extension;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.ui.ConnectAction;
 import csheets.ext.rtc.ui.DataListener;
+import csheets.ext.rtc.ui.RtcCellDecorator;
 import csheets.ext.rtc.ui.RtcSidebar;
 import csheets.ext.rtc.ui.ShareAction;
 import csheets.ui.ctrl.EditEvent;
@@ -94,23 +94,27 @@ public class RealTimeCollaboration extends Extension {
 	    @Override
 	    public void workbookModified(EditEvent event) {
 		if (communicator != null) {
-		    communicator.onCellChanged(null, new RemoteCell(
-			    uiController.getActiveCell()));
+		    if (uiController.getActiveSpreadsheet() == uiController
+			    .getActiveWorkbook().getSpreadsheet(0)) {
+			communicator.onCellChanged(null, new RemoteCell(
+				uiController.getActiveCell()));
+		    }
 		}
 	    }
 	});
-	uiController.addSelectionListener(new SelectionListener() {
-	    @Override
-	    public void selectionChanged(SelectionEvent event) {
-		if (uiController.getActiveCell() == null) {
-		    return;
-		}
-		if (communicator != null) {
-		    communicator.onCellSelected(null, uiController
-			    .getActiveCell().getAddress());
-		}
-	    }
-	});
+	// TODO let the others see what's selected
+	// uiController.addSelectionListener(new SelectionListener() {
+	// @Override
+	// public void selectionChanged(SelectionEvent event) {
+	// if (uiController.getActiveCell() == null) {
+	// return;
+	// }
+	// if (communicator != null) {
+	// communicator.onCellSelected(null, uiController
+	// .getActiveCell().getAddress());
+	// }
+	// }
+	// });
 	return new UIExtension(this, uiController) {
 	    @Override
 	    public CellDecorator getCellDecorator() {

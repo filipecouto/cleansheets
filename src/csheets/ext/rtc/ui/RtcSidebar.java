@@ -1,5 +1,7 @@
 package csheets.ext.rtc.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -7,6 +9,7 @@ import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -36,7 +39,7 @@ public class RtcSidebar extends JPanel {
 	    final UIController uiController, ShareAction shareAction,
 	    ConnectAction connectAction) {
 	setName("Real Time Colaboration");
-	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+	setLayout(new BorderLayout());
 	JPanel buttonPanel = new JPanel();
 	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 
@@ -51,6 +54,7 @@ public class RtcSidebar extends JPanel {
 	ipAddress.setText("Not connected");
 	ipAddress.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	buttonPanel.add(bConnect);
+	buttonPanel.add(ipAddress);
 
 	bDisconnect = new JButton("Disconnect");
 	bDisconnect.setAlignmentX(JComponent.CENTER_ALIGNMENT);
@@ -68,13 +72,13 @@ public class RtcSidebar extends JPanel {
 	bDisconnect.setVisible(false);
 	bShare.setSize(100, 30);
 	bConnect.setSize(100, 30);
-	
+
 	adapter = new ClientsListAdapter();
 	JList<ClientInfo> list = new JList<ClientInfo>(adapter);
 	list.setCellRenderer(new ClientInfoListRenderer());
-	add(list);
-	add(ipAddress);
-	add(buttonPanel);
+	list.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+	add(list, BorderLayout.CENTER);
+	add(buttonPanel, BorderLayout.SOUTH);
     }
 
     public void updateUsersList(final ClientInfo[] clients) {
@@ -87,7 +91,7 @@ public class RtcSidebar extends JPanel {
 
     public void onConnection(String address) {
 	if (ipAddress != null) {
-	    ipAddress.setText("Your IP Address: " + address);
+	    ipAddress.setText("IP Address: " + address);
 	    bDisconnect.setVisible(true);
 	    bShare.setVisible(false);
 	    bConnect.setVisible(false);

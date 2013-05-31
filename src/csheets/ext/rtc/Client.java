@@ -29,8 +29,6 @@ public class Client extends Communicator implements RtcInterface {
 		    // wait for its identity
 		    if ((message = getMessageOrFail(MessageTypes.info)) != null) {
 			info = (ClientInfo) message.getArgument();
-			// System.out.println(info.getName() +
-			// " just connected");
 		    } else {
 			return;
 		    }
@@ -73,15 +71,16 @@ public class Client extends Communicator implements RtcInterface {
 				    .getCellsToSend(0, range)));
 			    break;
 			case disconnect:
-			    server.onUserAction(info, null);
-			    client.close();
+			    close();
 			    return;
 			}
 		    }
 		} catch (IOException e) {
-		    e.printStackTrace();
+		    // Client disconnected
+		    close();
 		} catch (ClassNotFoundException e) {
 		    e.printStackTrace();
+		    close();
 		}
 	    }
 	}).start();
@@ -99,7 +98,7 @@ public class Client extends Communicator implements RtcInterface {
     public void close() {
 	try {
 	    client.close();
-	    onDisconnected(info);
+	    server.onUserAction(info, false);
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}

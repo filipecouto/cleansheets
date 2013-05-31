@@ -41,17 +41,17 @@ public class ServerInterface implements RtcCommunicator {
 	    info.addConnectionInfo(server.getInetAddress());
 	    listener.onConnected(info);
 	    new Thread(new Runnable() {
-	        public void run() {
-	    	try {
-	    	    Socket socket;
-	    	    while ((socket = server.accept()) != null) {
-	    		onClientConnected(socket);
-	    	    }
-	    	    server.close();
-	    	} catch (IOException e) {
-	    	    e.printStackTrace();
-	    	}
-	        }
+		public void run() {
+		    try {
+			Socket socket;
+			while ((socket = server.accept()) != null) {
+			    onClientConnected(socket);
+			}
+			server.close();
+		    } catch (IOException e) {
+			e.printStackTrace();
+		    }
+		}
 	    }).start();
 	} catch (IOException e) {
 	    e.printStackTrace();
@@ -101,10 +101,11 @@ public class ServerInterface implements RtcCommunicator {
     public synchronized ClientInfo[] getConnectedUsers() {
 	synchronized (clients) {
 	    final int len = clients.size();
-	    ClientInfo[] info = new ClientInfo[len];
+	    ClientInfo[] info = new ClientInfo[len + 1];
 	    for (int i = 0; i < len; i++) {
 		info[i] = clients.get(i).getInfo();
 	    }
+	    info[len] = this.info;
 	    return info;
 	}
     }
@@ -177,8 +178,25 @@ public class ServerInterface implements RtcCommunicator {
 	}
     }
 
+    private void removeUser(ClientInfo id) {
+	synchronized (clients) {
+	    final int len = clients.size();
+	    for (int i = 0; i < len; i++) {
+		if (clients.get(i).getInfo() == id) {
+		    clients.remove(i);
+		    return;
+		}
+	    }
+	}
+    }
+
     @Override
     public void onUserAction(ClientInfo source, Object action) {
+	if (action instanceof Boolean) {
+	    if ((Boolean) action == false) {
+		removeUser(source);
+	    }
+	}
 	listener.onUserAction(source, action);
 	synchronized (clients) {
 	    for (Client c : clients) {

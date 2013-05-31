@@ -12,12 +12,12 @@ public class ClientsListAdapter implements ListModel<ClientInfo> {
 
 	@Override
 	public int getSize() {
-	    return clientInfos.length; // clients.size();
+	    return clientInfos.length;
 	}
 
 	@Override
 	public ClientInfo getElementAt(int index) {
-	    return clientInfos[index]; // clients.get(index).getInfo().getName();
+	    return clientInfos[index];
 	}
 
 	@Override
