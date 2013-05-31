@@ -27,7 +27,7 @@ public class ShareAction extends FocusOwnerAction {
 
 	if(optDialog == null) {
         	optDialog = new ShareOptionsDialog();
-        	optDialog.setOnChooseExportListener(new onChooseExportListener() {
+        	optDialog.setOnChooseExportListener(new OnChooseExportListener() {
         
         	    @Override
         	    public void onChoosedExport(boolean export) {

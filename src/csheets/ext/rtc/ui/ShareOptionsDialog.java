@@ -18,7 +18,7 @@ public class ShareOptionsDialog extends JDialog {
     private JRadioButton selectSelected;
     private JButton buttonAccept;
     private JButton buttonCancel;
-    private onChooseExportListener listener;
+    private OnChooseExportListener listener;
     private ButtonGroup group;
     
     public ShareOptionsDialog() {
@@ -82,7 +82,7 @@ public class ShareOptionsDialog extends JDialog {
 	pack();
     }
     
-    public void setOnChooseExportListener(onChooseExportListener listener) {
+    public void setOnChooseExportListener(OnChooseExportListener listener) {
 	this.listener = listener;
     }
 }
