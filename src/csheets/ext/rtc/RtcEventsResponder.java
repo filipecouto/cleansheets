@@ -14,7 +14,8 @@ public class RtcEventsResponder implements RtcListener {
     UIController uiController;
     RealTimeCollaboration extension;
 
-    public RtcEventsResponder(UIController uiController, RealTimeCollaboration extension) {
+    public RtcEventsResponder(UIController uiController,
+	    RealTimeCollaboration extension) {
 	this.uiController = uiController;
 	this.extension = extension;
     }
@@ -39,16 +40,10 @@ public class RtcEventsResponder implements RtcListener {
     }
 
     @Override
-    public void onCellChanged(ClientInfo source, final Cell cell) {
+    public void onCellChanged(ClientInfo source, final RemoteCell cell) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
-		try {
-		    uiController.getActiveSpreadsheet()
-			    .getCell(cell.getAddress())
-			    .setContent(cell.getContent());
-		} catch (FormulaCompilationException e) {
-		    e.printStackTrace();
-		}
+		cell.getCell(uiController.getActiveWorkbook());
 	    }
 	});
     }
@@ -72,13 +67,8 @@ public class RtcEventsResponder implements RtcListener {
     public void onCellsReceived(ClientInfo source, final RemoteCell[] cells) {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
-		try {
-		    for (RemoteCell cell : cells) {
-			uiController.getActiveSpreadsheet()
-				.getCell(cell.getAddress())
-				.setContent(cell.getContent());
-		    }
-		} catch (FormulaCompilationException e) {
+		for (RemoteCell cell : cells) {
+		    cell.getCell(uiController.getActiveWorkbook());
 		}
 	    }
 	});

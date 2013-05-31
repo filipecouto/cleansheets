@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 
 import csheets.core.Address;
 import csheets.ext.Extension;
+import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.ui.RtcSidebar;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
@@ -34,7 +35,7 @@ public class RealTimeCollaboration extends Extension {
 	}
 	return responder;
     }
-    
+
     public void updateUsersList() {
 	sidebar.updateUsersList(communicator.getConnectedUsers());
     }
@@ -62,8 +63,8 @@ public class RealTimeCollaboration extends Extension {
 	    @Override
 	    public void workbookModified(EditEvent event) {
 		if (communicator != null) {
-		    communicator.onCellChanged(null,
-			    uiController.getActiveCell());
+		    communicator.onCellChanged(null, new RemoteCell(
+			    uiController.getActiveCell()));
 		}
 	    }
 	});

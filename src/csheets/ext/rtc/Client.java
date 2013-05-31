@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.Socket;
 
 import csheets.core.Address;
-import csheets.core.Cell;
 import csheets.ext.rtc.messages.RemoteCell;
 
 public class Client extends Communicator implements RtcInterface {
@@ -115,9 +114,9 @@ public class Client extends Communicator implements RtcInterface {
     }
 
     @Override
-    public void onCellChanged(ClientInfo source, Cell cell) {
+    public void onCellChanged(ClientInfo source, RemoteCell cell) {
 	sendMessage(new RtcMessage(source.getAddress(),
-		MessageTypes.eventCellChanged, new RemoteCell(cell)));
+		MessageTypes.eventCellChanged, cell));
     }
 
     @Override

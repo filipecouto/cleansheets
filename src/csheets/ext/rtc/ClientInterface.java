@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import csheets.core.Address;
-import csheets.core.Cell;
 import csheets.core.Workbook;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.messages.RemoteSpreadsheet;
@@ -126,9 +125,9 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     }
 
     @Override
-    public void onCellChanged(ClientInfo source, Cell cell) {
+    public void onCellChanged(ClientInfo source, RemoteCell cell) {
 	sendMessage(new RtcMessage(server.getInetAddress(),
-		MessageTypes.eventCellChanged, new RemoteCell(cell)));
+		MessageTypes.eventCellChanged, cell));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package csheets.ext.rtc;
 
 import csheets.core.Address;
-import csheets.core.Cell;
+import csheets.ext.rtc.messages.RemoteCell;
 
 /**
  * This interface contains all the methods needed for both ends to communicate
@@ -14,7 +14,7 @@ public interface RtcInterface {
 
     public void onCellSelected(ClientInfo source, Address address);
 
-    public void onCellChanged(ClientInfo source, Cell cell);
+    public void onCellChanged(ClientInfo source, RemoteCell cell);
 
     public void onUserAction(ClientInfo source, Object action);
 
