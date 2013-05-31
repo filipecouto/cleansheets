@@ -33,23 +33,25 @@ public class RtcSidebar extends JPanel {
     private ClientsListAdapter adapter;
 
     public RtcSidebar(final RealTimeCollaboration extension,
-	    final UIController uiController, ShareAction shareAction, ConnectAction connectAction) {
+	    final UIController uiController, ShareAction shareAction,
+	    ConnectAction connectAction) {
+	setName("Real Time Colaboration");
 	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	JPanel buttonPanel = new JPanel();
 	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-	
+
 	bShare = new JButton(shareAction);
 
 	bShare.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	buttonPanel.add(bShare);
 	bConnect = new JButton(connectAction);
-	
+
 	bConnect.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	ipAddress = new JLabel();
 	ipAddress.setText("Not connected");
 	ipAddress.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	buttonPanel.add(bConnect);
-	
+
 	bDisconnect = new JButton("Disconnect");
 	bDisconnect.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	bDisconnect.addActionListener(new ActionListener() {
@@ -78,5 +80,11 @@ public class RtcSidebar extends JPanel {
 		adapter.update(clients);
 	    }
 	});
+    }
+
+    public void setIP(String address) {
+	if (ipAddress != null) {
+	    ipAddress.setText("Your IP Address: " + address);
+	}
     }
 }
