@@ -25,4 +25,23 @@ public interface RtcCommunicator extends RtcInterface {
      * @return an array of ClientInfo's with their name and color
      */
     public ClientInfo[] getConnectedUsers();
+
+    /**
+     * Tells whether this server or client is online
+     * 
+     * @return true if it is
+     */
+    public boolean isConnected();
+
+    /**
+     * Gets some properties such as what cells are shared
+     * 
+     * @return a RtcShareProperties containing all needed properties
+     */
+    public RtcShareProperties getShareProperties();
+
+    /**
+     * Starts this server/client
+     */
+    public void start();
 }

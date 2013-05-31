@@ -11,19 +11,15 @@ import csheets.ui.ctrl.UIController;
 
 public class RtcEventsResponder implements RtcListener {
     private UIController uiController;
+    private RtcCommunicator communicator;
     private RtcShareProperties properties;
     private RealTimeCollaboration extension;
 
-    public RtcEventsResponder(UIController uiController,
-	    RealTimeCollaboration extension) {
+    public RtcEventsResponder(RtcCommunicator communicator,
+	    UIController uiController, RealTimeCollaboration extension) {
 	this.uiController = uiController;
 	this.extension = extension;
-    }
-
-    public RtcEventsResponder(UIController uiController,
-	    RtcShareProperties properties, RealTimeCollaboration extension) {
-	this(uiController, extension);
-	this.properties = properties;
+	this.communicator = communicator;
     }
 
     @Override
@@ -32,6 +28,11 @@ public class RtcEventsResponder implements RtcListener {
 
     @Override
     public void onConnected(ClientInfo client) {
+	properties = communicator.getShareProperties();
+    }
+    
+    public RtcShareProperties getShareProperties() {
+	return properties;
     }
 
     @Override

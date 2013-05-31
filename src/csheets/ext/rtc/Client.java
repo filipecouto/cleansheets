@@ -1,6 +1,7 @@
 package csheets.ext.rtc;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.Socket;
 
 import csheets.core.Address;
@@ -25,11 +26,6 @@ public class Client extends Communicator implements RtcInterface {
 		try {
 		    RtcMessage message;
 
-		    // let this client know who is already connected
-		    sendMessage(new RtcMessage(server.getServerInfo()
-			    .getAddress(), MessageTypes.infoList, server
-			    .getConnectedUsers()));
-
 		    // wait for its identity
 		    if ((message = getMessageOrFail(MessageTypes.info)) != null) {
 			info = (ClientInfo) message.getArgument();
@@ -38,6 +34,12 @@ public class Client extends Communicator implements RtcInterface {
 		    } else {
 			return;
 		    }
+
+		    // let this client know who is already connected
+		    sendMessage(new RtcMessage(server.getServerInfo()
+			    .getAddress(), MessageTypes.infoList,
+			    new Serializable[] { server.getConnectedUsers(),
+				    server.getShareProperties() }));
 
 		    // send our workbook
 		    sendMessage(new RtcMessage(server.getServerInfo()

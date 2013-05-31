@@ -2,6 +2,7 @@ package csheets.ext.rtc;
 
 import java.io.IOException;
 
+import javax.print.attribute.standard.MediaSize.ISO;
 import javax.swing.JComponent;
 
 import csheets.core.Address;
@@ -11,7 +12,6 @@ import csheets.ext.rtc.ui.ConnectAction;
 import csheets.ext.rtc.ui.DataListener;
 import csheets.ext.rtc.ui.RtcSidebar;
 import csheets.ext.rtc.ui.ShareAction;
-import csheets.ext.rtc.ui.ShareOptionsDialog;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
 import csheets.ui.ctrl.SelectionEvent;
@@ -24,6 +24,7 @@ public class RealTimeCollaboration extends Extension {
     RtcCommunicator communicator;
     RtcEventsResponder responder;
     ClientInfo identity;
+    // RtcShareProperties properties;
 
     RtcCellDecorator cellDecorator;
 
@@ -32,6 +33,8 @@ public class RealTimeCollaboration extends Extension {
     ShareAction shareAction;
     ConnectAction connectAction;
 
+    private boolean isOwner;
+
     public RealTimeCollaboration() {
 	super("Real Time Collaboration");
     }
@@ -39,7 +42,7 @@ public class RealTimeCollaboration extends Extension {
     private RtcEventsResponder getResponder(UIController uiController,
 	    RtcShareProperties properties) {
 	if (responder == null) {
-	    responder = new RtcEventsResponder(uiController, properties, this);
+	    responder = new RtcEventsResponder(communicator, uiController, this);
 	}
 	return responder;
     }
@@ -51,20 +54,38 @@ public class RealTimeCollaboration extends Extension {
     public ClientInfo createServer(ClientInfo client,
 	    RtcShareProperties properties, UIController uiController)
 	    throws IOException {
+	// this.properties = properties;
+	isOwner = true;
 	ServerInterface server = new ServerInterface(client, properties,
 		uiController);
 	identity = server.getServerInfo();
-	server.setListener(getResponder(uiController, properties));
 	communicator = server;
+	communicator.setListener(getResponder(uiController, properties));
+	communicator.start();
 	return identity;
     }
 
     public ClientInfo createClient(ClientInfo client, String ipAddress,
 	    UIController uiController) throws IOException {
+	isOwner = false;
 	identity = client;
 	communicator = new ClientInterface(ipAddress, identity);
 	communicator.setListener(getResponder(uiController, null));
+	communicator.start();
 	return identity;
+    }
+
+    public boolean isConnected() {
+	return communicator == null ? false : communicator.isConnected();
+    }
+
+    public boolean isOwner() {
+	return isOwner;
+    }
+
+    public boolean isShared(Address address) {
+	final RtcShareProperties props = responder.getShareProperties();
+	return props == null ? false : props.isInsideRange(address);
     }
 
     @Override
@@ -94,7 +115,8 @@ public class RealTimeCollaboration extends Extension {
 	    @Override
 	    public CellDecorator getCellDecorator() {
 		if (cellDecorator == null) {
-		    cellDecorator = new RtcCellDecorator();
+		    cellDecorator = new RtcCellDecorator(
+			    RealTimeCollaboration.this);
 		}
 		return cellDecorator;
 	    }

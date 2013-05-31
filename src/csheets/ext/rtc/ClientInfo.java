@@ -7,7 +7,7 @@ import java.net.Socket;
 
 public class ClientInfo implements Serializable {
     private static final long serialVersionUID = 6614659918137265454L;
-    
+
     private InetAddress address;
     private String name;
     private Color color;
@@ -25,9 +25,13 @@ public class ClientInfo implements Serializable {
 	name = info.name;
 	color = Color.getHSBColor((int) (Math.random() * 300), 0, 0);
     }
-    
+
     void addConnectionInfo(Socket socket) {
 	address = socket.getLocalAddress();
+    }
+
+    void addConnectionInfo(InetAddress address) {
+	this.address = address;
     }
 
     public InetAddress getAddress() {

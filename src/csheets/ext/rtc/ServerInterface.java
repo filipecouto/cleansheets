@@ -17,6 +17,8 @@ public class ServerInterface implements RtcCommunicator {
     private ServerSocket server;
     private RtcListener listener;
 
+    private boolean connected;
+
     private RtcShareProperties properties;
 
     private UIController uiController;
@@ -24,27 +26,38 @@ public class ServerInterface implements RtcCommunicator {
     private ArrayList<Client> clients;
 
     public ServerInterface(ClientInfo clientInfo,
-	    RtcShareProperties properties, UIController uiController)
-	    throws IOException {
+	    RtcShareProperties properties, UIController uiController) {
 	this.properties = properties;
 	this.uiController = uiController;
+	this.info = clientInfo;
 	clients = new ArrayList<Client>();
-	server = new ServerSocket(PORT);
-	info = new ClientInfo(server.getInetAddress());
-	info.addRemoteInfo(clientInfo);
-	new Thread(new Runnable() {
-	    public void run() {
-		try {
-		    Socket socket;
-		    while ((socket = server.accept()) != null) {
-			onClientConnected(socket);
-		    }
-		    server.close();
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}).start();
+    }
+
+    @Override
+    public void start() {
+	try {
+	    server = new ServerSocket(PORT);
+	    connected = true;
+	    info.addConnectionInfo(server.getInetAddress());
+	    listener.onConnected(info);
+	    new Thread(new Runnable() {
+	        public void run() {
+	    	try {
+	    	    Socket socket;
+	    	    while ((socket = server.accept()) != null) {
+	    		onClientConnected(socket);
+	    	    }
+	    	    server.close();
+	    	} catch (IOException e) {
+	    	    e.printStackTrace();
+	    	}
+	        }
+	    }).start();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	    connected = false;
+	    listener.onDisconnected(info);
+	}
     }
 
     public RemoteCell[] getCellsToSend(int spreadsheet, Address[] range) {
@@ -177,5 +190,15 @@ public class ServerInterface implements RtcCommunicator {
     @Override
     public void setListener(RtcListener listener) {
 	this.listener = listener;
+    }
+
+    @Override
+    public RtcShareProperties getShareProperties() {
+	return properties;
+    }
+
+    @Override
+    public boolean isConnected() {
+	return connected;
     }
 }

@@ -1,9 +1,11 @@
 package csheets.ext.rtc;
 
+import java.io.Serializable;
+
 import csheets.core.Address;
 import csheets.ext.rtc.messages.RemoteCell;
 
-public class RtcShareProperties {
+public class RtcShareProperties implements Serializable {
     private int spreadsheet;
 
     private boolean wholeSpreadsheet = false;
@@ -15,6 +17,14 @@ public class RtcShareProperties {
 	spreadsheet = 0;
 	start = new Address(1, 1);
 	end = new Address(5, 8);
+    }
+
+    public RtcShareProperties getPropertiesForClients() {
+	RtcShareProperties props = new RtcShareProperties();
+	props.start = start;
+	props.end = end;
+	props.wholeSpreadsheet = wholeSpreadsheet;
+	return props;
     }
 
     public void setAcceptWholeSpreadsheet(boolean accept) {
@@ -41,12 +51,13 @@ public class RtcShareProperties {
      * @return true if it is
      */
     public boolean isInsideRange(Address address) {
-	if (wholeSpreadsheet)
+	if (wholeSpreadsheet) {
 	    return true;
-	return start.getColumn() >= address.getColumn()
-		&& start.getRow() >= start.getRow()
-		&& end.getColumn() <= address.getColumn()
-		&& end.getRow() <= address.getRow();
+	}
+	return start.getColumn() <= address.getColumn()
+		&& start.getRow() <= address.getRow()
+		&& end.getColumn() >= address.getColumn()
+		&& end.getRow() >= address.getRow();
     }
 
     /**
