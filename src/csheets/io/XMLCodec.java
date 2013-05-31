@@ -127,6 +127,7 @@ public class XMLCodec implements Codec {
 
     /**
      * Method for testing if there is a border lign
+     * 
      * @param border
      * @return
      */
@@ -295,9 +296,13 @@ public class XMLCodec implements Codec {
 	String styleItalic = "False";
 	Attr attr = null;
 
-	if ((sheet.getCell(column, row).getContent()).length() != 0) {
-	    System.out.println("Col = " + (column + 1) + " Row = " + (row + 1)
-		    + " Content = " + sheet.getCell(column, row).getContent());
+	//testing the background
+	if ((((((StylableCell) (sheet.getCell(column, row))
+		.getExtension(StyleExtension.NAME)).getBackgroundColor()
+		.getRGB()) != (Color.WHITE.getRGB())) && ((((StylableCell) (sheet
+		.getCell(column, row)).getExtension(StyleExtension.NAME))
+		.getForegroundColor().getRGB()) != (Color.BLACK.getRGB())))
+		|| (sheet.getCell(column, row).getContent()).length() != 0) {
 	    // create StylableCell to access cell styles
 	    StylableCell stylableCell = (StylableCell) sheet.getCell(column,
 		    row).getExtension(StyleExtension.NAME);

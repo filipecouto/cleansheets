@@ -40,9 +40,7 @@ public class XMLValidator {
 
 	try {
 	    validator.validate(xmlFile);
-	    System.out.println(xmlFile.getSystemId() + " is valid");
 	} catch (SAXException e) {
-	    System.out.println(xmlFile.getSystemId() + " is NOT valid");
 	    System.out.println("Reason: " + e.getLocalizedMessage());
 	}
     }
