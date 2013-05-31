@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import csheets.core.Address;
+import csheets.core.Cell;
 import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.RealTimeCollaboration;
 import csheets.ext.rtc.RtcShareProperties;
@@ -39,8 +40,9 @@ public class ShareAction extends FocusOwnerAction {
 			cell1 = new Address(1, 1);
 			cell2 = new Address(1, 1);
 		    } else {
-			cell1 = new Address(1, 1);
-			cell2 = new Address(1, 1);
+			Cell[][] cells = focusOwner.getSelectedCells();
+			cell1 = cells[0][0].getAddress();
+			cell2 = cells[cells.length][cells[cells.length].length].getAddress();
 		    }
 		    String ip = "";
 		    ClientInfo server = null;
