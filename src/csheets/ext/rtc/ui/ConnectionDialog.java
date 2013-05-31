@@ -18,6 +18,7 @@ public class ConnectionDialog extends JDialog {
 
     private JTextField ipAddress;
     private JTextField userName;
+    private JTextField connectionPort;
     private JButton buttonCancel;
     private JButton buttonAccept;
     private OnIPSelectListener listener;
@@ -44,6 +45,23 @@ public class ConnectionDialog extends JDialog {
 		ConnectionDialog.this.userName.selectAll();
 	    }
 	});
+	
+	connectionPort = new JTextField();
+	connectionPort.setText("Insert connection port");
+	connectionPort.addFocusListener(new FocusListener() {
+	    
+	    @Override
+	    public void focusLost(FocusEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	    }
+	    
+	    @Override
+	    public void focusGained(FocusEvent arg0) {
+		connectionPort.selectAll();
+	    }
+	});
+	
 	ipAddress = new JTextField();
 	ipAddress.setText("Insert IP address or URL");
 	ipAddress.addFocusListener(new FocusListener() {
@@ -61,7 +79,10 @@ public class ConnectionDialog extends JDialog {
 	buttonAccept.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		listener.onIPSelected(ConnectionDialog.this.ipAddress.getText() , ConnectionDialog.this.userName.getText());
+		String userName = ConnectionDialog.this.userName.getText();
+		String ipAddress = ConnectionDialog.this.ipAddress.getText();
+		int port = Integer.valueOf(ConnectionDialog.this.connectionPort.getText());
+		listener.onIPSelected(ipAddress, userName, port);
 		ConnectionDialog.this.setVisible(false);
 	    }
 	});
@@ -75,6 +96,7 @@ public class ConnectionDialog extends JDialog {
 	});
 	add(userName);
 	add(ipAddress);
+	add(connectionPort);
 	panelButtons = new JPanel();
 	panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.X_AXIS));
 	panelButtons.add(buttonAccept);

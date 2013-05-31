@@ -24,6 +24,7 @@ public class ShareOptionsDialog extends JDialog {
     private OnChooseExportListener listener;
     private ButtonGroup group;
     private JTextField userName;
+    private JTextField connectionPort;
     
     public ShareOptionsDialog() {
 	super((JFrame) null, "Options of share", true);
@@ -43,6 +44,22 @@ public class ShareOptionsDialog extends JDialog {
 	    @Override
 	    public void focusGained(FocusEvent arg0) {
 		userName.selectAll();
+	    }
+	});
+	
+	connectionPort = new JTextField();
+	connectionPort.setText("Insert port for connection");
+	connectionPort.addFocusListener(new FocusListener() {
+	    
+	    @Override
+	    public void focusLost(FocusEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	    }
+	    
+	    @Override
+	    public void focusGained(FocusEvent arg0) {	
+		connectionPort.selectAll();
 	    }
 	});
 	
@@ -75,8 +92,9 @@ public class ShareOptionsDialog extends JDialog {
 		} else if(ShareOptionsDialog.this.selectWhole.isSelected()){
 		    choice = true;
 		}
-		ShareOptionsDialog.this.listener.onChoosedExport(choice, ShareOptionsDialog.this.userName.getText());
-		ShareOptionsDialog.this.setVisible(false);
+		int port = Integer.valueOf(ShareOptionsDialog.this.connectionPort.getText());
+		String userName = ShareOptionsDialog.this.userName.getText();
+		ShareOptionsDialog.this.listener.onChoosedExport(choice, userName, port);
 	    }
 	});
 
@@ -95,6 +113,7 @@ public class ShareOptionsDialog extends JDialog {
 	add(selectSelected);
 	add(selectWhole);
 	add(userName);
+	add(connectionPort);
 	add(panel);
 	setSize(400, 200);
 	setLocationRelativeTo(null);
