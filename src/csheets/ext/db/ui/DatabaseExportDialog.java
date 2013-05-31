@@ -48,11 +48,10 @@ public class DatabaseExportDialog extends JDialog {
     private SpreadsheetTable table;
 
     public DatabaseExportDialog(DatabaseExtension extension) {
-	super((JFrame)null, "Export to Database", true);
+	super((JFrame) null, "Export to Database", true);
 
 	this.extension = extension;
 
-	
 	getContentPane().setLayout(
 		new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
@@ -64,6 +63,7 @@ public class DatabaseExportDialog extends JDialog {
 	add(createButtonsPanel());
 
 	pack();
+	setLocationRelativeTo(null);
     }
 
     private JPanel createButtonsPanel() {
