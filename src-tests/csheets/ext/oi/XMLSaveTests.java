@@ -238,7 +238,7 @@ public class XMLSaveTests {
 	    int nSheets = workbook.getSpreadsheetCount();
 	    if (totalSheets == nSheets) {
 		int nCells = totalColumns * totalRows;
-		NodeList nListCells = doc.getElementsByTagName("Cell");
+		NodeList nListCells = nList.item(0).getChildNodes();
 		int totalCells = nListCells.getLength();
 		if (nCells != totalCells) {
 		    return false;

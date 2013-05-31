@@ -68,7 +68,8 @@ public class XMLCodec implements Codec {
 
 	for (int i = 0; i < totalSheets; i++) {
 	    Spreadsheet sheet = wb.getSpreadsheet(i);
-	    NodeList nCells = doc.getElementsByTagName("Cell");
+	    
+	    NodeList nCells = nList.item(i).getChildNodes();
 	    totalCells = nCells.getLength();
 
 	    for (int j = 0; j < totalCells; j++) {
