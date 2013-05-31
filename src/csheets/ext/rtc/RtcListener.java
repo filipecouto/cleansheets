@@ -12,7 +12,8 @@ import csheets.ext.rtc.messages.RemoteCell;
 public interface RtcListener extends RtcInterface {
     public void onWorkbookReceived(ClientInfo source, Workbook workbook);
 
-    //public void onSpreadsheetReceived(ClientInfo source, Spreadsheet spreadsheet);
+    // public void onSpreadsheetReceived(ClientInfo source, Spreadsheet
+    // spreadsheet);
 
     public void onCellsReceived(ClientInfo source, RemoteCell[] cells);
 }

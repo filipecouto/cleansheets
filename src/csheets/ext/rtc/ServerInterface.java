@@ -158,6 +158,16 @@ public class ServerInterface implements RtcCommunicator {
     }
 
     @Override
+    public void onUserAction(ClientInfo source, Object action) {
+	listener.onUserAction(source, action);
+	synchronized (clients) {
+	    for (Client c : clients) {
+		c.onUserAction(source, action);
+	    }
+	}
+    }
+
+    @Override
     public void setListener(RtcListener listener) {
 	this.listener = listener;
     }

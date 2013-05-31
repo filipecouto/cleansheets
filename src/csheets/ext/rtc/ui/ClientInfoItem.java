@@ -10,7 +10,10 @@ import csheets.ext.rtc.ClientInfo;
 public class ClientInfoItem extends JPanel {
 
     public ClientInfoItem(ClientInfo info, JLabel label) {
-	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+	setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+	System.out
+		.println("ClientInfoListRenderer.getListCellRendererComponent("
+			+ info + ")");
 	// label
 	label.setName(info.getName());
 	// color square

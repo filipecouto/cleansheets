@@ -5,7 +5,6 @@ import javax.swing.SwingUtilities;
 import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.core.CellListener;
-import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
 import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.rtc.messages.RemoteCell;
@@ -13,9 +12,11 @@ import csheets.ui.ctrl.UIController;
 
 public class RtcEventsResponder implements RtcListener {
     UIController uiController;
+    RealTimeCollaboration extension;
 
-    public RtcEventsResponder(UIController uiController) {
+    public RtcEventsResponder(UIController uiController, RealTimeCollaboration extension) {
 	this.uiController = uiController;
+	this.extension = extension;
     }
 
     @Override
@@ -81,5 +82,10 @@ public class RtcEventsResponder implements RtcListener {
 		}
 	    }
 	});
+    }
+
+    @Override
+    public void onUserAction(ClientInfo source, Object action) {
+	extension.updateUsersList();
     }
 }

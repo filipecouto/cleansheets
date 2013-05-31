@@ -34,7 +34,8 @@ public class Client extends Communicator implements RtcInterface {
 		    // wait for its identity
 		    if ((message = getMessageOrFail(MessageTypes.info)) != null) {
 			info = (ClientInfo) message.getArgument();
-			System.out.println(info.getName() + " just connected");
+			// System.out.println(info.getName() +
+			// " just connected");
 		    } else {
 			return;
 		    }
@@ -43,6 +44,8 @@ public class Client extends Communicator implements RtcInterface {
 		    sendMessage(new RtcMessage(server.getServerInfo()
 			    .getAddress(), MessageTypes.workbook, server
 			    .getWorkbookToSend()));
+
+		    server.onUserAction(info, null);
 
 		    while (true) {
 			message = getMessage();
@@ -69,7 +72,7 @@ public class Client extends Communicator implements RtcInterface {
 				    .getCellsToSend(0, range)));
 			    break;
 			case disconnect:
-			    server.onDisconnected(info);
+			    server.onUserAction(info, null);
 			    client.close();
 			    return;
 			}
@@ -115,6 +118,12 @@ public class Client extends Communicator implements RtcInterface {
     public void onCellChanged(ClientInfo source, Cell cell) {
 	sendMessage(new RtcMessage(source.getAddress(),
 		MessageTypes.eventCellChanged, new RemoteCell(cell)));
+    }
+
+    @Override
+    public void onUserAction(ClientInfo source, Object action) {
+	sendMessage(new RtcMessage(source.getAddress(), MessageTypes.infoList,
+		server.getConnectedUsers()));
     }
 
     @Override
