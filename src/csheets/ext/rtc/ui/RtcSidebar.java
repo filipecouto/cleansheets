@@ -82,9 +82,12 @@ public class RtcSidebar extends JPanel {
 	});
     }
 
-    public void setIP(String address) {
+    public void onConnection(String address) {
 	if (ipAddress != null) {
 	    ipAddress.setText("Your IP Address: " + address);
+	    bDisconnect.setVisible(true);
+	    bShare.setVisible(false);
+	    bConnect.setVisible(false);
 	}
     }
 }

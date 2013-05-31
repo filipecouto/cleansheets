@@ -14,7 +14,7 @@ public class ConnectAction extends FocusOwnerAction {
     private RealTimeCollaboration extension;
     private UIController uiController;
     private DataListener dataListener;
-    private ConnectionWindow ipDialog;
+    private ConnectionDialog ipDialog;
 
     public ConnectAction(RealTimeCollaboration extension,
 	    UIController uiController) {
@@ -26,7 +26,7 @@ public class ConnectAction extends FocusOwnerAction {
     public void actionPerformed(ActionEvent e) {
 
 	if (ipDialog == null) {
-	    ipDialog = new ConnectionWindow();
+	    ipDialog = new ConnectionDialog();
 	    ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
 		@Override
 		public void onIPSelected(String address, String username) {

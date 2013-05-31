@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 // REFACTOR: this name doesn't make much sense either
-public class ConnectionWindow extends JDialog {
+public class ConnectionDialog extends JDialog {
 
     private JTextField ipAddress;
     private JTextField userName;
@@ -23,7 +23,7 @@ public class ConnectionWindow extends JDialog {
     private OnIPSelectListener listener;
     private JPanel panelButtons;
 
-    public ConnectionWindow() {
+    public ConnectionDialog() {
 	super((JFrame) null, "Connection Form",
 		true);
 
@@ -41,7 +41,7 @@ public class ConnectionWindow extends JDialog {
 	    
 	    @Override
 	    public void focusGained(FocusEvent arg0) {
-		ConnectionWindow.this.userName.selectAll();
+		ConnectionDialog.this.userName.selectAll();
 	    }
 	});
 	ipAddress = new JTextField();
@@ -53,7 +53,7 @@ public class ConnectionWindow extends JDialog {
 
 	    @Override
 	    public void focusGained(FocusEvent arg0) {
-		ConnectionWindow.this.ipAddress.selectAll();
+		ConnectionDialog.this.ipAddress.selectAll();
 	    }
 	});
 
@@ -61,8 +61,8 @@ public class ConnectionWindow extends JDialog {
 	buttonAccept.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		listener.onIPSelected(ConnectionWindow.this.ipAddress.getText() , ConnectionWindow.this.userName.getText());
-		ConnectionWindow.this.setVisible(false);
+		listener.onIPSelected(ConnectionDialog.this.ipAddress.getText() , ConnectionDialog.this.userName.getText());
+		ConnectionDialog.this.setVisible(false);
 	    }
 	});
 
@@ -70,7 +70,7 @@ public class ConnectionWindow extends JDialog {
 	buttonCancel.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		ConnectionWindow.this.setVisible(false);
+		ConnectionDialog.this.setVisible(false);
 	    }
 	});
 	add(userName);
