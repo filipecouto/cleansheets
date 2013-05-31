@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import csheets.core.Address;
-import csheets.core.Cell;
 import csheets.core.Spreadsheet;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.messages.RemoteSpreadsheet;
@@ -130,7 +129,7 @@ public class ServerInterface implements RtcCommunicator {
     }
 
     @Override
-    public void onCellChanged(ClientInfo source, Cell cell) {
+    public void onCellChanged(ClientInfo source, RemoteCell cell) {
 	if (source == null) {
 	    source = info;
 	} else {
@@ -153,6 +152,16 @@ public class ServerInterface implements RtcCommunicator {
 	synchronized (clients) {
 	    for (Client c : clients) {
 		c.onDisconnected(client);
+	    }
+	}
+    }
+
+    @Override
+    public void onUserAction(ClientInfo source, Object action) {
+	listener.onUserAction(source, action);
+	synchronized (clients) {
+	    for (Client c : clients) {
+		c.onUserAction(source, action);
 	    }
 	}
     }

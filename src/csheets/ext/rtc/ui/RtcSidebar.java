@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import csheets.core.Address;
 import csheets.ext.rtc.ClientInfo;
@@ -38,9 +39,11 @@ public class RtcSidebar extends JPanel {
 	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 	
 	bShare = new JButton(shareAction);
+
 	bShare.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	buttonPanel.add(bShare);
 	bConnect = new JButton(connectAction);
+	
 	bConnect.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	ipAddress = new JLabel();
 	ipAddress.setText("Not connected");
@@ -68,5 +71,13 @@ public class RtcSidebar extends JPanel {
 	add(list);
 	add(ipAddress);
 	add(buttonPanel);
+    }
+
+    public void updateUsersList(final ClientInfo[] clients) {
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+		adapter.update(clients);
+	    }
+	});
     }
 }

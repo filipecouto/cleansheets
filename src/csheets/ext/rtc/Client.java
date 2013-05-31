@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.Socket;
 
 import csheets.core.Address;
-import csheets.core.Cell;
 import csheets.ext.rtc.messages.RemoteCell;
 
 public class Client extends Communicator implements RtcInterface {
@@ -34,7 +33,8 @@ public class Client extends Communicator implements RtcInterface {
 		    // wait for its identity
 		    if ((message = getMessageOrFail(MessageTypes.info)) != null) {
 			info = (ClientInfo) message.getArgument();
-			System.out.println(info.getName() + " just connected");
+			// System.out.println(info.getName() +
+			// " just connected");
 		    } else {
 			return;
 		    }
@@ -43,6 +43,8 @@ public class Client extends Communicator implements RtcInterface {
 		    sendMessage(new RtcMessage(server.getServerInfo()
 			    .getAddress(), MessageTypes.workbook, server
 			    .getWorkbookToSend()));
+
+		    server.onUserAction(info, null);
 
 		    while (true) {
 			message = getMessage();
@@ -69,7 +71,7 @@ public class Client extends Communicator implements RtcInterface {
 				    .getCellsToSend(0, range)));
 			    break;
 			case disconnect:
-			    server.onDisconnected(info);
+			    server.onUserAction(info, null);
 			    client.close();
 			    return;
 			}
@@ -112,9 +114,15 @@ public class Client extends Communicator implements RtcInterface {
     }
 
     @Override
-    public void onCellChanged(ClientInfo source, Cell cell) {
+    public void onCellChanged(ClientInfo source, RemoteCell cell) {
 	sendMessage(new RtcMessage(source.getAddress(),
-		MessageTypes.eventCellChanged, new RemoteCell(cell)));
+		MessageTypes.eventCellChanged, cell));
+    }
+
+    @Override
+    public void onUserAction(ClientInfo source, Object action) {
+	sendMessage(new RtcMessage(source.getAddress(), MessageTypes.infoList,
+		server.getConnectedUsers()));
     }
 
     @Override

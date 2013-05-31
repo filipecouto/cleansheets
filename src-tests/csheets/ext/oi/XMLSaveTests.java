@@ -36,6 +36,7 @@ import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
 import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.style.StylableCell;
+import csheets.ext.style.StyleExtension;
 import csheets.io.CLSCodec;
 import csheets.io.XMLCodec;
 
@@ -96,26 +97,23 @@ public class XMLSaveTests {
     }
 
     private static void generateData(Spreadsheet sheet) {
-	int countRow = sheet.getRowCount();
-	int countColumn = sheet.getColumnCount();
-	for (int row = 0; row <= countRow; row++) {
-	    for (int column = 0; column <= countColumn; column++) {
-		if ((sheet.getCell(column, row).getContent()).length() != 0) {
-		    try {
-			StylableCell sc = (StylableCell) sheet.getCell(column,
-				row);
-			System.out.println("Rita" + makeRandomString());
-			sc.setContent(makeRandomString());
-			sc.setBackgroundColor(makeRandomColor());
-			sc.setFont(makeRandomFont());
-			sc.setForegroundColor(makeRandomColor());
-			sc.setHorizontalAlignment(makeRandomTextAlignment(r
-				.nextInt(2)));
-			sc.setVerticalAlignment(makeRandomCellAlignment(r
-				.nextInt(2)));
-		    } catch (FormulaCompilationException e) {
-			e.printStackTrace();
-		    }
+	int countRow = rows;
+	int countColumn = columns;
+	for (int row = 0; row < countRow; row++) {
+	    for (int column = 0; column < countColumn; column++) {
+		try {
+		    StylableCell sc = (StylableCell) sheet.getCell(column
+			    + xOffset, row + yOffset).getExtension(StyleExtension.NAME);
+		    sc.setContent(makeRandomString());
+		    sc.setBackgroundColor(makeRandomColor());
+		    sc.setFont(makeRandomFont());
+		    sc.setForegroundColor(makeRandomColor());
+		    sc.setHorizontalAlignment(makeRandomTextAlignment(r
+			    .nextInt(2)));
+		    sc.setVerticalAlignment(makeRandomCellAlignment(r
+			    .nextInt(2)));
+		} catch (FormulaCompilationException e) {
+		    e.printStackTrace();
 		}
 	    }
 	}

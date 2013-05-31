@@ -6,7 +6,7 @@ import javax.swing.JComponent;
 
 import csheets.core.Address;
 import csheets.ext.Extension;
-import csheets.ext.rtc.ui.ClientsListAdapter;
+import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.ui.RtcSidebar;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
@@ -18,22 +18,33 @@ import csheets.ui.ext.UIExtension;
 
 public class RealTimeCollaboration extends Extension {
     RtcCommunicator communicator;
+    RtcEventsResponder responder;
     ClientInfo identity;
 
     RtcCellDecorator cellDecorator;
 
-    ClientsListAdapter adapter;
     RtcSidebar sidebar;
 
     public RealTimeCollaboration() {
 	super("Real Time Collaboration");
     }
 
+    private RtcEventsResponder getResponder(UIController uiController) {
+	if (responder == null) {
+	    responder = new RtcEventsResponder(uiController, this);
+	}
+	return responder;
+    }
+
+    public void updateUsersList() {
+	sidebar.updateUsersList(communicator.getConnectedUsers());
+    }
+
     public ClientInfo createServer(ClientInfo client,
 	    UIController uiController, Address[] range) throws IOException {
 	ServerInterface server = new ServerInterface(client, uiController);
 	identity = server.getServerInfo();
-	server.setListener(new RtcEventsResponder(uiController));
+	server.setListener(getResponder(uiController));
 	communicator = server;
 	return identity;
     }
@@ -42,7 +53,7 @@ public class RealTimeCollaboration extends Extension {
 	    UIController uiController) throws IOException {
 	identity = client;
 	communicator = new ClientInterface(ipAddress, identity);
-	communicator.setListener(new RtcEventsResponder(uiController));
+	communicator.setListener(getResponder(uiController));
 	return identity;
     }
 
@@ -52,8 +63,8 @@ public class RealTimeCollaboration extends Extension {
 	    @Override
 	    public void workbookModified(EditEvent event) {
 		if (communicator != null) {
-		    communicator.onCellChanged(null,
-			    uiController.getActiveCell());
+		    communicator.onCellChanged(null, new RemoteCell(
+			    uiController.getActiveCell()));
 		}
 	    }
 	});

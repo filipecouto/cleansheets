@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import csheets.core.Address;
-import csheets.core.Cell;
 import csheets.core.Workbook;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.messages.RemoteSpreadsheet;
@@ -21,6 +20,8 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     private ClientInfo info;
     private Socket server;
     private RtcListener listener;
+
+    private Workbook workbook;
 
     private ClientInfo[] otherUsers;
 
@@ -39,6 +40,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 		    // wait for the list of already connected users
 		    if ((message = getMessageOrFail(MessageTypes.infoList)) != null) {
 			otherUsers = (ClientInfo[]) message.getArgument();
+			listener.onUserAction(info, null);
 		    } else {
 			return;
 		    }
@@ -48,30 +50,16 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 			    MessageTypes.info, info));
 
 		    if ((message = getMessageOrFail(MessageTypes.workbook)) != null) {
-			Workbook wb = ((RemoteWorkbook) message.getArgument())
+			workbook = ((RemoteWorkbook) message.getArgument())
 				.getWorkbook();
-			if (wb.getSpreadsheetCount() > 0) {
+			if (workbook.getSpreadsheetCount() > 0) {
 			    sendMessage(new RtcMessage(info.getAddress(),
 				    MessageTypes.getSpreadsheet, 0));
-			    if ((message = getMessageOrFail(MessageTypes.spreadsheet)) != null) {
-				RemoteSpreadsheet sheet = (RemoteSpreadsheet) message
-					.getArgument();
-				sheet.getSpreadsheet(wb);
-				sendMessage(new RtcMessage(info.getAddress(),
-					MessageTypes.getCells, new Address[] {
-						new Address(0, 0),
-						new Address(sheet
-							.getColumnCount(),
-							sheet.getRowCount()) }));
-			    } else {
-				return;
-			    }
 			} else {
 			    // TODO support more than one spreadsheet, protocol
 			    // and interfaces are ready for it
 			    // TODO what if the workbook is empty?
 			}
-			listener.onWorkbookReceived(info, wb);
 		    } else {
 			return;
 		    }
@@ -92,6 +80,21 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 			    final RemoteCell[] cells = (RemoteCell[]) message
 				    .getArgument();
 			    listener.onCellsReceived(null, cells);
+			    break;
+			case spreadsheet:
+			    RemoteSpreadsheet sheet = (RemoteSpreadsheet) message
+				    .getArgument();
+			    sheet.getSpreadsheet(workbook);
+			    sendMessage(new RtcMessage(info.getAddress(),
+				    MessageTypes.getCells, new Address[] {
+					    new Address(0, 0),
+					    new Address(sheet.getColumnCount(),
+						    sheet.getRowCount()) }));
+			    listener.onWorkbookReceived(info, workbook);
+			    break;
+			case infoList:
+			    otherUsers = (ClientInfo[]) message.getArgument();
+			    listener.onUserAction(info, null);
 			    break;
 			case disconnect:
 			    listener.onDisconnected(info);
@@ -122,9 +125,9 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     }
 
     @Override
-    public void onCellChanged(ClientInfo source, Cell cell) {
+    public void onCellChanged(ClientInfo source, RemoteCell cell) {
 	sendMessage(new RtcMessage(server.getInetAddress(),
-		MessageTypes.eventCellChanged, new RemoteCell(cell)));
+		MessageTypes.eventCellChanged, cell));
     }
 
     @Override
@@ -139,6 +142,11 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     @Override
     public ClientInfo[] getConnectedUsers() {
 	return otherUsers;
+    }
+
+    @Override
+    public void onUserAction(ClientInfo source, Object action) {
+	listener.onUserAction(source, action);
     }
 
     @Override
