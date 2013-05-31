@@ -23,7 +23,7 @@ public class ConnectionWindow extends JDialog {
     private OnIPSelectListener listener;
     private JPanel panelButtons;
 
-    public ConnectionWindow(RtcSidebar sidebar) {
+    public ConnectionWindow() {
 	super((JFrame) null, "Connection Form",
 		true);
 
@@ -61,8 +61,6 @@ public class ConnectionWindow extends JDialog {
 	buttonAccept.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		System.out.println(ConnectionWindow.this.ipAddress.getText());
-		System.out.println(ConnectionWindow.this.userName.getText());
 		listener.onIPSelected(ConnectionWindow.this.ipAddress.getText() , ConnectionWindow.this.userName.getText());
 		ConnectionWindow.this.setVisible(false);
 	    }

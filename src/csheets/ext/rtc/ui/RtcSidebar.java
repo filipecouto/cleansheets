@@ -15,6 +15,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import csheets.core.Address;
 import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.ClientInterface;
 import csheets.ext.rtc.RealTimeCollaboration;
@@ -35,26 +36,50 @@ public class RtcSidebar extends JPanel {
 	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	JPanel buttonPanel = new JPanel();
 	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
+	
 	bShare = new JButton("Share");
 	bShare.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	buttonPanel.add(bShare);
 	bShare.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		String ip = "";
-		try {
-		    ip = extension
-			    .createServer(new ClientInfo("Servidor"),
-				    uiController).getAddress().toString();
-		} catch (IOException e1) {
-		    e1.printStackTrace();
-		} finally {
-		    ipAddress.setText("Your ip address: " + ip);
-		    bShare.setVisible(false);
-		    bConnect.setVisible(false);
-		    bDisconnect.setVisible(true);
-		}
+		
+		ShareOptionsDialog optDialog = new ShareOptionsDialog();
+		optDialog.setOnChooseExportListener(new onChooseExportListener() {
+		    
+		    @Override
+		    public void onChoosedExport(boolean export) {
+			// selected cells if false , whole spreadsheet if true
+			Address cells[] = new Address[2];
+			Address cell1;
+			Address cell2;
+			if(export) {
+			    cell1 = new Address(1,1);
+			    cell2 = new Address(1,1);
+			} else {
+			    cell1 = new Address(1,1);
+			    cell2 = new Address(1,1);
+			}
+			cells[0] = cell1;
+			cells[1] = cell2;
+			String ip = "";
+			try {
+			    ip = extension
+				    .createServer(new ClientInfo("Servidor"),
+					    uiController, cells).getAddress().toString();
+			} catch (IOException e1) {
+			    e1.printStackTrace();
+			} finally {
+			    ipAddress.setText("Your ip address: " + ip);
+			    bShare.setVisible(false);
+			    bConnect.setVisible(false);
+			    bDisconnect.setVisible(true);
+			}
+		    }
+		});
+		/*String ip = "";
+		*/
+		optDialog.setVisible(true);
 	    }
 	});
 	bConnect = new JButton("Connect");
@@ -68,9 +93,7 @@ public class RtcSidebar extends JPanel {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 
-		ConnectionWindow ipDialog = new ConnectionWindow(
-			RtcSidebar.this);
-
+		ConnectionWindow ipDialog = new ConnectionWindow();
 		ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
 		    @Override
 		    public void onIPSelected(String address, String username) {
