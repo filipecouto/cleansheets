@@ -30,6 +30,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 	server = new Socket(address, PORT);
 	setSocket(server);
 	info = clientInfo;
+	info.addConnectionInfo(server);
 
 	new Thread(new Runnable() {
 	    @Override

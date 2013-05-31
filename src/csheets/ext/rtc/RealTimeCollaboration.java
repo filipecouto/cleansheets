@@ -11,6 +11,7 @@ import csheets.ext.rtc.ui.ConnectAction;
 import csheets.ext.rtc.ui.DataListener;
 import csheets.ext.rtc.ui.RtcSidebar;
 import csheets.ext.rtc.ui.ShareAction;
+import csheets.ext.rtc.ui.ShareOptionsDialog;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
 import csheets.ui.ctrl.SelectionEvent;
@@ -47,7 +48,8 @@ public class RealTimeCollaboration extends Extension {
     }
 
     public ClientInfo createServer(ClientInfo client,
-	    UIController uiController, Address[] range) throws IOException {
+	    RtcShareProperties properties, UIController uiController)
+	    throws IOException {
 	ServerInterface server = new ServerInterface(client, uiController);
 	identity = server.getServerInfo();
 	server.setListener(getResponder(uiController));
@@ -103,6 +105,7 @@ public class RealTimeCollaboration extends Extension {
 		    shareAction.setListener(new DataListener() {
 			@Override
 			public void onSendData(ClientInfo info, String address) {
+			    sidebar.onConnection(address);
 			}
 		    });
 		    connectAction = new ConnectAction(
@@ -110,11 +113,11 @@ public class RealTimeCollaboration extends Extension {
 		    connectAction.setListener(new DataListener() {
 			@Override
 			public void onSendData(ClientInfo info, String address) {
+			    sidebar.onConnection(address);
 			}
 		    });
 		    sidebar = new RtcSidebar(RealTimeCollaboration.this,
 			    uiController, shareAction, connectAction);
-		    sidebar.setName("Real Time Collaboration");
 		}
 		return sidebar;
 	    }

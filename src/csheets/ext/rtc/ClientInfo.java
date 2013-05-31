@@ -3,6 +3,7 @@ package csheets.ext.rtc;
 import java.awt.Color;
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.net.Socket;
 
 public class ClientInfo implements Serializable {
     private static final long serialVersionUID = 6614659918137265454L;
@@ -23,6 +24,10 @@ public class ClientInfo implements Serializable {
     void addRemoteInfo(ClientInfo info) {
 	name = info.name;
 	color = Color.getHSBColor((int) (Math.random() * 300), 0, 0);
+    }
+    
+    void addConnectionInfo(Socket socket) {
+	address = socket.getLocalAddress();
     }
 
     public InetAddress getAddress() {
