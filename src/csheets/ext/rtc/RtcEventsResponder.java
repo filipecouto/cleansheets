@@ -6,18 +6,24 @@ import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.core.CellListener;
 import csheets.core.Workbook;
-import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ui.ctrl.UIController;
 
 public class RtcEventsResponder implements RtcListener {
-    UIController uiController;
-    RealTimeCollaboration extension;
+    private UIController uiController;
+    private RtcShareProperties properties;
+    private RealTimeCollaboration extension;
 
     public RtcEventsResponder(UIController uiController,
 	    RealTimeCollaboration extension) {
 	this.uiController = uiController;
 	this.extension = extension;
+    }
+
+    public RtcEventsResponder(UIController uiController,
+	    RtcShareProperties properties, RealTimeCollaboration extension) {
+	this(uiController, extension);
+	this.properties = properties;
     }
 
     @Override
@@ -30,6 +36,9 @@ public class RtcEventsResponder implements RtcListener {
 
     @Override
     public void onCellSelected(ClientInfo source, Address address) {
+	if (properties != null && !properties.isInsideRange(address)) {
+	    return;
+	}
 	synchronized (uiController) {
 	    final Cell cell = uiController.getActiveSpreadsheet().getCell(
 		    address);
@@ -41,6 +50,9 @@ public class RtcEventsResponder implements RtcListener {
 
     @Override
     public void onCellChanged(ClientInfo source, final RemoteCell cell) {
+	if (properties != null && !properties.isValid(cell)) {
+	    return;
+	}
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
 		cell.getCell(uiController.getActiveWorkbook());
@@ -68,7 +80,9 @@ public class RtcEventsResponder implements RtcListener {
 	SwingUtilities.invokeLater(new Runnable() {
 	    public void run() {
 		for (RemoteCell cell : cells) {
-		    cell.getCell(uiController.getActiveWorkbook());
+		    if (cell != null) {
+			cell.getCell(uiController.getActiveWorkbook());
+		    }
 		}
 	    }
 	});

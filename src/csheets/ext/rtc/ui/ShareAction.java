@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import csheets.core.Address;
+import csheets.core.Cell;
 import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.RealTimeCollaboration;
 import csheets.ext.rtc.RtcShareProperties;
@@ -33,20 +34,21 @@ public class ShareAction extends FocusOwnerAction {
 		@Override
 		public void onChoosedExport(boolean export) {
 		    // selected cells if false , whole spreadsheet if true
+		    RtcShareProperties props = new RtcShareProperties();
 		    Address cell1;
 		    Address cell2;
 		    if (export) {
-			cell1 = new Address(1, 1);
-			cell2 = new Address(1, 1);
+			props.setAcceptWholeSpreadsheet(true);
 		    } else {
-			cell1 = new Address(1, 1);
-			cell2 = new Address(1, 1);
+			Cell[][] cells = focusOwner.getSelectedCells();
+			cell1 = cells[0][0].getAddress();
+			cell2 = cells[cells.length - 1][cells[0].length - 1]
+				.getAddress();
+			props.setRange(cell1, cell2);
 		    }
 		    String ip = "";
 		    ClientInfo server = null;
 		    try {
-			RtcShareProperties props = new RtcShareProperties();
-			props.setRange(cell1, cell2);
 			props.setSpreadsheet(0);
 			server = extension.createServer(new ClientInfo(
 				"Servidor"), props, uiController);

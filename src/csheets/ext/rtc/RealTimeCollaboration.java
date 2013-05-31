@@ -36,9 +36,10 @@ public class RealTimeCollaboration extends Extension {
 	super("Real Time Collaboration");
     }
 
-    private RtcEventsResponder getResponder(UIController uiController) {
+    private RtcEventsResponder getResponder(UIController uiController,
+	    RtcShareProperties properties) {
 	if (responder == null) {
-	    responder = new RtcEventsResponder(uiController, this);
+	    responder = new RtcEventsResponder(uiController, properties, this);
 	}
 	return responder;
     }
@@ -50,9 +51,10 @@ public class RealTimeCollaboration extends Extension {
     public ClientInfo createServer(ClientInfo client,
 	    RtcShareProperties properties, UIController uiController)
 	    throws IOException {
-	ServerInterface server = new ServerInterface(client, uiController);
+	ServerInterface server = new ServerInterface(client, properties,
+		uiController);
 	identity = server.getServerInfo();
-	server.setListener(getResponder(uiController));
+	server.setListener(getResponder(uiController, properties));
 	communicator = server;
 	return identity;
     }
@@ -61,7 +63,7 @@ public class RealTimeCollaboration extends Extension {
 	    UIController uiController) throws IOException {
 	identity = client;
 	communicator = new ClientInterface(ipAddress, identity);
-	communicator.setListener(getResponder(uiController));
+	communicator.setListener(getResponder(uiController, null));
 	return identity;
     }
 

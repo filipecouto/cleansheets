@@ -17,12 +17,16 @@ public class ServerInterface implements RtcCommunicator {
     private ServerSocket server;
     private RtcListener listener;
 
+    private RtcShareProperties properties;
+
     private UIController uiController;
 
     private ArrayList<Client> clients;
 
-    public ServerInterface(ClientInfo clientInfo, UIController uiController)
+    public ServerInterface(ClientInfo clientInfo,
+	    RtcShareProperties properties, UIController uiController)
 	    throws IOException {
+	this.properties = properties;
 	this.uiController = uiController;
 	clients = new ArrayList<Client>();
 	server = new ServerSocket(PORT);
@@ -53,10 +57,14 @@ public class ServerInterface implements RtcCommunicator {
 	RemoteCell[] cells = new RemoteCell[columnCount * rowCount];
 	final Spreadsheet sheet = uiController.getActiveWorkbook()
 		.getSpreadsheet(spreadsheet);
+	Address address;
 
 	for (int y = yOffset; y < yOffset + rowCount; y++) {
 	    for (int x = xOffset; x < xOffset + columnCount; x++) {
-		cells[i++] = new RemoteCell(sheet.getCell(x, y));
+		address = new Address(x, y);
+		if (properties.isInsideRange(address)) {
+		    cells[i++] = new RemoteCell(sheet.getCell(address));
+		}
 	    }
 	}
 
