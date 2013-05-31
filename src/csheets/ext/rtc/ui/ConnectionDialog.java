@@ -80,7 +80,8 @@ public class ConnectionDialog extends JDialog {
 	panelButtons.add(buttonAccept);
 	panelButtons.add(buttonCancel);
 	add(panelButtons);
-
+	setLocationRelativeTo(null);
+	
 	pack();
     }
 

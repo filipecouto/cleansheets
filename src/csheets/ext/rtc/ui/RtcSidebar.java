@@ -38,7 +38,7 @@ public class RtcSidebar extends JPanel {
 	setName("Real Time Colaboration");
 	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	JPanel buttonPanel = new JPanel();
-	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+	buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 
 	bShare = new JButton(shareAction);
 
@@ -65,7 +65,10 @@ public class RtcSidebar extends JPanel {
 	    }
 	});
 	buttonPanel.add(bDisconnect);
-
+	bDisconnect.setVisible(false);
+	bShare.setSize(100, 30);
+	bConnect.setSize(100, 30);
+	
 	adapter = new ClientsListAdapter();
 	JList<ClientInfo> list = new JList<ClientInfo>(adapter);
 	list.setCellRenderer(new ClientInfoListRenderer());

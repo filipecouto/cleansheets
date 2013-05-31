@@ -2,6 +2,8 @@ package csheets.ext.rtc.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -10,6 +12,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
 
 public class ShareOptionsDialog extends JDialog {
@@ -20,6 +23,7 @@ public class ShareOptionsDialog extends JDialog {
     private JButton buttonCancel;
     private OnChooseExportListener listener;
     private ButtonGroup group;
+    private JTextField userName;
     
     public ShareOptionsDialog() {
 	super((JFrame) null, "Options of share", true);
@@ -28,6 +32,20 @@ public class ShareOptionsDialog extends JDialog {
 
 	setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 	group = new ButtonGroup();
+	userName= new JTextField();
+	userName.setText("Insert username");
+	userName.addFocusListener(new FocusListener() {
+	    
+	    @Override
+	    public void focusLost(FocusEvent arg0) {
+	    }
+	    
+	    @Override
+	    public void focusGained(FocusEvent arg0) {
+		userName.selectAll();
+	    }
+	});
+	
 	selectWhole = new JRadioButton();
 	selectWhole.setText("Export whole spreadsheet");
 
@@ -57,7 +75,7 @@ public class ShareOptionsDialog extends JDialog {
 		} else if(ShareOptionsDialog.this.selectWhole.isSelected()){
 		    choice = true;
 		}
-		ShareOptionsDialog.this.listener.onChoosedExport(choice);
+		ShareOptionsDialog.this.listener.onChoosedExport(choice, ShareOptionsDialog.this.userName.getText());
 		ShareOptionsDialog.this.setVisible(false);
 	    }
 	});
@@ -76,8 +94,10 @@ public class ShareOptionsDialog extends JDialog {
 	panel.add(buttonCancel);
 	add(selectSelected);
 	add(selectWhole);
+	add(userName);
 	add(panel);
 	setSize(400, 200);
+	setLocationRelativeTo(null);
 
 	pack();
     }
