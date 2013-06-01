@@ -2,20 +2,13 @@ package csheets.ext.rtc;
 
 import java.io.IOException;
 
-import javax.swing.JComponent;
-
 import csheets.core.Address;
 import csheets.ext.Extension;
 import csheets.ext.rtc.messages.RemoteCell;
-import csheets.ext.rtc.ui.ConnectAction;
-import csheets.ext.rtc.ui.DataListener;
-import csheets.ext.rtc.ui.RtcCellDecorator;
-import csheets.ext.rtc.ui.RtcSidebar;
-import csheets.ext.rtc.ui.ShareAction;
+import csheets.ext.rtc.ui.RtcUI;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
 import csheets.ui.ctrl.UIController;
-import csheets.ui.ext.CellDecorator;
 import csheets.ui.ext.UIExtension;
 
 /**
@@ -33,16 +26,11 @@ import csheets.ui.ext.UIExtension;
  * @author gil_1110484
  */
 public class RealTimeCollaboration extends Extension {
-    RtcCommunicator communicator;
-    RtcEventsResponder responder;
-    ClientInfo identity;
+    private RtcCommunicator communicator;
+    private RtcEventsResponder responder;
+    private ClientInfo identity;
 
-    RtcCellDecorator cellDecorator;
-
-    RtcSidebar sidebar;
-
-    ShareAction shareAction;
-    ConnectAction connectAction;
+    private RtcUI rtcUI;
 
     private boolean isOwner;
 
@@ -61,7 +49,7 @@ public class RealTimeCollaboration extends Extension {
      * Tells the side bar to refresh the list of connected users
      */
     public void updateUsersList() {
-	sidebar.updateUsersList(communicator.getConnectedUsers());
+	rtcUI.updateUsersList(communicator.getConnectedUsers());
     }
 
     /**
@@ -132,14 +120,14 @@ public class RealTimeCollaboration extends Extension {
      * reason
      */
     public void onDisconnected() {
-	sidebar.onDisconnected();
+	rtcUI.onDisconnected();
     }
 
     /**
      * Called when connection is established
      */
     public void onConnected() {
-	sidebar.onConnection(identity.getAddress().getHostAddress());
+	rtcUI.onConnected(identity.getAddress().getHostAddress());
     }
 
     /**
@@ -150,7 +138,7 @@ public class RealTimeCollaboration extends Extension {
      *            the thrown exception
      */
     public void onConnectionFailed(Exception e) {
-	sidebar.onConnectionFailed(e);
+	rtcUI.onConnectionFailed(e);
     }
 
     /**
@@ -181,71 +169,44 @@ public class RealTimeCollaboration extends Extension {
      * @return true if this address is shared, false otherwise
      */
     public boolean isShared(Address address) {
-	final RtcSharingProperties props = responder.getShareProperties();
-	return props == null ? false : props.isInsideRange(address);
+	if (responder == null) {
+	    return false;
+	} else {
+	    final RtcSharingProperties props = responder.getShareProperties();
+	    return props == null ? false : props.isInsideRange(address);
+	}
     }
 
     @Override
     public UIExtension getUIExtension(final UIController uiController) {
-	uiController.addEditListener(new EditListener() {
-	    @Override
-	    public void workbookModified(EditEvent event) {
-		if (communicator != null) {
-		    if (uiController.getActiveSpreadsheet() == uiController
-			    .getActiveWorkbook().getSpreadsheet(0)) {
-			communicator.onCellChanged(null, new RemoteCell(
-				uiController.getActiveCell()));
+	if (rtcUI == null) {
+	    uiController.addEditListener(new EditListener() {
+		@Override
+		public void workbookModified(EditEvent event) {
+		    if (communicator != null) {
+			if (uiController.getActiveSpreadsheet() == uiController
+				.getActiveWorkbook().getSpreadsheet(0)) {
+			    communicator.onCellChanged(null, new RemoteCell(
+				    uiController.getActiveCell()));
+			}
 		    }
 		}
-	    }
-	});
-	// TODO let the others see what's selected
-	// uiController.addSelectionListener(new SelectionListener() {
-	// @Override
-	// public void selectionChanged(SelectionEvent event) {
-	// if (uiController.getActiveCell() == null) {
-	// return;
-	// }
-	// if (communicator != null) {
-	// communicator.onCellSelected(null, uiController
-	// .getActiveCell().getAddress());
-	// }
-	// }
-	// });
-	return new UIExtension(this, uiController) {
-	    @Override
-	    public CellDecorator getCellDecorator() {
-		if (cellDecorator == null) {
-		    cellDecorator = new RtcCellDecorator(
-			    RealTimeCollaboration.this);
-		}
-		return cellDecorator;
-	    }
-
-	    @Override
-	    public JComponent getSideBar() {
-		if (sidebar == null) {
-		    shareAction = new ShareAction(RealTimeCollaboration.this,
-			    uiController);
-		    shareAction.setListener(new DataListener() {
-			@Override
-			public void onSendData(ClientInfo info, String address) {
-			    // sidebar.onConnection(address);
-			}
-		    });
-		    connectAction = new ConnectAction(
-			    RealTimeCollaboration.this, uiController);
-		    connectAction.setListener(new DataListener() {
-			@Override
-			public void onSendData(ClientInfo info, String address) {
-			    // sidebar.onConnection(address);
-			}
-		    });
-		    sidebar = new RtcSidebar(RealTimeCollaboration.this,
-			    uiController, shareAction, connectAction);
-		}
-		return sidebar;
-	    }
-	};
+	    });
+	    // TODO let the others see what's selected
+	    // uiController.addSelectionListener(new SelectionListener() {
+	    // @Override
+	    // public void selectionChanged(SelectionEvent event) {
+	    // if (uiController.getActiveCell() == null) {
+	    // return;
+	    // }
+	    // if (communicator != null) {
+	    // communicator.onCellSelected(null, uiController
+	    // .getActiveCell().getAddress());
+	    // }
+	    // }
+	    // });
+	    rtcUI = new RtcUI(this, uiController);
+	}
+	return rtcUI;
     }
 }

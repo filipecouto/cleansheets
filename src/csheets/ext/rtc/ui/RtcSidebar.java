@@ -20,6 +20,8 @@ import csheets.ext.rtc.RealTimeCollaboration;
 import csheets.ui.ctrl.UIController;
 
 public class RtcSidebar extends JPanel {
+    private static final long serialVersionUID = -5795254724858699202L;
+    
     private JButton bShare;
     private JButton bConnect;
     private JButton bDisconnect;

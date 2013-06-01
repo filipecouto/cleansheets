@@ -1,4 +1,18 @@
 /**
+ * <p>This extension lets the user share his/her workbook with other CleanSheets
+ * users and real-time collaboration (many people can be working on the same
+ * workbook at the same time).</p>
+ * 
+ * <p>Currently, it is able to share one spreadsheet (however the structure is
+ * ready to support for any amount of spreadsheets) or a range of cells in one
+ * spreadsheet.</p>
+ * 
+ * <p>Once disconnected, the user can use that shared spreadsheet or piece of it
+ * separately from the source.</p>
+ * 
+ * @author gil_1110484
+ */
+/**
  @startuml
  title Communication
  
@@ -50,7 +64,8 @@
  Server <- "A Client": connects
  Server -> Client: instantiate
  activate Client
- Client <-> "A Client": communication
+ Client -> "A Client": communication
+ Client <- "A Client": communication
  ...
  Client <- "A Client": event
  Server <- Client: event
@@ -190,6 +205,7 @@ Communicator		-->	RtcMessage
 
 RealTimeCollaboration	-->	RtcCommunicator
 RealTimeCollaboration	-->	RtcEventsResponder
+RealTimeCollaboration	-->	ClientInfo
 
 RtcEventsResponder	-->	RtcCommunicator
 RtcEventsResponder	-->	RtcSharingProperties 
@@ -205,7 +221,75 @@ ServerInterface		-->	Client
 RtcMessage		..>	RemoteCell
 RtcMessage		..>	RemoteSpreadsheet
 RtcMessage		..>	RemoteWorkbook
- @enduml
+@enduml
+
+
+@startuml
+  participant ExtensionManager as ExtM
+  participant Class
+  participant "aClass:Class" as aClass
+  participant "extension : RealTimeCollaboration" as RTC
+  ExtM -> Class : aClass = forName("csheets.ext.rtc.RealTimeCollaboration");
+  activate Class
+  create aClass
+  Class -> aClass : new
+  deactivate Class
+  ExtM -> aClass : extension = (Extension)newInstance();
+  activate aClass
+  create RTC
+  aClass -> RTC : new
+  deactivate aClass
+  ExtM -> RTC : name = getName();
+  activate RTC
+  deactivate RTC
+  ExtM -> ExtM : extensionMap.put(name, extension)
+@enduml
+
+@startuml
+  participant UIController as UIC
+  participant ExtensionManager as ExtM
+  participant "extension : RealTimeCollaboration" as RTC
+  participant "uiExtension : RtcUI" as RTCUI
+  UIC -> ExtM : extensions=getExtensions();
+  loop for Extension ext : extensions
+  	UIC -> RTC : uiExtension=getUIExtension(this);
+  	activate RTC
+  	create RTCUI
+  	RTC -> RTCUI : new
+  	deactivate RTC
+  	UIC -> UIC : uiExtensions.add(uiExtension);
+  end
+@enduml
+
+@startuml
+  participant Frame
+  participant UIController as UIC
+  participant "uiExtension : RtcUI" as RTCUI
+  participant "sidebar : RtcSideBar" as RTCSideBar
+  Frame -> UIC : uiExtensions=getExtensions();
+  loop for UIExtension uiExt : uiExtensions
+  	Frame -> RTCUI : extBar=getSideBar();
+  	create RTCSideBar
+  	RTCUI -> RTCSideBar : new
+  	deactivate RTCSideBar
+  	Frame -> Frame : sideBar.insertTab(extBar);
+  end
+@enduml
+
+@startuml
+  participant CellRenderer
+  participant UIController as UIC
+  participant "uiExtension : RtcUI" as RTCUI
+  participant "cellDecorator : RtcCellRenderer" as RTCCellRenderer
+  CellRenderer -> UIC : uiExtensions=getExtensions();
+  loop for UIExtension uiExt : uiExtensions
+  	CellRenderer -> RTCUI : decorator=getCellDecorator();
+  	create RTCCellRenderer
+  	RTCUI -> RTCCellRenderer : new
+  	deactivate RTCCellRenderer
+  	CellRenderer -> CellRenderer : decorators.add(decorator);
+  end
+@enduml
  */
 
 package csheets.ext.rtc;
