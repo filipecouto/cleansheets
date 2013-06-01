@@ -12,7 +12,6 @@ import csheets.ui.ctrl.FocusOwnerAction;
 import csheets.ui.ctrl.UIController;
 
 public class ShareAction extends FocusOwnerAction {
-
     private RealTimeCollaboration extension;
     private UIController uiController;
     private DataListener dataListener;
@@ -26,7 +25,6 @@ public class ShareAction extends FocusOwnerAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
 	if (optDialog == null) {
 	    optDialog = new ShareOptionsDialog();
 	    optDialog.setOnChooseExportListener(new OnChooseExportListener() {
@@ -65,6 +63,17 @@ public class ShareAction extends FocusOwnerAction {
 		}
 	    });
 	}
+        final Cell[][] selectedCells = focusOwner.getSelectedCells();
+	final int rowCount = selectedCells.length;
+	boolean hasInterestingSelection = true;
+
+	if (rowCount != 0) {
+	    final int columnCount = selectedCells[0].length;
+	    if (rowCount == 1 && columnCount == 1)
+		hasInterestingSelection = false;
+	} else
+	    hasInterestingSelection = false;
+	optDialog.setHasInterestingSelection(hasInterestingSelection);
 	optDialog.setVisible(true);
     }
 

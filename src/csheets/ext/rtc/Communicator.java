@@ -80,7 +80,6 @@ public abstract class Communicator {
 	    out.writeInt(bytes.length);
 	    out.write(bytes);
 	} catch (IOException e) {
-	    e.printStackTrace();
 	}
     }
 
@@ -94,7 +93,6 @@ public abstract class Communicator {
 	    return new ObjectInputStream(new ByteArrayInputStream(bytes))
 		    .readObject();
 	} catch (java.io.IOException e) {
-	    e.printStackTrace();
 	} catch (java.lang.ClassNotFoundException e) {
 	    e.printStackTrace();
 	}

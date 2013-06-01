@@ -1,6 +1,5 @@
 package csheets.ext.rtc.ui;
 
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -13,9 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-// REFACTOR: this name doesn't make much sense either
 public class ConnectionDialog extends JDialog {
-
     private JTextField ipAddress;
     private JTextField userName;
     private JTextField connectionPort;
@@ -25,45 +22,26 @@ public class ConnectionDialog extends JDialog {
     private JPanel panelButtons;
 
     public ConnectionDialog() {
-	super((JFrame) null, "Connection Form",
-		true);
+	super((JFrame) null, "Connection Options", true);
 
 	setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-
 	// creates textfield for insertion
 	userName = new JTextField();
-	userName.setText("Insert username");
+	userName.setText("Username");
 	userName.addFocusListener(new FocusListener() {
-	    
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
 	    }
-	    
+
 	    @Override
 	    public void focusGained(FocusEvent arg0) {
 		ConnectionDialog.this.userName.selectAll();
 	    }
 	});
-	
-	connectionPort = new JTextField();
-	connectionPort.setText("Insert connection port");
-	connectionPort.addFocusListener(new FocusListener() {
-	    
-	    @Override
-	    public void focusLost(FocusEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	    }
-	    
-	    @Override
-	    public void focusGained(FocusEvent arg0) {
-		connectionPort.selectAll();
-	    }
-	});
-	
+
 	ipAddress = new JTextField();
-	ipAddress.setText("Insert IP address or URL");
+	ipAddress.setText("IP address or URL");
 	ipAddress.addFocusListener(new FocusListener() {
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
@@ -75,13 +53,27 @@ public class ConnectionDialog extends JDialog {
 	    }
 	});
 
-	buttonAccept = new JButton("Accept");
+	connectionPort = new JTextField();
+	connectionPort.setText("Port");
+	connectionPort.addFocusListener(new FocusListener() {
+	    @Override
+	    public void focusLost(FocusEvent arg0) {
+	    }
+
+	    @Override
+	    public void focusGained(FocusEvent arg0) {
+		connectionPort.selectAll();
+	    }
+	});
+
+	buttonAccept = new JButton("Connect");
 	buttonAccept.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		String userName = ConnectionDialog.this.userName.getText();
 		String ipAddress = ConnectionDialog.this.ipAddress.getText();
-		int port = Integer.valueOf(ConnectionDialog.this.connectionPort.getText());
+		int port = Integer.valueOf(ConnectionDialog.this.connectionPort
+			.getText());
 		listener.onIPSelected(ipAddress, userName, port);
 		ConnectionDialog.this.setVisible(false);
 	    }
@@ -102,9 +94,9 @@ public class ConnectionDialog extends JDialog {
 	panelButtons.add(buttonAccept);
 	panelButtons.add(buttonCancel);
 	add(panelButtons);
-	setLocationRelativeTo(null);
-	
+
 	pack();
+	setLocationRelativeTo(null);
     }
 
     public void setOnIpSelectedListener(OnIPSelectListener listener) {

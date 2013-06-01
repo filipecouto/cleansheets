@@ -3,6 +3,7 @@ package csheets.ext.rtc;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import csheets.core.Address;
@@ -86,46 +87,51 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 
 			while (true) {
 			    message = getMessage();
-			    switch (message.getMessage()) {
-			    case eventCellChanged:
-				final RemoteCell c = (RemoteCell) message
-					.getArgument();
-				listener.onCellChanged(null, c);
-				break;
-			    case eventCellSelected:
-				final Address a = (Address) message
-					.getArgument();
-				listener.onCellSelected(null, a);
-				break;
-			    case cells:
-				final RemoteCell[] cells = (RemoteCell[]) message
-					.getArgument();
-				listener.onCellsReceived(null, cells);
-				break;
-			    case spreadsheet:
-				RemoteSpreadsheet sheet = (RemoteSpreadsheet) message
-					.getArgument();
-				sheet.getSpreadsheet(workbook);
-				sendMessage(new RtcMessage(info.getAddress(),
-					MessageTypes.getCells, new Address[] {
-						new Address(0, 0),
-						new Address(sheet
-							.getColumnCount(),
-							sheet.getRowCount()) }));
-				listener.onWorkbookReceived(info, workbook);
-				break;
-			    case infoList:
-				otherUsers = (ClientInfo[]) message
-					.getArgument();
-				listener.onUserAction(info, null);
-				break;
-			    case disconnect:
+			    if (message == null) {
+				// server disconnected
 				close();
-				return;
+			    } else {
+				switch (message.getMessage()) {
+				case eventCellChanged:
+				    final RemoteCell c = (RemoteCell) message
+					    .getArgument();
+				    listener.onCellChanged(null, c);
+				    break;
+				case eventCellSelected:
+				    final Address a = (Address) message
+					    .getArgument();
+				    listener.onCellSelected(null, a);
+				    break;
+				case cells:
+				    final RemoteCell[] cells = (RemoteCell[]) message
+					    .getArgument();
+				    listener.onCellsReceived(null, cells);
+				    break;
+				case spreadsheet:
+				    RemoteSpreadsheet sheet = (RemoteSpreadsheet) message
+					    .getArgument();
+				    sheet.getSpreadsheet(workbook);
+				    sendMessage(new RtcMessage(
+					    info.getAddress(),
+					    MessageTypes.getCells,
+					    new Address[] {
+						    new Address(0, 0),
+						    new Address(sheet
+							    .getColumnCount(),
+							    sheet.getRowCount()) }));
+				    listener.onWorkbookReceived(info, workbook);
+				    break;
+				case infoList:
+				    otherUsers = (ClientInfo[]) message
+					    .getArgument();
+				    listener.onUserAction(info, null);
+				    break;
+				case disconnect:
+				    close();
+				    return;
+				}
 			    }
 			}
-
-			// in.close();
 		    } catch (IOException e) {
 			// server disconnected
 			close();
@@ -136,9 +142,11 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 		}
 	    }).start();
 	} catch (UnknownHostException e) {
-	    e.printStackTrace();
 	    connected = false;
-	    listener.onDisconnected(info);
+	    listener.onConnectionFailed(e);
+	} catch (SocketException e) {
+	    connected = false;
+	    listener.onConnectionFailed(e);
 	} catch (IOException e) {
 	    e.printStackTrace();
 	    connected = false;

@@ -31,6 +31,7 @@ public class RtcEventsResponder implements RtcListener {
     @Override
     public void onConnected(ClientInfo client) {
 	properties = communicator.getShareProperties();
+	extension.onConnected();
 	if (extension.isOwner()) {
 	    extension.updateUsersList();
 	}
@@ -97,5 +98,10 @@ public class RtcEventsResponder implements RtcListener {
     @Override
     public void onUserAction(ClientInfo source, Object action) {
 	extension.updateUsersList();
+    }
+
+    @Override
+    public void onConnectionFailed(Exception e) {
+	extension.onConnectionFailed(e);
     }
 }

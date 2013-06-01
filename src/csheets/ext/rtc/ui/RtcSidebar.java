@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -93,7 +94,8 @@ public class RtcSidebar extends JPanel {
 
     public void onConnection(String address) {
 	if (ipAddress != null) {
-	    ipAddress.setText("Connected: " + address);
+	    // ipAddress.setText("Connected: " + address);
+	    ipAddress.setText(address == null ? "Failed" : "Connected");
 	    bDisconnect.setVisible(true);
 	    bShare.setVisible(false);
 	    bConnect.setVisible(false);
@@ -105,5 +107,11 @@ public class RtcSidebar extends JPanel {
 	bShare.setVisible(true);
 	bConnect.setVisible(true);
 	bDisconnect.setVisible(false);
+    }
+
+    public void onConnectionFailed(Exception e) {
+	JOptionPane.showMessageDialog(getParent(),
+		"There was a problem while connecting: " + e.getMessage(),
+		"Can't connect", JOptionPane.ERROR_MESSAGE);
     }
 }

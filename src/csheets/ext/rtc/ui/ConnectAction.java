@@ -1,8 +1,6 @@
 package csheets.ext.rtc.ui;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.net.UnknownHostException;
 
 import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.RealTimeCollaboration;
@@ -32,19 +30,23 @@ public class ConnectAction extends FocusOwnerAction {
 		public void onIPSelected(String address, String username,
 			int port) {
 		    ClientInfo client = null;
-		    String ip = "";
+		    // String ip = "";
+		    // try {
 		    try {
-			client = extension
-				.createClient(new ClientInfo(username),
-					address, port, uiController);
-			ip = client.getAddress().getHostAddress() + ':' + port;
-		    } catch (UnknownHostException e1) {
-			e1.printStackTrace();
-		    } catch (IOException e1) {
-			e1.printStackTrace();
-		    } finally {
-			dataListener.onSendData(client, ip);
+			client = extension.createClient(
+				new ClientInfo(username), address, port,
+				uiController);
+		    } catch (Exception e) {
+			extension.onConnectionFailed(e);
 		    }
+		    // ip = client.getAddress().getHostAddress() + ':' + port;
+		    // } catch (UnknownHostException e1) {
+		    // e1.printStackTrace();
+		    // } catch (IOException e1) {
+		    // e1.printStackTrace();
+		    // } finally {
+		    // dataListener.onSendData(client, ip);
+		    // }
 		}
 	    });
 	    ipDialog.setVisible(true);

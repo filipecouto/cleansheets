@@ -49,24 +49,22 @@ public class ServerInterface implements RtcCommunicator {
 			while ((socket = server.accept()) != null) {
 			    onClientConnected(socket);
 			}
-			server.close();
 		    } catch (IOException e) {
-			e.printStackTrace();
+			// server was disconnected
 		    }
 		}
 	    }).start();
 	} catch (IOException e) {
-	    e.printStackTrace();
 	    connected = false;
-	    listener.onDisconnected(info);
+	    listener.onConnectionFailed(e);
 	}
     }
 
-    protected void close() {
+    private void close() {
 	try {
 	    connected = false;
 	    server.close();
-	    listener.onDisconnected(null);
+	    listener.onDisconnected(info);
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
@@ -182,12 +180,25 @@ public class ServerInterface implements RtcCommunicator {
 
     @Override
     public void onDisconnected(ClientInfo client) {
-	synchronized (clients) {
-	    for (Client c : clients) {
-		c.onDisconnected(client);
+	try {
+	    connected = false;
+	    ArrayList<Client> auxClients;
+	    synchronized (clients) {
+		auxClients = new ArrayList<Client>(clients.size());
+		for (Client c : clients) {
+		    auxClients.add(c);
+		}
 	    }
+	    if (auxClients.size() == 0) {
+		close();
+	    } else {
+		for (Client c : auxClients) {
+		    c.onDisconnected(client);
+		}
+	    }
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
-	close();
     }
 
     private void removeUser(ClientInfo id) {
@@ -207,6 +218,11 @@ public class ServerInterface implements RtcCommunicator {
 	if (action instanceof Boolean) {
 	    if ((Boolean) action == false) {
 		removeUser(source);
+		synchronized (clients) {
+		    if (!connected && clients.size() == 0) {
+			close();
+		    }
+		}
 	    }
 	}
 	listener.onUserAction(source, action);

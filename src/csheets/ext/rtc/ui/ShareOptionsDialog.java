@@ -10,13 +10,14 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
+
+import csheets.core.Cell;
 
 public class ShareOptionsDialog extends JDialog {
-
     private JRadioButton selectWhole;
     private JRadioButton selectSelected;
     private JButton buttonAccept;
@@ -27,16 +28,13 @@ public class ShareOptionsDialog extends JDialog {
     private JTextField connectionPort;
 
     public ShareOptionsDialog() {
-	super((JFrame) null, "Options of share", true);
-
-	// creation of buttongroup
+	super((JFrame) null, "Sharing Options", true);
 
 	setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 	group = new ButtonGroup();
 	userName = new JTextField();
-	userName.setText("Insert username");
+	userName.setText("Username");
 	userName.addFocusListener(new FocusListener() {
-
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
 	    }
@@ -48,13 +46,10 @@ public class ShareOptionsDialog extends JDialog {
 	});
 
 	connectionPort = new JTextField();
-	connectionPort.setText("Insert port for connection");
+	connectionPort.setText("Port");
 	connectionPort.addFocusListener(new FocusListener() {
-
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
-		// TODO Auto-generated method stub
-
 	    }
 
 	    @Override
@@ -78,34 +73,39 @@ public class ShareOptionsDialog extends JDialog {
 	panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
 	buttonAccept = new JButton();
-	buttonAccept.setText("Accept");
+	buttonAccept.setText("Share");
 	buttonAccept.addActionListener(new ActionListener() {
-
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
 		/**
 		 * true for whole , false for selected
 		 */
-		boolean choice = true;
-		if (ShareOptionsDialog.this.selectSelected.isSelected()) {
-		    choice = false;
-		} else if (ShareOptionsDialog.this.selectWhole.isSelected()) {
-		    choice = true;
+		try {
+		    boolean choice = true;
+		    if (ShareOptionsDialog.this.selectSelected.isSelected()) {
+			choice = false;
+		    } else if (ShareOptionsDialog.this.selectWhole.isSelected()) {
+			choice = true;
+		    }
+		    int port = Integer
+			    .valueOf(ShareOptionsDialog.this.connectionPort
+				    .getText());
+		    String userName = ShareOptionsDialog.this.userName
+			    .getText();
+		    ShareOptionsDialog.this.listener.onChoosedExport(choice,
+			    userName, port);
+		    ShareOptionsDialog.this.setVisible(false);
+		} catch (NumberFormatException e) {
+		    JOptionPane.showMessageDialog(getParent(),
+			    "The port is supposed to be a number.",
+			    "Can't connect", JOptionPane.ERROR_MESSAGE);
 		}
-		int port = Integer
-			.valueOf(ShareOptionsDialog.this.connectionPort
-				.getText());
-		String userName = ShareOptionsDialog.this.userName.getText();
-		ShareOptionsDialog.this.listener.onChoosedExport(choice,
-			userName, port);
-		ShareOptionsDialog.this.setVisible(false);
 	    }
 	});
 
 	buttonCancel = new JButton();
 	buttonCancel.setText("Cancel");
 	buttonCancel.addActionListener(new ActionListener() {
-
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 		ShareOptionsDialog.this.setVisible(false);
@@ -119,10 +119,19 @@ public class ShareOptionsDialog extends JDialog {
 	add(userName);
 	add(connectionPort);
 	add(panel);
-	setSize(400, 200);
-	setLocationRelativeTo(null);
 
 	pack();
+	setLocationRelativeTo(null);
+    }
+
+    public void setHasInterestingSelection(boolean has) {
+	if (has) {
+	    selectSelected.setSelected(true);
+	    selectSelected.setEnabled(true);
+	} else {
+	    selectWhole.setSelected(true);
+	    selectSelected.setEnabled(false);
+	}
     }
 
     public void setOnChooseExportListener(OnChooseExportListener listener) {

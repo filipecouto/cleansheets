@@ -14,8 +14,6 @@ import csheets.ext.rtc.ui.RtcSidebar;
 import csheets.ext.rtc.ui.ShareAction;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
-import csheets.ui.ctrl.SelectionEvent;
-import csheets.ui.ctrl.SelectionListener;
 import csheets.ui.ctrl.UIController;
 import csheets.ui.ext.CellDecorator;
 import csheets.ui.ext.UIExtension;
@@ -24,7 +22,6 @@ public class RealTimeCollaboration extends Extension {
     RtcCommunicator communicator;
     RtcEventsResponder responder;
     ClientInfo identity;
-    // RtcShareProperties properties;
 
     RtcCellDecorator cellDecorator;
 
@@ -54,7 +51,6 @@ public class RealTimeCollaboration extends Extension {
     public ClientInfo createServer(ClientInfo client, int port,
 	    RtcShareProperties properties, UIController uiController)
 	    throws IOException {
-	// this.properties = properties;
 	isOwner = true;
 	ServerInterface server = new ServerInterface(client, port, properties,
 		uiController);
@@ -81,6 +77,14 @@ public class RealTimeCollaboration extends Extension {
 
     public void onDisconnected() {
 	sidebar.onDisconnected();
+    }
+
+    public void onConnected() {
+	sidebar.onConnection(identity.getAddress().getHostAddress());
+    }
+    
+    public void onConnectionFailed(Exception e) {
+	sidebar.onConnectionFailed(e);
     }
 
     public boolean isConnected() {
@@ -141,7 +145,7 @@ public class RealTimeCollaboration extends Extension {
 		    shareAction.setListener(new DataListener() {
 			@Override
 			public void onSendData(ClientInfo info, String address) {
-			    sidebar.onConnection(address);
+			    // sidebar.onConnection(address);
 			}
 		    });
 		    connectAction = new ConnectAction(
@@ -149,7 +153,7 @@ public class RealTimeCollaboration extends Extension {
 		    connectAction.setListener(new DataListener() {
 			@Override
 			public void onSendData(ClientInfo info, String address) {
-			    sidebar.onConnection(address);
+			    // sidebar.onConnection(address);
 			}
 		    });
 		    sidebar = new RtcSidebar(RealTimeCollaboration.this,
