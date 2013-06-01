@@ -290,7 +290,7 @@ public class ServerInterface implements RtcCommunicator {
     }
 
     @Override
-    public RtcSharingProperties getShareProperties() {
+    public RtcSharingProperties getSharingProperties() {
 	return properties;
     }
 

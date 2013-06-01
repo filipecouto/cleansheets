@@ -34,9 +34,9 @@ public interface RtcCommunicator extends RtcInterface {
     /**
      * Gets some properties such as what cells are shared
      * 
-     * @return a RtcShareProperties containing all needed properties
+     * @return a RtcSharingProperties containing all needed properties
      */
-    public RtcSharingProperties getShareProperties();
+    public RtcSharingProperties getSharingProperties();
 
     /**
      * Starts this server/client

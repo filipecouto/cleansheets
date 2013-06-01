@@ -58,6 +58,7 @@ public class RtcSharingProperties implements Serializable {
      *            the bottom right corner of the range
      */
     public void setRange(Address start, Address end) {
+	wholeSpreadsheet = false;
 	this.start = start;
 	this.end = end;
     }
