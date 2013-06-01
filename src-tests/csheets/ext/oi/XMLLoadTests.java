@@ -16,10 +16,17 @@ import javax.swing.SwingConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -33,16 +40,16 @@ import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
 import csheets.io.XMLCodec;
-import csheets.io.XMLValidator;
 
-public class XMLSaveTests {
-    private static Workbook workbook;
-    private static Spreadsheet spreadsheet;
+public class XMLLoadTests {
+    private static DocumentBuilderFactory dbFactory;
+    private static DocumentBuilder dBuilder;
+    private static Document doc;
 
     private static String[] font = { Font.MONOSPACED, Font.SANS_SERIF,
 	    Font.SERIF };
     private static Random r = new Random();
-    private static File outFile = new File("XmlTextOut.xml");
+    private static File inFile = new File("XmlTextIn.xml");
     private static int columns;
     private static int rows;
     private static int xOffset;
@@ -54,7 +61,7 @@ public class XMLSaveTests {
 	// let's choose to create our random data in a range of up to 99 rows
 	// and columns, starting on a row from 1 to 10 and a column from A to E
 	columns = (int) (Math.random() * 100);
-	rows = (int) (Math.random() * 10);
+	rows = (int) (Math.random() * 100);
 	xOffset = (int) (Math.random() * 50);
 	yOffset = (int) (Math.random() * 10);
 
@@ -63,86 +70,172 @@ public class XMLSaveTests {
 	generateData();
 
 	// let's save this workbook, it may contain precious info
-	saveTestWorkbook();
+	loadTestWorkbook();
     }
 
     /**
      * Saves this test workbook just in case
      */
-    private static void saveTestWorkbook() {
+    private static void loadTestWorkbook() {
+
+	FileInputStream in;
 	try {
-	    FileOutputStream out = new FileOutputStream(outFile);
+	    in = new FileInputStream(inFile);
 	    XMLCodec codec = new XMLCodec();
-	    codec.write(workbook, out);
-	    out.close();
-	} catch (ParserConfigurationException e) {
-	    System.err.println("ParserConfigurationException");
+	    codec.read(in);
+	    in.close();
+	} catch (FileNotFoundException e) {
 	    e.printStackTrace();
-	} catch (IOException e) {
-	    System.err.println("IOException");
+	} catch (ClassNotFoundException e) {
 	    e.printStackTrace();
 	} catch (DOMException e) {
-	    System.err.println("DOMException");
 	    e.printStackTrace();
-	} catch (TransformerException e) {
-	    System.err.println("TransformerException");
+	} catch (IOException e) {
+	    e.printStackTrace();
+	} catch (ParserConfigurationException e) {
+	    e.printStackTrace();
+	} catch (SAXException e) {
+	    e.printStackTrace();
+	} catch (FormulaCompilationException e) {
+	    e.printStackTrace();
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
+
     }
 
     /**
      * Generates data for XML file
      */
     private static void generateData() {
-	workbook = new Workbook(1);
-	spreadsheet = workbook.getSpreadsheet(0);
+	try {
+	    FileOutputStream stream = new FileOutputStream(inFile);
+	    dbFactory = DocumentBuilderFactory.newInstance();
+	    dBuilder = dbFactory.newDocumentBuilder();
+
+	    doc = dBuilder.newDocument();
+	    createXMLContent();
+
+	    TransformerFactory transformerFactory = TransformerFactory
+		    .newInstance();
+	    Transformer transformer;
+
+	    transformer = transformerFactory.newTransformer();
+
+	    DOMSource source = new DOMSource(doc);
+	    StreamResult result = new StreamResult(stream);
+
+	    transformer.transform(source, result);
+	    stream.close();
+	} catch (TransformerConfigurationException e) {
+	    e.printStackTrace();
+	} catch (TransformerException e) {
+	    e.printStackTrace();
+	} catch (FileNotFoundException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	} catch (ParserConfigurationException e) {
+	    e.printStackTrace();
+	}
+
+    }
+
+    /**
+     * Creates the XML Content
+     */
+    private static void createXMLContent() {
 	int countRow = rows;
 	int countColumn = columns;
-	if (Math.random() > 0.08f) {
-	    for (int row = 0; row < countRow; row++) {
-		for (int column = 0; column < countColumn; column++) {
+	Element workBook = (Element) doc.createElement("Workbook");
+	doc.appendChild(workBook);
+	// set attribute to workBook element
+	Attr attr = doc.createAttribute("name");
+	attr.setValue("Ficheiro");
+	workBook.setAttributeNode(attr);
+	attr = doc.createAttribute("xmlns:xsi");
+	attr.setValue("http://www.w3.org/2001/XMLSchema-instance");
+	workBook.setAttributeNode(attr);
+	attr = doc.createAttribute("xsi:noNamespaceSchemaLocation");
+	attr.setValue("XMLSchema.xsd");
+	workBook.setAttributeNode(attr);
+	Element spreadSheet = doc.createElement("SpreadSheet");
+	workBook.appendChild(spreadSheet);
+	// set attribute to spreadSheet element
+	attr = doc.createAttribute("name");
+	attr.setValue(makeRandomString());
+	spreadSheet.setAttributeNode(attr);
 
-		    try {
-			StylableCell sc = (StylableCell) spreadsheet.getCell(
-				column + xOffset, row + yOffset).getExtension(
-				StyleExtension.NAME);
-			sc.setContent(makeRandomString());
-			sc.setBackgroundColor(makeRandomColor());
-			sc.setFont(makeRandomFont());
-			sc.setForegroundColor(makeRandomColor());
-			sc.setHorizontalAlignment(makeRandomTextAlignment(r
-				.nextInt(2)));
-			sc.setVerticalAlignment(makeRandomCellAlignment(r
-				.nextInt(2)));
-		    } catch (FormulaCompilationException e) {
-			e.printStackTrace();
-		    }
-		}
-	    }
+	for (int row = 0; row <= countRow; row++) {
+	    for (int column = 0; column <= countColumn; column++) {
 
-	} else {
-	    for (int row = 0; row < countRow; row++) {
-		for (int column = 0; column < countColumn; column++) {
-		    try {
-			StylableCell sc = (StylableCell) spreadsheet.getCell(
-				column + xOffset, row + yOffset).getExtension(
-				StyleExtension.NAME);
-			sc.setContent(String.valueOf(Math.random() * 1000000));
-			sc.setBackgroundColor(makeRandomColor());
-			sc.setFont(makeRandomFont());
-			sc.setForegroundColor(makeRandomColor());
-			sc.setHorizontalAlignment(makeRandomTextAlignment(r
-				.nextInt(2)));
-			sc.setVerticalAlignment(makeRandomCellAlignment(r
-				.nextInt(2)));
-		    } catch (FormulaCompilationException e) {
-			e.printStackTrace();
-		    }
-		}
+		Element cell = doc.createElement("Cell");
+		spreadSheet.appendChild(cell);
+		// set attributes to cell element
+		attr = doc.createAttribute("Column");
+		attr.setValue("" + column);
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("Row");
+		attr.setValue("" + row);
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("BackgroundColor");
+		attr.setValue("" + makeRandomColor().getRGB());
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("TextAlign");
+		attr.setValue("" + makeRandomStringTextAlignment(r.nextInt(2)));
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("CellAlign");
+		attr.setValue("" + makeRandomStringCellAlignment(r.nextInt(2)));
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("ForegroundColor");
+		attr.setValue("" + makeRandomColor().getRGB());
+		cell.setAttributeNode(attr);
+		Font f = makeRandomFont();
+		attr = doc.createAttribute("FontFamily");
+		attr.setValue(f.getFamily());
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("FontSize");
+		attr.setValue("" + f.getSize());
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("BorderTop");
+		attr.setValue("False");
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("BorderBottom");
+		attr.setValue("False");
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("BorderLeft");
+		attr.setValue("False");
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("BorderRight");
+		attr.setValue("False");
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("BorderColor");
+		attr.setValue("000000");
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("Bold");
+		attr.setValue(makeRandomStringItalicBold());
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("Italic");
+		attr.setValue(makeRandomStringItalicBold());
+		cell.setAttributeNode(attr);
+		attr = doc.createAttribute("Underline");
+		attr.setValue("False");
+		cell.setAttributeNode(attr);
+		cell.appendChild(doc.createTextNode(makeRandomString()));
 	    }
 	}
+
 	totalColumns += countColumn;
 	totalRows += countRow;
+    }
+
+    /**
+     * Random Italic and Bold
+     * 
+     * @return "True" or "False"
+     */
+    private static String makeRandomStringItalicBold() {
+	return ((r.nextInt() * 1) == 0 ? "True" : "False");
     }
 
     /**
@@ -150,18 +243,18 @@ public class XMLSaveTests {
      * 
      * @param rand
      *            - random number for generate alignment
-     * @return
+     * @return "Center" "Bottom" or "Top"
      */
-    private static int makeRandomCellAlignment(int rand) {
+    private static String makeRandomStringCellAlignment(int rand) {
 	switch (rand) {
-	case 0:
-	    return SwingConstants.CENTER;
 	case 1:
-	    return SwingConstants.BOTTOM;
+	    return "Center";
 	case 2:
-	    return SwingConstants.TOP;
+	    return "Bottom";
+	case 3:
+	    return "Top";
 	default:
-	    return SwingConstants.CENTER;
+	    return "Center";
 	}
     }
 
@@ -170,18 +263,18 @@ public class XMLSaveTests {
      * 
      * @param rand
      *            - random number for generate alignment
-     * @return
+     * @return "Center" "Left" or "Right"
      */
-    private static int makeRandomTextAlignment(int rand) {
+    private static String makeRandomStringTextAlignment(int rand) {
 	switch (rand) {
-	case 0:
-	    return SwingConstants.CENTER;
 	case 1:
-	    return SwingConstants.LEFT;
+	    return "Center";
 	case 2:
-	    return SwingConstants.RIGHT;
+	    return "Left";
+	case 3:
+	    return "Right";
 	default:
-	    return SwingConstants.LEFT;
+	    return "Left";
 	}
     }
 
@@ -245,10 +338,10 @@ public class XMLSaveTests {
     @Test
     public void compareAllRows() {
 	try {
-	    FileOutputStream stream = new FileOutputStream(outFile);
+	    FileInputStream stream = new FileInputStream(inFile);
 	    XMLCodec xml = new XMLCodec();
-	    xml.write(workbook, stream);
-	    if (testNumberSheetsAndCells()) {
+	    Workbook wb = xml.read(stream);
+	    if (testNumberSheetsAndCells(wb)) {
 		assertTrue("Number of SpreadSheets and Cells correct", true);
 	    } else {
 		assertTrue("Number of SpreadSheets and Cells incorrect", false);
@@ -258,6 +351,16 @@ public class XMLSaveTests {
 	} catch (TransformerException e) {
 	    e.printStackTrace();
 	} catch (ParserConfigurationException e) {
+	    e.printStackTrace();
+	} catch (ClassNotFoundException e) {
+	    e.printStackTrace();
+	} catch (DOMException e) {
+	    e.printStackTrace();
+	} catch (SAXException e) {
+	    e.printStackTrace();
+	} catch (FormulaCompilationException e) {
+	    e.printStackTrace();
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
 
@@ -269,34 +372,19 @@ public class XMLSaveTests {
      * @param workbook
      * @return
      */
-    private boolean testNumberSheetsAndCells() {
-	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    private boolean testNumberSheetsAndCells(Workbook workbook) {
 
-	try {
-	    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-	    Document doc = dBuilder.parse(outFile);
-
-	    NodeList nList = doc.getElementsByTagName("SpreadSheet");
-	    int totalSheets = nList.getLength();
-	    int nSheets = workbook.getSpreadsheetCount();
-	    if (totalSheets == nSheets) {
-		int nCells = totalColumns * totalRows;
-		NodeList nListCells = nList.item(0).getChildNodes();
-		int totalCells = nListCells.getLength();
-		if (nCells != totalCells) {
-		    return false;
-		}
-		return true;
+	NodeList nList = doc.getElementsByTagName("SpreadSheet");
+	int totalSheets = nList.getLength();
+	int nSheets = workbook.getSpreadsheetCount();
+	if (totalSheets == nSheets) {
+	    int nCells = totalColumns * totalRows;
+	    int totalCells = workbook.getSpreadsheet(0).getRowCount()
+		    * workbook.getSpreadsheet(0).getColumnCount();
+	    if (nCells != totalCells) {
+		return false;
 	    }
-
-	    return false;
-
-	} catch (SAXException e) {
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    e.printStackTrace();
-	} catch (ParserConfigurationException e) {
-	    e.printStackTrace();
+	    return true;
 	}
 	return false;
     }
@@ -304,10 +392,10 @@ public class XMLSaveTests {
     @Test
     public void compareNumberOfRows() {
 	try {
-	    FileOutputStream stream = new FileOutputStream(outFile);
+	    FileInputStream stream = new FileInputStream(inFile);
 	    XMLCodec xml = new XMLCodec();
-	    xml.write(workbook, stream);
-	    if (testSheetsAndCellsContent()) {
+	    Workbook wb = xml.read(stream);
+	    if (testSheetsAndCellsContent(wb)) {
 		assertTrue("The content of SpreadSheets and Cells correct",
 			true);
 	    } else {
@@ -320,6 +408,16 @@ public class XMLSaveTests {
 	    e.printStackTrace();
 	} catch (ParserConfigurationException e) {
 	    e.printStackTrace();
+	} catch (ClassNotFoundException e) {
+	    e.printStackTrace();
+	} catch (DOMException e) {
+	    e.printStackTrace();
+	} catch (SAXException e) {
+	    e.printStackTrace();
+	} catch (FormulaCompilationException e) {
+	    e.printStackTrace();
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
     }
 
@@ -329,13 +427,13 @@ public class XMLSaveTests {
      * @param workbook
      * @return
      */
-    private boolean testSheetsAndCellsContent() {
+    private boolean testSheetsAndCellsContent(Workbook workbook) {
 	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	int column = 0;
 	int row = 0;
 	try {
 	    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-	    Document doc = dBuilder.parse(outFile);
+	    Document doc = dBuilder.parse(inFile);
 
 	    NodeList nList = doc.getElementsByTagName("SpreadSheet");
 	    int totalSheets = nList.getLength();
