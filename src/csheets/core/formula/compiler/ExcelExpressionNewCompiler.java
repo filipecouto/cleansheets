@@ -33,7 +33,7 @@ import csheets.core.formula.newcompiler.FormulaParserTokenTypes;
  */
 public class ExcelExpressionNewCompiler implements ExpressionCompiler {
 
-	/** The character that signals that a cell's content is a formula ('#') */
+	/* The character that signals that a cell's content is a formula ('#') */
 	public static final char FORMULA_STARTER = '#';
 
 	/**
