@@ -104,6 +104,9 @@ public class XMLLoadTests {
 
     }
 
+    /**
+     * Generates data for XML file
+     */
     private static void generateData() {
 	try {
 	    FileOutputStream stream = new FileOutputStream(inFile);
@@ -138,6 +141,9 @@ public class XMLLoadTests {
 
     }
 
+    /**
+     * Creates the XML Content
+     */
     private static void createXMLContent() {
 	int countRow = rows;
 	int countColumn = columns;
@@ -223,12 +229,24 @@ public class XMLLoadTests {
 	totalRows += countRow;
     }
 
+    /**
+     * Random Italic and Bold
+     * 
+     * @return "True" or "False"
+     */
     private static String makeRandomStringItalicBold() {
 	return ((r.nextInt() * 1) == 0 ? "True" : "False");
     }
 
-    private static String makeRandomStringCellAlignment(int gerar) {
-	switch (gerar) {
+    /**
+     * Random Cell Alignment
+     * 
+     * @param rand
+     *            - random number for generate alignment
+     * @return "Center" "Bottom" or "Top"
+     */
+    private static String makeRandomStringCellAlignment(int rand) {
+	switch (rand) {
 	case 1:
 	    return "Center";
 	case 2:
@@ -240,8 +258,15 @@ public class XMLLoadTests {
 	}
     }
 
-    private static String makeRandomStringTextAlignment(int gerar) {
-	switch (gerar) {
+    /**
+     * Random Text Alignment
+     * 
+     * @param rand
+     *            - random number for generate alignment
+     * @return "Center" "Left" or "Right"
+     */
+    private static String makeRandomStringTextAlignment(int rand) {
+	switch (rand) {
 	case 1:
 	    return "Center";
 	case 2:
@@ -253,13 +278,23 @@ public class XMLLoadTests {
 	}
     }
 
+    /**
+     * Random font
+     * 
+     * @return Font
+     */
     private static Font makeRandomFont() {
 	return new Font(font[r.nextInt(2)],
 		makeRandomBoldAndItalic(r.nextInt(3)), r.nextInt(50));
     }
 
-    private static int makeRandomBoldAndItalic(int gerar) {
-	switch (gerar) {
+    /**
+     * Random Italic and Bold
+     * 
+     * @return
+     */
+    private static int makeRandomBoldAndItalic(int rand) {
+	switch (rand) {
 	case 0:
 	    return Font.BOLD;
 	case 1:
@@ -273,10 +308,20 @@ public class XMLLoadTests {
 	}
     }
 
+    /**
+     * Random Color
+     * 
+     * @return Color
+     */
     private static Color makeRandomColor() {
 	return new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
     }
 
+    /**
+     * Random String for cell content
+     * 
+     * @return
+     */
     private static String makeRandomString() {
 	String result = new String();
 	final int len = (int) (Math.random() * 100 + 1);
@@ -321,6 +366,12 @@ public class XMLLoadTests {
 
     }
 
+    /**
+     * Method for testing if the number of cells is correct
+     * 
+     * @param workbook
+     * @return
+     */
     private boolean testNumberSheetsAndCells(Workbook workbook) {
 
 	NodeList nList = doc.getElementsByTagName("SpreadSheet");
@@ -370,6 +421,12 @@ public class XMLLoadTests {
 	}
     }
 
+    /**
+     * Method for testing if the content of the file is correct
+     * 
+     * @param workbook
+     * @return
+     */
     private boolean testSheetsAndCellsContent(Workbook workbook) {
 	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	int column = 0;
@@ -439,6 +496,12 @@ public class XMLLoadTests {
 	return false;
     }
 
+    /**
+     * Method for testing if there is a border line
+     * 
+     * @param border
+     * @return
+     */
     private int getIntBorder(String border) {
 	if (border.compareTo("True") == 0) {
 	    return 1;
@@ -446,6 +509,13 @@ public class XMLLoadTests {
 	return 0;
     }
 
+    /**
+     * Method to test if text is bold and italic
+     * 
+     * @param bold
+     * @param italic
+     * @return
+     */
     private int getBoldAndItalic(String bold, String italic) {
 	if ((bold.compareTo("True") == 0) && (italic.compareTo("True") == 0)) {
 	    return (Font.BOLD | Font.ITALIC);
@@ -461,6 +531,12 @@ public class XMLLoadTests {
 	return 0;
     }
 
+    /**
+     * Method for testing the alignment of the text
+     * 
+     * @param textAlign
+     * @return
+     */
     private int getIntTextAlign(String textAlign) {
 	if (textAlign.compareTo("Center") == 0) {
 	    return SwingConstants.CENTER;
@@ -474,6 +550,12 @@ public class XMLLoadTests {
 	return 2;
     }
 
+    /**
+     * Method for testing the alignment of the cell
+     * 
+     * @param cellAlign
+     * @return
+     */
     private int getIntCellAlign(String cellAlign) {
 
 	if (cellAlign.compareTo("Center") == 0) {
@@ -488,6 +570,13 @@ public class XMLLoadTests {
 	return 0;
     }
 
+    /**
+     * Method for testing if the two cells are equal
+     * 
+     * @param scWorkbook
+     * @param scXML
+     * @return
+     */
     private boolean testOneCell(StylableCell scWorkbook, StylableCell scXML) {
 	if (scWorkbook.getBackgroundColor().getRGB() != scXML
 		.getBackgroundColor().getRGB()) {
