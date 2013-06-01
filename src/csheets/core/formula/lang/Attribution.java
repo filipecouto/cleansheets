@@ -26,7 +26,7 @@ public class Attribution implements BinaryOperator {
                 } catch(FormulaCompilationException e){
                     System.out.println(e);
                 }
-            return new Value();
+            return new Value(rightOperand.evaluate().toDouble());
 	}
 
 	public String getIdentifier() {
@@ -34,7 +34,7 @@ public class Attribution implements BinaryOperator {
 	}
 
 	public Value.Type getOperandValueType() {
-		return Value.Type.TEXT;
+		return Value.Type.NUMERIC;
 	}
 
 	public String toString() {
