@@ -53,5 +53,48 @@ public class UML {
  * activate Interface
  * "DatabaseExportMenuItem"-->Interface: actionPerformed()
  * @enduml
+ * 
+ * @startuml
+ * class DatabaseExportBuilder
+ * class DatabaseDriverManager {
+ *  +getAvailableDrivers()
+ * }
+ * class DatabaseExportInterface {
+ *  createTable()
+ *  addLine()
+ *  openDatabase()
+ *  closeDatabase()
+ *  getName()
+ *  requiresUsername()
+ *  requiresPassword()
+ * }
+ * class H2Exporter
+ * class HSQLdbExporter
+ * class DatabaseExportController
+ * class DatabaseExtension {
+ *  +getAvailableDrivers()
+ *  +getUIExtension()
+ * }
+ * class DatabaseExportDialog {
+ *  -export()
+ * }
+ * class DatabaseUIExtension
+ * class DatabaseExportMenuItem
+ * 
+ * DatabaseExportInterface <|-- H2Exporter
+ * DatabaseExportInterface <|-- HSQLdbExporter
+ * DatabaseExportInterface <-- DatabaseExportBuilder
+ * DatabaseExportInterface <-- DatabaseDriverManager
+ * DatabaseExportBuilder <-- DatabaseExportController
+ * DatabaseDriverManager <-- DatabaseExtension
+ * DatabaseExtension <-- DatabaseExportDialog
+ * DatabaseExportDialog <-- DatabaseExportController
+ * DatabaseExportDialog <-- DatabaseExportMenuItem
+ * DatabaseExportMenuItem <-- DatabaseUIMenu
+ * DatabaseUIMenu <-- DatabaseUIExtension
+ * DatabaseUIExtension <-- DatabaseExtension
+ * 
+ * 
+ * @enduml
  */
 }
