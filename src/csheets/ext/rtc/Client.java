@@ -5,7 +5,9 @@ import java.io.Serializable;
 import java.net.Socket;
 
 import csheets.core.Address;
+import csheets.ext.rtc.messages.MessageTypes;
 import csheets.ext.rtc.messages.RemoteCell;
+import csheets.ext.rtc.messages.RtcMessage;
 
 /**
  * This class communicates through the server socket with a connected client
@@ -46,7 +48,7 @@ public class Client extends Communicator implements RtcInterface {
 		    sendMessage(new RtcMessage(server.getServerInfo()
 			    .getAddress(), MessageTypes.infoList,
 			    new Serializable[] { server.getConnectedUsers(),
-				    server.getShareProperties() }));
+				    server.getSharingProperties() }));
 
 		    // send our workbook
 		    sendMessage(new RtcMessage(server.getServerInfo()

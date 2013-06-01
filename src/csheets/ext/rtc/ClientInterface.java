@@ -8,9 +8,11 @@ import java.net.UnknownHostException;
 
 import csheets.core.Address;
 import csheets.core.Workbook;
+import csheets.ext.rtc.messages.MessageTypes;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.messages.RemoteSpreadsheet;
 import csheets.ext.rtc.messages.RemoteWorkbook;
+import csheets.ext.rtc.messages.RtcMessage;
 
 /**
  * This class will be the client-side bridge of the connection (therefore the
@@ -203,7 +205,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     }
 
     @Override
-    public RtcSharingProperties getShareProperties() {
+    public RtcSharingProperties getSharingProperties() {
 	return properties;
     }
 

@@ -1,4 +1,4 @@
-package csheets.ext.rtc;
+package csheets.ext.rtc.messages;
 
 /**
  * This enumeration contains the currently supported types of messages

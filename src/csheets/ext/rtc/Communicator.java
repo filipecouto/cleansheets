@@ -9,6 +9,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import csheets.ext.rtc.messages.MessageTypes;
+import csheets.ext.rtc.messages.RtcMessage;
+
 /**
  * This class provides helper methods for ClientInterface and Client classes
  * especially for sending and receiving data
