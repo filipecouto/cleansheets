@@ -63,7 +63,7 @@ public class ShareAction extends FocusOwnerAction {
 		}
 	    });
 	}
-        final Cell[][] selectedCells = focusOwner.getSelectedCells();
+	final Cell[][] selectedCells = focusOwner.getSelectedCells();
 	final int rowCount = selectedCells.length;
 	boolean hasInterestingSelection = true;
 

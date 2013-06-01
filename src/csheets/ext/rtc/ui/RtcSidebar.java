@@ -4,10 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.io.IOException;
-import java.net.UnknownHostException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -17,15 +13,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import csheets.core.Address;
 import csheets.ext.rtc.ClientInfo;
-import csheets.ext.rtc.ClientInterface;
 import csheets.ext.rtc.RealTimeCollaboration;
-import csheets.ext.rtc.RtcEventsResponder;
-import csheets.ext.rtc.ServerInterface;
 import csheets.ui.ctrl.UIController;
 
 public class RtcSidebar extends JPanel {

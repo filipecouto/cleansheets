@@ -128,8 +128,8 @@ public class Client extends Communicator implements RtcInterface {
 
     @Override
     public void onDisconnected(ClientInfo client) {
-	sendMessage(new RtcMessage(info.getAddress(),
-		MessageTypes.disconnect, null));
+	sendMessage(new RtcMessage(info.getAddress(), MessageTypes.disconnect,
+		null));
 	close();
     }
 }
