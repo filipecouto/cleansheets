@@ -13,9 +13,6 @@ import csheets.core.formula.compiler.FormulaCompilationException;
  */
 public class Attribution implements BinaryOperator {
 
-	/** The unique version identifier used for serialization */
-	//private static final long serialVersionUID = -1880245696016234963L; // update this
-
 	/**
 	 * Creates a new attribution.
 	 */
