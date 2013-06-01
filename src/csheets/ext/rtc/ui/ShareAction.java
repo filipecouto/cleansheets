@@ -32,7 +32,7 @@ public class ShareAction extends FocusOwnerAction {
 	    optDialog.setOnChooseExportListener(new OnChooseExportListener() {
 
 		@Override
-		public void onChoosedExport(boolean export, String name) {
+		public void onChoosedExport(boolean export, String name, int port) {
 		    // selected cells if false , whole spreadsheet if true
 		    RtcShareProperties props = new RtcShareProperties();
 		    Address cell1;

@@ -29,7 +29,7 @@ public class ConnectAction extends FocusOwnerAction {
 	    ipDialog = new ConnectionDialog();
 	    ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
 		@Override
-		public void onIPSelected(String address, String username) {
+		public void onIPSelected(String address, String username, int port) {
 		    ClientInfo client = null;
 		    String ip = "";
 		    try {
