@@ -55,17 +55,46 @@ public class UML {
  * @enduml
  * 
  * @startuml
- * class "DatabaseExportBuilder"
- * class "DatabaseDriverManager"
- * class "DatabaseExportInterface"
- * class "H2Exporter"
- * class "HSQLdbExporter"
- * "DatabaseExportInterface" <|-- "DatabaseExportInterface"
- * namespace- "UI-Dependant part"
- * 	DatabaseExportDialog <|-- DatabaseExportMenuItem
- * 	DatabaseUIMenu <|-- DatabaseUIExtension
- * 	DatabaseExportMenuItem <|-- DatabaseUIMenu
- * end namespace
+ * class DatabaseExportBuilder
+ * class DatabaseDriverManager {
+ *  +getAvailableDrivers()
+ * }
+ * class DatabaseExportInterface {
+ *  createTable()
+ *  addLine()
+ *  openDatabase()
+ *  closeDatabase()
+ *  getName()
+ *  requiresUsername()
+ *  requiresPassword()
+ * }
+ * class H2Exporter
+ * class HSQLdbExporter
+ * class DatabaseExportController
+ * class DatabaseExtension {
+ *  +getAvailableDrivers()
+ *  +getUIExtension()
+ * }
+ * class DatabaseExportDialog {
+ *  -export()
+ * }
+ * class DatabaseUIExtension
+ * class DatabaseExportMenuItem
+ * 
+ * DatabaseExportInterface <|-- H2Exporter
+ * DatabaseExportInterface <|-- HSQLdbExporter
+ * DatabaseExportInterface <-- DatabaseExportBuilder
+ * DatabaseExportInterface <-- DatabaseDriverManager
+ * DatabaseExportBuilder <-- DatabaseExportController
+ * DatabaseDriverManager <-- DatabaseExtension
+ * DatabaseExtension <-- DatabaseExportDialog
+ * DatabaseExportDialog <-- DatabaseExportController
+ * DatabaseExportDialog <-- DatabaseExportMenuItem
+ * DatabaseExportMenuItem <-- DatabaseUIMenu
+ * DatabaseUIMenu <-- DatabaseUIExtension
+ * DatabaseUIExtension <-- DatabaseExtension
+ * 
+ * 
  * @enduml
  */
 }
