@@ -82,7 +82,7 @@ public class RealTimeCollaboration extends Extension {
     public void onConnected() {
 	sidebar.onConnection(identity.getAddress().getHostAddress());
     }
-    
+
     public void onConnectionFailed(Exception e) {
 	sidebar.onConnectionFailed(e);
     }

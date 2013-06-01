@@ -15,8 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import csheets.core.Cell;
-
 public class ShareOptionsDialog extends JDialog {
     private JRadioButton selectWhole;
     private JRadioButton selectSelected;

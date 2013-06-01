@@ -3,6 +3,7 @@ package csheets.ext.rtc.messages;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.Serializable;
+
 import javax.swing.border.Border;
 
 import csheets.core.Address;
@@ -58,10 +59,10 @@ public class RemoteCell implements Serializable {
 	sc.setHorizontalAlignment(horizontalAlignment);
 	sc.setVerticalAlignment(verticalAlignment);
     }
-    
+
     @Override
     public String toString() {
-        return "Cell on " + address + " with " + content;
+	return "Cell on " + address + " with " + content;
     }
 
     public boolean isValid(RtcShareProperties properties) {

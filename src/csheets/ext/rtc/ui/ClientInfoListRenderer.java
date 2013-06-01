@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JList;
+
 import csheets.ext.rtc.ClientInfo;
 
 public class ClientInfoListRenderer extends DefaultListCellRenderer {

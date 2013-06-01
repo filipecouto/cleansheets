@@ -3,8 +3,6 @@ package csheets.ext.rtc.ui;
 import javax.swing.JMenu;
 
 import csheets.ext.Extension;
-import csheets.ext.db.DatabaseExtension;
-import csheets.ext.db.ui.DatabaseUIMenu;
 import csheets.ext.rtc.RealTimeCollaboration;
 import csheets.ui.ctrl.UIController;
 import csheets.ui.ext.UIExtension;
@@ -18,6 +16,7 @@ public class ConnectionUIExtension extends UIExtension {
 
     @Override
     public JMenu getMenu() {
-	return new ConnectionUIMenu((RealTimeCollaboration) extension, uiController);
+	return new ConnectionUIMenu((RealTimeCollaboration) extension,
+		uiController);
     }
 }
