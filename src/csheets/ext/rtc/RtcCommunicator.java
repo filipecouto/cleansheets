@@ -36,7 +36,7 @@ public interface RtcCommunicator extends RtcInterface {
      * 
      * @return a RtcShareProperties containing all needed properties
      */
-    public RtcShareProperties getShareProperties();
+    public RtcSharingProperties getShareProperties();
 
     /**
      * Starts this server/client

@@ -12,6 +12,12 @@ import csheets.ext.rtc.messages.RemoteSpreadsheet;
 import csheets.ext.rtc.messages.RemoteWorkbook;
 import csheets.ui.ctrl.UIController;
 
+/**
+ * This class creates the server, listens to incoming connections and sends them
+ * to a Client instance in order to manage them.
+ * 
+ * @author gil_1110484
+ */
 public class ServerInterface implements RtcCommunicator {
     private ClientInfo info;
     private ServerSocket server;
@@ -20,14 +26,14 @@ public class ServerInterface implements RtcCommunicator {
     private boolean connected;
     private int port;
 
-    private RtcShareProperties properties;
+    private RtcSharingProperties properties;
 
     private UIController uiController;
 
     private ArrayList<Client> clients;
 
     public ServerInterface(ClientInfo clientInfo, int port,
-	    RtcShareProperties properties, UIController uiController) {
+	    RtcSharingProperties properties, UIController uiController) {
 	this.properties = properties;
 	this.uiController = uiController;
 	this.info = clientInfo;
@@ -60,6 +66,9 @@ public class ServerInterface implements RtcCommunicator {
 	}
     }
 
+    /**
+     * Closes the server and warns the listener
+     */
     private void close() {
 	try {
 	    connected = false;
@@ -70,6 +79,16 @@ public class ServerInterface implements RtcCommunicator {
 	}
     }
 
+    /**
+     * Creates an array of RemoteCells to send to a client by asking
+     * RtcSharingOptions whether that cell can be shared or not
+     * 
+     * @param spreadsheet
+     *            the index of the requested spreadsheet
+     * @param range
+     *            the range of the cells to get
+     * @return the array with the cells ready to send
+     */
     public RemoteCell[] getCellsToSend(int spreadsheet, Address[] range) {
 	int xOffset = range[0].getColumn();
 	int yOffset = range[0].getRow();
@@ -94,15 +113,33 @@ public class ServerInterface implements RtcCommunicator {
 	return cells;
     }
 
+    /**
+     * Instantiates a RemoteWorkbook to send to clients
+     * 
+     * @return the RemoteWorkbook ready to send
+     */
     public RemoteWorkbook getWorkbookToSend() {
 	return new RemoteWorkbook(uiController.getActiveWorkbook());
     }
 
+    /**
+     * Instantiates a RemoteSpreadsheet to send to clients, it may not contain
+     * any filled in cell
+     * 
+     * @param index
+     *            the index of the requested spreadsheet
+     * @return the RemoteSpreadsheet ready to send
+     */
     public RemoteSpreadsheet getSpreadsheetToSend(int index) {
 	return new RemoteSpreadsheet(uiController.getActiveWorkbook()
 		.getSpreadsheet(index), index);
     }
 
+    /**
+     * Gets the identity of the user who started this server
+     * 
+     * @return his/her identity
+     */
     public ClientInfo getServerInfo() {
 	return info;
     }
@@ -124,7 +161,15 @@ public class ServerInterface implements RtcCommunicator {
 	}
     }
 
-    public void onClientConnected(Socket client) {
+    /**
+     * Called by the server when a user attempts to connect to the server,
+     * creates a Client instance to communicate with it and set the connection
+     * up
+     * 
+     * @param client
+     *            the socket that connects to the client
+     */
+    private void onClientConnected(Socket client) {
 	try {
 	    Client newClient = new Client(this, client);
 	    synchronized (clients) {
@@ -201,6 +246,12 @@ public class ServerInterface implements RtcCommunicator {
 	}
     }
 
+    /**
+     * Called to remove a Client from the list when a user disconnects
+     * 
+     * @param id
+     *            its identity
+     */
     private void removeUser(ClientInfo id) {
 	synchronized (clients) {
 	    final int len = clients.size();
@@ -239,7 +290,7 @@ public class ServerInterface implements RtcCommunicator {
     }
 
     @Override
-    public RtcShareProperties getShareProperties() {
+    public RtcSharingProperties getShareProperties() {
 	return properties;
     }
 

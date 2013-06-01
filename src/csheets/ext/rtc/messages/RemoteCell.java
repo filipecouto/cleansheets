@@ -10,7 +10,7 @@ import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.core.Workbook;
 import csheets.core.formula.compiler.FormulaCompilationException;
-import csheets.ext.rtc.RtcShareProperties;
+import csheets.ext.rtc.RtcSharingProperties;
 import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
 
@@ -65,7 +65,7 @@ public class RemoteCell implements Serializable {
 	return "Cell on " + address + " with " + content;
     }
 
-    public boolean isValid(RtcShareProperties properties) {
+    public boolean isValid(RtcSharingProperties properties) {
 	return properties.isInsideRange(address)
 		&& properties.getSpreadsheet() == spreadsheet;
     }

@@ -9,10 +9,16 @@ import csheets.core.Workbook;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ui.ctrl.UIController;
 
+/**
+ * This class is in charge of providing feedback to the application when
+ * something is received from the connection.
+ * 
+ * @author gil_1110484
+ */
 public class RtcEventsResponder implements RtcListener {
     private UIController uiController;
     private RtcCommunicator communicator;
-    private RtcShareProperties properties;
+    private RtcSharingProperties properties;
     private RealTimeCollaboration extension;
 
     public RtcEventsResponder(RtcCommunicator communicator,
@@ -37,7 +43,7 @@ public class RtcEventsResponder implements RtcListener {
 	}
     }
 
-    public RtcShareProperties getShareProperties() {
+    public RtcSharingProperties getShareProperties() {
 	return properties;
     }
 
