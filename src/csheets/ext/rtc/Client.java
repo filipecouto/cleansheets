@@ -5,8 +5,15 @@ import java.io.Serializable;
 import java.net.Socket;
 
 import csheets.core.Address;
+import csheets.ext.rtc.messages.MessageTypes;
 import csheets.ext.rtc.messages.RemoteCell;
+import csheets.ext.rtc.messages.RtcMessage;
 
+/**
+ * This class communicates through the server socket with a connected client
+ * 
+ * @author gil_1110484
+ */
 public class Client extends Communicator implements RtcInterface {
     private ClientInfo info;
     private ServerInterface server;
@@ -19,6 +26,10 @@ public class Client extends Communicator implements RtcInterface {
 	info = new ClientInfo(client.getInetAddress());
     }
 
+    /**
+     * Start the communication routine starting by the initial communication
+     * setup
+     */
     public void run() {
 	new Thread(new Runnable() {
 	    @Override
@@ -37,7 +48,7 @@ public class Client extends Communicator implements RtcInterface {
 		    sendMessage(new RtcMessage(server.getServerInfo()
 			    .getAddress(), MessageTypes.infoList,
 			    new Serializable[] { server.getConnectedUsers(),
-				    server.getShareProperties() }));
+				    server.getSharingProperties() }));
 
 		    // send our workbook
 		    sendMessage(new RtcMessage(server.getServerInfo()
@@ -48,7 +59,7 @@ public class Client extends Communicator implements RtcInterface {
 
 		    while (true) {
 			message = getMessage();
-			switch (message.getMessage()) {
+			switch (message.getMessageType()) {
 			case eventCellChanged:
 			    RemoteCell c = (RemoteCell) message.getArgument();
 			    server.onCellChanged(info, c);
@@ -90,12 +101,17 @@ public class Client extends Communicator implements RtcInterface {
 	return this.info.isSameIP(info.getAddress());
     }
 
+    /**
+     * User identity sent from the client
+     * 
+     * @return a ClientInfo with the other user's identity
+     */
     public ClientInfo getInfo() {
 	return info;
     }
 
     @Override
-    public void close() {
+    protected void close() {
 	try {
 	    client.close();
 	    server.onUserAction(info, false);

@@ -51,9 +51,9 @@
 				<xsd:attribute name="Border" type="xsd:string"
 					default="False" />
 
-				<xsd:attribute name="TextAlign" type="TAlign" default="Left" />
+				<xsd:attribute name="TextAlign" type="TTextAlign" default="Left" />
 
-				<xsd:attribute name="CellAlign" type="TAlign" default="Center" />
+				<xsd:attribute name="CellAlign" type="TCellAlign" default="Center" />
 
 				<xsd:attribute name="BorderTop" type="TBoolean"
 					default="False" />
@@ -100,7 +100,7 @@
 
 	</xsd:simpleType>
 
-	<xsd:simpleType name="TAlign">
+	<xsd:simpleType name="TTextAlign">
 
 		<xsd:restriction base="xsd:string">
 
@@ -109,6 +109,20 @@
 			<xsd:enumeration value="Center" />
 
 			<xsd:enumeration value="Right" />
+
+		</xsd:restriction>
+
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="TCellAlign">
+
+		<xsd:restriction base="xsd:string">
+
+			<xsd:enumeration value="Bottom" />
+
+			<xsd:enumeration value="Center" />
+
+			<xsd:enumeration value="Top" />
 
 		</xsd:restriction>
 

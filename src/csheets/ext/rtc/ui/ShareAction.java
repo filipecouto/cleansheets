@@ -7,7 +7,7 @@ import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.RealTimeCollaboration;
-import csheets.ext.rtc.RtcShareProperties;
+import csheets.ext.rtc.RtcSharingProperties;
 import csheets.ui.ctrl.FocusOwnerAction;
 import csheets.ui.ctrl.UIController;
 
@@ -32,7 +32,7 @@ public class ShareAction extends FocusOwnerAction {
 		public void onChoosedExport(boolean export, String name,
 			int port) {
 		    // selected cells if false , whole spreadsheet if true
-		    RtcShareProperties props = new RtcShareProperties();
+		    RtcSharingProperties props = new RtcSharingProperties();
 		    Address cell1;
 		    Address cell2;
 		    if (export) {

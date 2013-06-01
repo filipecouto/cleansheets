@@ -8,9 +8,11 @@ import java.net.UnknownHostException;
 
 import csheets.core.Address;
 import csheets.core.Workbook;
+import csheets.ext.rtc.messages.MessageTypes;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.messages.RemoteSpreadsheet;
 import csheets.ext.rtc.messages.RemoteWorkbook;
+import csheets.ext.rtc.messages.RtcMessage;
 
 /**
  * This class will be the client-side bridge of the connection (therefore the
@@ -22,7 +24,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     private ClientInfo info;
     private Socket server;
     private RtcListener listener;
-    private RtcShareProperties properties;
+    private RtcSharingProperties properties;
 
     private boolean connected = false;
     private String address;
@@ -60,7 +62,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 			    Serializable[] response = (Serializable[]) message
 				    .getArgument();
 			    otherUsers = (ClientInfo[]) response[0];
-			    properties = (RtcShareProperties) response[1];
+			    properties = (RtcSharingProperties) response[1];
 			    listener.onUserAction(info, null);
 			} else {
 			    return;
@@ -91,7 +93,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 				// server disconnected
 				close();
 			    } else {
-				switch (message.getMessage()) {
+				switch (message.getMessageType()) {
 				case eventCellChanged:
 				    final RemoteCell c = (RemoteCell) message
 					    .getArgument();
@@ -203,7 +205,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     }
 
     @Override
-    public RtcShareProperties getShareProperties() {
+    public RtcSharingProperties getSharingProperties() {
 	return properties;
     }
 
