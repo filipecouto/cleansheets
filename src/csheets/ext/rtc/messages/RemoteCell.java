@@ -14,6 +14,12 @@ import csheets.ext.rtc.RtcSharingProperties;
 import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
 
+/**
+ * This class holds data from Cell instances in order to send them across the
+ * network
+ * 
+ * @author gil_1110484
+ */
 public class RemoteCell implements Serializable {
     private static final long serialVersionUID = 7156793484407606025L;
 
@@ -29,6 +35,12 @@ public class RemoteCell implements Serializable {
     int horizontalAlignment;
     int verticalAlignment;
 
+    /**
+     * Constructor, requires a Cell.
+     * 
+     * @param cell
+     *            the cell to send
+     */
     public RemoteCell(Cell cell) {
 	spreadsheet = 0;
 
@@ -44,6 +56,12 @@ public class RemoteCell implements Serializable {
 	verticalAlignment = sc.getVerticalAlignment();
     }
 
+    /**
+     * Puts the held Cell in its right place
+     * 
+     * @param workbook
+     *            the workbook where to put the cell
+     */
     public void getCell(Workbook workbook) {
 	final Cell cell = workbook.getSpreadsheet(spreadsheet).getCell(address);
 	try {
@@ -60,11 +78,14 @@ public class RemoteCell implements Serializable {
 	sc.setVerticalAlignment(verticalAlignment);
     }
 
-    @Override
-    public String toString() {
-	return "Cell on " + address + " with " + content;
-    }
-
+    /**
+     * Says whether this cell is in a shared place, accordingly to
+     * RtcSharingProperties
+     * 
+     * @param properties
+     *            the sharing properties
+     * @return true if it is in a shared place, false otherwise
+     */
     public boolean isValid(RtcSharingProperties properties) {
 	return properties.isInsideRange(address)
 		&& properties.getSpreadsheet() == spreadsheet;

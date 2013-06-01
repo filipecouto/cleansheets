@@ -15,10 +15,21 @@ public class RemoteWorkbook implements Serializable {
 
     private int spreadsheetCount;
 
+    /**
+     * Constructor, requires a Workbook.
+     * 
+     * @param workbook
+     *            the workbook to send
+     */
     public RemoteWorkbook(Workbook workbook) {
 	spreadsheetCount = workbook.getSpreadsheetCount();
     }
 
+    /**
+     * Builds the workbook using as much of the data it can hold.
+     * 
+     * @return the workbook, ready to pass to the application
+     */
     public Workbook getWorkbook() {
 	Workbook wb = new Workbook(spreadsheetCount);
 
