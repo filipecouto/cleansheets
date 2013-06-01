@@ -37,7 +37,7 @@ import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
 
 /**
- * A codec for xml files.
+ * A codec for read and write XML files.
  * 
  * @author Filipe Silva & Rita Nogueira
  */
