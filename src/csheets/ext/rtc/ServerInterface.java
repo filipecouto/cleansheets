@@ -18,6 +18,7 @@ public class ServerInterface implements RtcCommunicator {
     private RtcListener listener;
 
     private boolean connected;
+    private int port;
 
     private RtcShareProperties properties;
 
@@ -25,18 +26,19 @@ public class ServerInterface implements RtcCommunicator {
 
     private ArrayList<Client> clients;
 
-    public ServerInterface(ClientInfo clientInfo,
+    public ServerInterface(ClientInfo clientInfo, int port,
 	    RtcShareProperties properties, UIController uiController) {
 	this.properties = properties;
 	this.uiController = uiController;
 	this.info = clientInfo;
+	this.port = port;
 	clients = new ArrayList<Client>();
     }
 
     @Override
     public void start() {
 	try {
-	    server = new ServerSocket(PORT);
+	    server = new ServerSocket(port);
 	    connected = true;
 	    info.addConnectionInfo(server.getInetAddress());
 	    listener.onConnected(info);
@@ -57,6 +59,16 @@ public class ServerInterface implements RtcCommunicator {
 	    e.printStackTrace();
 	    connected = false;
 	    listener.onDisconnected(info);
+	}
+    }
+
+    protected void close() {
+	try {
+	    connected = false;
+	    server.close();
+	    listener.onDisconnected(null);
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
     }
 
@@ -99,14 +111,18 @@ public class ServerInterface implements RtcCommunicator {
 
     @Override
     public synchronized ClientInfo[] getConnectedUsers() {
-	synchronized (clients) {
-	    final int len = clients.size();
-	    ClientInfo[] info = new ClientInfo[len + 1];
-	    for (int i = 0; i < len; i++) {
-		info[i] = clients.get(i).getInfo();
+	if (connected) {
+	    synchronized (clients) {
+		final int len = clients.size();
+		ClientInfo[] info = new ClientInfo[len + 1];
+		for (int i = 0; i < len; i++) {
+		    info[i] = clients.get(i).getInfo();
+		}
+		info[len] = this.info;
+		return info;
 	    }
-	    info[len] = this.info;
-	    return info;
+	} else {
+	    return null;
 	}
     }
 
@@ -166,16 +182,12 @@ public class ServerInterface implements RtcCommunicator {
 
     @Override
     public void onDisconnected(ClientInfo client) {
-	if (client == null) {
-	    client = info;
-	} else {
-	    listener.onDisconnected(client);
-	}
 	synchronized (clients) {
 	    for (Client c : clients) {
 		c.onDisconnected(client);
 	    }
 	}
+	close();
     }
 
     private void removeUser(ClientInfo id) {

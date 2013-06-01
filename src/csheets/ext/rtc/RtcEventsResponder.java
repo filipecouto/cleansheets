@@ -24,6 +24,8 @@ public class RtcEventsResponder implements RtcListener {
 
     @Override
     public void onDisconnected(ClientInfo client) {
+	extension.onDisconnected();
+	extension.updateUsersList();
     }
 
     @Override

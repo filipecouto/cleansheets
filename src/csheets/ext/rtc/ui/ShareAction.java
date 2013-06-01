@@ -30,9 +30,9 @@ public class ShareAction extends FocusOwnerAction {
 	if (optDialog == null) {
 	    optDialog = new ShareOptionsDialog();
 	    optDialog.setOnChooseExportListener(new OnChooseExportListener() {
-
 		@Override
-		public void onChoosedExport(boolean export, String name, int port) {
+		public void onChoosedExport(boolean export, String name,
+			int port) {
 		    // selected cells if false , whole spreadsheet if true
 		    RtcShareProperties props = new RtcShareProperties();
 		    Address cell1;
@@ -41,18 +41,22 @@ public class ShareAction extends FocusOwnerAction {
 			props.setAcceptWholeSpreadsheet(true);
 		    } else {
 			Cell[][] cells = focusOwner.getSelectedCells();
-			cell1 = cells[0][0].getAddress();
-			cell2 = cells[cells.length - 1][cells[0].length - 1]
-				.getAddress();
-			props.setRange(cell1, cell2);
+			if (cells.length == 1 && cells[0].length == 1) {
+			    props.setAcceptWholeSpreadsheet(false);
+			} else {
+			    cell1 = cells[0][0].getAddress();
+			    cell2 = cells[cells.length - 1][cells[0].length - 1]
+				    .getAddress();
+			    props.setRange(cell1, cell2);
+			}
 		    }
 		    String ip = "";
 		    ClientInfo server = null;
 		    try {
 			props.setSpreadsheet(0);
-			server = extension.createServer(new ClientInfo(
-				name), props, uiController);
-			ip = server.getAddress().toString();
+			server = extension.createServer(new ClientInfo(name),
+				port, props, uiController);
+			ip = server.getAddress().getHostAddress() + ':' + port;
 		    } catch (IOException e1) {
 			e1.printStackTrace();
 		    } finally {
@@ -60,10 +64,8 @@ public class ShareAction extends FocusOwnerAction {
 		    }
 		}
 	    });
-	    optDialog.setVisible(true);
-	} else {
-	    optDialog.setVisible(true);
 	}
+	optDialog.setVisible(true);
     }
 
     @Override

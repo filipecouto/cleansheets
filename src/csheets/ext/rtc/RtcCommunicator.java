@@ -6,8 +6,6 @@ package csheets.ext.rtc;
  * @author gil_1110484
  */
 public interface RtcCommunicator extends RtcInterface {
-    static int PORT = 33334;
-
     /**
      * Used by each side of the communication, another RtcListener must be
      * implemented in order to react to events on the other side

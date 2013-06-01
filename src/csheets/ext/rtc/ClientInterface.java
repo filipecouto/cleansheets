@@ -25,21 +25,23 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 
     private boolean connected = false;
     private String address;
+    private int port;
 
     private Workbook workbook;
 
     private ClientInfo[] otherUsers;
 
-    public ClientInterface(String address, ClientInfo clientInfo)
+    public ClientInterface(String address, int port, ClientInfo clientInfo)
 	    throws UnknownHostException, IOException {
 	this.address = address;
+	this.port = port;
 	info = clientInfo;
     }
 
     @Override
     public void start() {
 	try {
-	    server = new Socket(address, PORT);
+	    server = new Socket(address, port);
 	    setSocket(server);
 	    info.addConnectionInfo(server);
 	    new Thread(new Runnable() {
@@ -118,17 +120,18 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 				listener.onUserAction(info, null);
 				break;
 			    case disconnect:
-				listener.onDisconnected(info);
-				server.close();
+				close();
 				return;
 			    }
 			}
 
 			// in.close();
 		    } catch (IOException e) {
-			e.printStackTrace();
+			// server disconnected
+			close();
 		    } catch (ClassNotFoundException e) {
 			e.printStackTrace();
+			close();
 		    }
 		}
 	    }).start();
@@ -162,6 +165,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 
     @Override
     public void onDisconnected(ClientInfo client) {
+	close();
     }
 
     @Override
@@ -171,7 +175,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 
     @Override
     public ClientInfo[] getConnectedUsers() {
-	return otherUsers;
+	return connected ? otherUsers : null;
     }
 
     @Override

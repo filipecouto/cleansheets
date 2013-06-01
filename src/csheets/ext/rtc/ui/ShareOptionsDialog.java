@@ -25,7 +25,7 @@ public class ShareOptionsDialog extends JDialog {
     private ButtonGroup group;
     private JTextField userName;
     private JTextField connectionPort;
-    
+
     public ShareOptionsDialog() {
 	super((JFrame) null, "Options of share", true);
 
@@ -33,43 +33,43 @@ public class ShareOptionsDialog extends JDialog {
 
 	setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 	group = new ButtonGroup();
-	userName= new JTextField();
+	userName = new JTextField();
 	userName.setText("Insert username");
 	userName.addFocusListener(new FocusListener() {
-	    
+
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
 	    }
-	    
+
 	    @Override
 	    public void focusGained(FocusEvent arg0) {
 		userName.selectAll();
 	    }
 	});
-	
+
 	connectionPort = new JTextField();
 	connectionPort.setText("Insert port for connection");
 	connectionPort.addFocusListener(new FocusListener() {
-	    
+
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	    }
-	    
+
 	    @Override
-	    public void focusGained(FocusEvent arg0) {	
+	    public void focusGained(FocusEvent arg0) {
 		connectionPort.selectAll();
 	    }
 	});
-	
+
 	selectWhole = new JRadioButton();
 	selectWhole.setText("Export whole spreadsheet");
 
 	selectSelected = new JRadioButton();
 	selectSelected.setText("Export selected cells");
 	selectSelected.setSelected(true);
-	
+
 	group.add(selectWhole);
 	group.add(selectSelected);
 
@@ -87,14 +87,18 @@ public class ShareOptionsDialog extends JDialog {
 		 * true for whole , false for selected
 		 */
 		boolean choice = true;
-		if(ShareOptionsDialog.this.selectSelected.isSelected()) {
+		if (ShareOptionsDialog.this.selectSelected.isSelected()) {
 		    choice = false;
-		} else if(ShareOptionsDialog.this.selectWhole.isSelected()){
+		} else if (ShareOptionsDialog.this.selectWhole.isSelected()) {
 		    choice = true;
 		}
-		int port = Integer.valueOf(ShareOptionsDialog.this.connectionPort.getText());
+		int port = Integer
+			.valueOf(ShareOptionsDialog.this.connectionPort
+				.getText());
 		String userName = ShareOptionsDialog.this.userName.getText();
-		ShareOptionsDialog.this.listener.onChoosedExport(choice, userName, port);
+		ShareOptionsDialog.this.listener.onChoosedExport(choice,
+			userName, port);
+		ShareOptionsDialog.this.setVisible(false);
 	    }
 	});
 
@@ -107,7 +111,7 @@ public class ShareOptionsDialog extends JDialog {
 		ShareOptionsDialog.this.setVisible(false);
 	    }
 	});
-	
+
 	panel.add(buttonAccept);
 	panel.add(buttonCancel);
 	add(selectSelected);
@@ -120,7 +124,7 @@ public class ShareOptionsDialog extends JDialog {
 
 	pack();
     }
-    
+
     public void setOnChooseExportListener(OnChooseExportListener listener) {
 	this.listener = listener;
     }

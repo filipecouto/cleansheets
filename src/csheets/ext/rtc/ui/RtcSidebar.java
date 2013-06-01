@@ -28,16 +28,18 @@ import csheets.ext.rtc.ServerInterface;
 import csheets.ui.ctrl.UIController;
 
 public class RtcSidebar extends JPanel {
-
     private JButton bShare;
     private JButton bConnect;
     private JButton bDisconnect;
     private JLabel ipAddress;
     private ClientsListAdapter adapter;
 
-    public RtcSidebar(final RealTimeCollaboration extension,
-	    final UIController uiController, ShareAction shareAction,
+    private RealTimeCollaboration extension;
+
+    public RtcSidebar(RealTimeCollaboration extension,
+	    UIController uiController, ShareAction shareAction,
 	    ConnectAction connectAction) {
+	this.extension = extension;
 	setName("Real Time Colaboration");
 	setLayout(new BorderLayout());
 	JPanel buttonPanel = new JPanel();
@@ -61,11 +63,11 @@ public class RtcSidebar extends JPanel {
 	bDisconnect.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		ipAddress.setText("Not connected");
-		bShare.setVisible(true);
-		bConnect.setVisible(true);
-		bDisconnect.setVisible(false);
-
+		// ipAddress.setText("Not connected");
+		// bShare.setVisible(true);
+		// bConnect.setVisible(true);
+		// bDisconnect.setVisible(false);
+		RtcSidebar.this.extension.disconnect();
 	    }
 	});
 	buttonPanel.add(bDisconnect);
@@ -91,10 +93,17 @@ public class RtcSidebar extends JPanel {
 
     public void onConnection(String address) {
 	if (ipAddress != null) {
-	    ipAddress.setText("IP Address: " + address);
+	    ipAddress.setText("Connected: " + address);
 	    bDisconnect.setVisible(true);
 	    bShare.setVisible(false);
 	    bConnect.setVisible(false);
 	}
+    }
+
+    public void onDisconnected() {
+	ipAddress.setText("Not connected");
+	bShare.setVisible(true);
+	bConnect.setVisible(true);
+	bDisconnect.setVisible(false);
     }
 }

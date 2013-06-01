@@ -51,12 +51,12 @@ public class RealTimeCollaboration extends Extension {
 	sidebar.updateUsersList(communicator.getConnectedUsers());
     }
 
-    public ClientInfo createServer(ClientInfo client,
+    public ClientInfo createServer(ClientInfo client, int port,
 	    RtcShareProperties properties, UIController uiController)
 	    throws IOException {
 	// this.properties = properties;
 	isOwner = true;
-	ServerInterface server = new ServerInterface(client, properties,
+	ServerInterface server = new ServerInterface(client, port, properties,
 		uiController);
 	identity = server.getServerInfo();
 	communicator = server;
@@ -66,13 +66,21 @@ public class RealTimeCollaboration extends Extension {
     }
 
     public ClientInfo createClient(ClientInfo client, String ipAddress,
-	    UIController uiController) throws IOException {
+	    int port, UIController uiController) throws IOException {
 	isOwner = false;
 	identity = client;
-	communicator = new ClientInterface(ipAddress, identity);
+	communicator = new ClientInterface(ipAddress, port, identity);
 	communicator.setListener(getResponder(uiController, null));
 	communicator.start();
 	return identity;
+    }
+
+    public void disconnect() {
+	communicator.onDisconnected(null);
+    }
+
+    public void onDisconnected() {
+	sidebar.onDisconnected();
     }
 
     public boolean isConnected() {

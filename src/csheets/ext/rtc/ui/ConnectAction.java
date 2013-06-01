@@ -29,14 +29,15 @@ public class ConnectAction extends FocusOwnerAction {
 	    ipDialog = new ConnectionDialog();
 	    ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
 		@Override
-		public void onIPSelected(String address, String username, int port) {
+		public void onIPSelected(String address, String username,
+			int port) {
 		    ClientInfo client = null;
 		    String ip = "";
 		    try {
 			client = extension
 				.createClient(new ClientInfo(username),
-					address, uiController);
-			ip = client.getAddress().toString();
+					address, port, uiController);
+			ip = client.getAddress().getHostAddress() + ':' + port;
 		    } catch (UnknownHostException e1) {
 			e1.printStackTrace();
 		    } catch (IOException e1) {
