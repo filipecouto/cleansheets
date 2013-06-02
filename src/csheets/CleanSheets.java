@@ -50,6 +50,7 @@ import csheets.ext.ExtensionManager;
 import csheets.io.Codec;
 import csheets.io.CodecFactory;
 import csheets.io.NamedProperties;
+import csheets.io.XMLCodec;
 import csheets.io.XMLValidator;
 
 /**
@@ -208,15 +209,13 @@ public class CleanSheets {
 
 	if (codec != null) {
 	    FileInputStream stream = null;
-
-	    String fileName = file.getName();
 	    Workbook workbook;
 	    try {
 		// Reads workbook data
 		stream = new FileInputStream(file);
 		// Call XML validator code
 
-		if (fileName.contains("xml")) {
+		if (codec.getClass().equals(XMLCodec.class)) {
 		    FileInputStream streamValidate = new FileInputStream(file);
 		    XMLValidator validator = new XMLValidator();
 		    validator.validate(streamValidate);
