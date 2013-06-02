@@ -205,18 +205,22 @@ public class CleanSheets {
 	    DOMException, ParserConfigurationException, SAXException,
 	    FormulaCompilationException, Exception {
 	Codec codec = new CodecFactory().getCodec(file);
+
 	if (codec != null) {
 	    FileInputStream stream = null;
-	    FileInputStream streamValidate = null;
+
+	    String fileName = file.getName();
 	    Workbook workbook;
 	    try {
 		// Reads workbook data
 		stream = new FileInputStream(file);
 		// Call XML validator code
-		streamValidate = new FileInputStream(file);
-		XMLValidator validator = new XMLValidator();
-		validator.validate(streamValidate);
-		// -------------------------
+
+		if (fileName.contains("xml")) {
+		    FileInputStream streamValidate = new FileInputStream(file);
+		    XMLValidator validator = new XMLValidator();
+		    validator.validate(streamValidate);
+		}
 		workbook = codec.read(stream);
 	    } finally {
 		try {
