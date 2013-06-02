@@ -215,7 +215,7 @@ public class CleanSheets {
 		stream = new FileInputStream(file);
 		// Call XML validator code
 
-		if (codec.getClass().equals(XMLCodec.class)) {
+		if (codec.getClass().isInstance(XMLCodec.class)) {
 		    FileInputStream streamValidate = new FileInputStream(file);
 		    XMLValidator validator = new XMLValidator();
 		    validator.validate(streamValidate);
