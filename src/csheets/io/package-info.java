@@ -10,4 +10,60 @@ interface. <code>Codec</code>s must be named <code>nnnCodec</code> where
 utility classes.
 
 */
+/**
+ @startuml
+ class Frame
+ class CleanSheets {
+ +save()
+ +saveAs()
+ +load(
+ }
+ class Codec {
+ }
+ class OpenAction {
+ }
+ class SaveAction {
+ }
+ class XMLCodec {
+ +read(InputStream)
+ +write(Workbook, OutputStream)
+ +getStylabeCell(Node, Spreadsheet)
+ +getIntBorder(String)
+ +getBoldAndItalic(String, String)
+ +getIntTextAlign(String)
+ +getIntCellAlign(String)
+ +createXMLContent(Document, Workbook) 
+ +setXMLContent(Spreadsheet, int, int,Document, Element)
+ +getBold(Font)
+ +getItalic(Font)
+ +getStringCellAlign(int)
+ +getStringTextAlign(int)
+ }
+ class XMLValidator {
+ +validate(InputStream)
+ }
+ Codec <|-- XMLCodec
+ OpenAction  <-- Frame
+ SaveAction <-- Frame
+ CleanSheets <--OpenAction
+ CleanSheets <--SaveAction
+ XMLCodec   <--CleanSheets
+ XMLValidator  <--CleanSheets
+ @enduml
+
+
+ @startuml 
+ Interface->"CleanSheets":save()
+ CleanSheets->"CleanSheets":saveAs()
+ CleanSheets ->XMLCodec:write(Workbook, FileOutputStream)
+ @enduml
+
+ @startuml 
+ Interface->"CleanSheets":load()
+ CleanSheets->XMLValidator:validate(FileInputStream)
+ CleanSheets ->XMLCodec:read(FileInputStream)
+ XMLCodec-->CleanSheets : Workbook
+ @enduml
+ **/
+	 
 package csheets.io;
