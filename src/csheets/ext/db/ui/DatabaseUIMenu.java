@@ -9,6 +9,7 @@ public class DatabaseUIMenu extends JMenu {
     private static final long serialVersionUID = 2854862500115559859L;
 
     private JMenuItem itemExport;
+    private JMenuItem itemImport;
 
     public DatabaseUIMenu(DatabaseExtension extension) {
 	super("Database");
@@ -17,5 +18,7 @@ public class DatabaseUIMenu extends JMenu {
 
 	itemExport = new JMenuItem(new DatabaseExportMenuItem(extension));
 	add(itemExport);
+        itemImport = new JMenuItem(new DatabaseImportMenuItem(extension));
+	add(itemImport);
     }
 }
