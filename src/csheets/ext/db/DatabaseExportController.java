@@ -6,7 +6,7 @@ import csheets.core.Cell;
 import csheets.core.Spreadsheet;
 
 public class DatabaseExportController {
-    private DatabaseExportInterface driver; // database driver
+    private DatabaseInterface driver; // database driver
     private String tableName; // table name
     private String database; // database name
     private String[] columns;
@@ -18,7 +18,7 @@ public class DatabaseExportController {
 
     }
 
-    public void setDriver(DatabaseExportInterface driver) {
+    public void setDriver(DatabaseInterface driver) {
 	this.driver = driver;
     }
 
@@ -89,7 +89,7 @@ public class DatabaseExportController {
 	this.justSelection = justSelection;
     }
 
-    public DatabaseExportInterface getDriver() {
+    public DatabaseInterface getDriver() {
 	return driver;
     }
 
