@@ -27,7 +27,7 @@ import javax.swing.JTextField;
 import csheets.core.Cell;
 import csheets.ext.db.DatabaseExportBuilder;
 import csheets.ext.db.DatabaseExportController;
-import csheets.ext.db.DatabaseExportInterface;
+import csheets.ext.db.DatabaseInterface;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.sheet.SpreadsheetTable;
 
@@ -198,7 +198,7 @@ public class DatabaseExportDialog extends JDialog {
 	});
 	tableName = new JTextField();
 
-	final List<DatabaseExportInterface> availableDrivers = extension
+	final List<DatabaseInterface> availableDrivers = extension
 		.getAvailableDrivers();
 
 	String[] availableDriverNames = new String[availableDrivers.size()];
@@ -289,7 +289,7 @@ public class DatabaseExportDialog extends JDialog {
 	return options;
     }
 
-    private void onFormatSelected(DatabaseExportInterface driver) {
+    private void onFormatSelected(DatabaseInterface driver) {
 	username.setEnabled(driver.requiresUsername());
 	password.setEnabled(driver.requiresUsername());
     }
