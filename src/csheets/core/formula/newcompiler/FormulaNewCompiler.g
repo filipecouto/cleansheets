@@ -28,17 +28,18 @@ class FormulaParser extends Parser;
 options {
 	buildAST = true;
 	defaultErrorHandler = false;
-        k=2;
+	k=2;
 }
 
 /**
  * The start rule for formula expressions.
  */
-/* content
-	: ( expression | literal ) EOF
-	; */
+content
+	: HASHTAG! ( expression | (LBRAC! (expression SEMI^)+ RBRAC!) ) EOF!
+	;
+
 expression
-        : HASHTAG! (attribution|comparison) EOF!
+    : (attribution|comparison)
 	;
 
 attribution
@@ -181,6 +182,8 @@ COMMA	: ',' ;
 SEMI	: ';' ;
 LPAR	: '(' ;
 RPAR	: ')' ;
+LBRAC	: '{' ;
+RBRAC	: '}' ;
 
 
 /* White-space (ignored) */

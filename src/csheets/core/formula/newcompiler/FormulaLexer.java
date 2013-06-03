@@ -1,4 +1,4 @@
-// $ANTLR 2.7.5 (20050128): "../src/csheets/core/formula/newcompiler/FormulaNewCompiler.g" -> "FormulaLexer.java"$
+// $ANTLR 2.7.5 (20050128): "FormulaNewCompiler.g" -> "FormulaLexer.java"$
 package csheets.core.formula.newcompiler;
 import java.io.InputStream;
 import antlr.TokenStreamException;
@@ -162,6 +162,18 @@ tryAgain:
 					theRetToken=_returnToken;
 					break;
 				}
+				case '{':
+				{
+					mLBRAC(true);
+					theRetToken=_returnToken;
+					break;
+				}
+				case '}':
+				{
+					mRBRAC(true);
+					theRetToken=_returnToken;
+					break;
+				}
 				case '\t':  case '\n':  case '\r':  case ' ':
 				{
 					mWS(true);
@@ -243,49 +255,49 @@ tryAgain:
 		_ttype = ALPHABETICAL;
 		int _saveIndex;
 		
-		boolean synPredMatched39 = false;
+		boolean synPredMatched44 = false;
 		if ((((LA(1) >= 'a' && LA(1) <= 'z')) && (_tokenSet_0.member(LA(2))) && (true) && (true))) {
-			int _m39 = mark();
-			synPredMatched39 = true;
+			int _m44 = mark();
+			synPredMatched44 = true;
 			inputState.guessing++;
 			try {
 				{
 				{
-				int _cnt38=0;
-				_loop38:
+				int _cnt43=0;
+				_loop43:
 				do {
 					if (((LA(1) >= 'a' && LA(1) <= 'z'))) {
 						mLETTER(false);
 					}
 					else {
-						if ( _cnt38>=1 ) { break _loop38; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+						if ( _cnt43>=1 ) { break _loop43; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 					}
 					
-					_cnt38++;
+					_cnt43++;
 				} while (true);
 				}
 				mLPAR(false);
 				}
 			}
 			catch (RecognitionException pe) {
-				synPredMatched39 = false;
+				synPredMatched44 = false;
 			}
-			rewind(_m39);
+			rewind(_m44);
 			inputState.guessing--;
 		}
-		if ( synPredMatched39 ) {
+		if ( synPredMatched44 ) {
 			{
-			int _cnt41=0;
-			_loop41:
+			int _cnt46=0;
+			_loop46:
 			do {
 				if (((LA(1) >= 'a' && LA(1) <= 'z'))) {
 					mLETTER(false);
 				}
 				else {
-					if ( _cnt41>=1 ) { break _loop41; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt46>=1 ) { break _loop46; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt41++;
+				_cnt46++;
 			} while (true);
 			}
 			_saveIndex=text.length();
@@ -372,17 +384,17 @@ tryAgain:
 			}
 			}
 			{
-			int _cnt46=0;
-			_loop46:
+			int _cnt51=0;
+			_loop51:
 			do {
 				if (((LA(1) >= '0' && LA(1) <= '9'))) {
 					mDIGIT(false);
 				}
 				else {
-					if ( _cnt46>=1 ) { break _loop46; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt51>=1 ) { break _loop51; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt46++;
+				_cnt51++;
 			} while (true);
 			}
 			if ( inputState.guessing==0 ) {
@@ -450,15 +462,15 @@ tryAgain:
 		mQUOT(false);
 		text.setLength(_saveIndex);
 		{
-		_loop49:
+		_loop54:
 		do {
 			// nongreedy exit test
-			if ((LA(1)=='"') && (true)) break _loop49;
+			if ((LA(1)=='"') && (true)) break _loop54;
 			if (((LA(1) >= '\u0000' && LA(1) <= '\u007f')) && ((LA(2) >= '\u0000' && LA(2) <= '\u007f'))) {
 				matchNot(EOF_CHAR);
 			}
 			else {
-				break _loop49;
+				break _loop54;
 			}
 			
 		} while (true);
@@ -492,34 +504,34 @@ tryAgain:
 		int _saveIndex;
 		
 		{
-		int _cnt53=0;
-		_loop53:
+		int _cnt58=0;
+		_loop58:
 		do {
 			if (((LA(1) >= '0' && LA(1) <= '9'))) {
 				mDIGIT(false);
 			}
 			else {
-				if ( _cnt53>=1 ) { break _loop53; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+				if ( _cnt58>=1 ) { break _loop58; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 			}
 			
-			_cnt53++;
+			_cnt58++;
 		} while (true);
 		}
 		{
 		if ((LA(1)==',')) {
 			mCOMMA(false);
 			{
-			int _cnt56=0;
-			_loop56:
+			int _cnt61=0;
+			_loop61:
 			do {
 				if (((LA(1) >= '0' && LA(1) <= '9'))) {
 					mDIGIT(false);
 				}
 				else {
-					if ( _cnt56>=1 ) { break _loop56; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt61>=1 ) { break _loop61; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt56++;
+				_cnt61++;
 			} while (true);
 			}
 		}
@@ -787,6 +799,32 @@ tryAgain:
 		int _saveIndex;
 		
 		match(')');
+		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
+			_token = makeToken(_ttype);
+			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));
+		}
+		_returnToken = _token;
+	}
+	
+	public final void mLBRAC(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
+		int _ttype; Token _token=null; int _begin=text.length();
+		_ttype = LBRAC;
+		int _saveIndex;
+		
+		match('{');
+		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
+			_token = makeToken(_ttype);
+			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));
+		}
+		_returnToken = _token;
+	}
+	
+	public final void mRBRAC(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
+		int _ttype; Token _token=null; int _begin=text.length();
+		_ttype = RBRAC;
+		int _saveIndex;
+		
+		match('}');
 		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
 			_token = makeToken(_ttype);
 			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));

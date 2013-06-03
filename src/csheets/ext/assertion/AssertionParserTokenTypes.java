@@ -1,4 +1,4 @@
-// $ANTLR 2.7.5 (20050128): "../src/csheets/ext/assertion/AssertionParser.g" -> "AssertionParser.java"$
+// $ANTLR 2.7.5 (20050128): "AssertionParser.g" -> "AssertionParser.java"$
 package csheets.ext.assertion;
 public interface AssertionParserTokenTypes {
 	int EOF = 1;

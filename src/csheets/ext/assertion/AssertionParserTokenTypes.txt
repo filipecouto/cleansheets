@@ -1,4 +1,4 @@
-// $ANTLR 2.7.5 (20050128): ../src/csheets/ext/assertion/AssertionParser.g -> AssertionParserTokenTypes.txt$
+// $ANTLR 2.7.5 (20050128): AssertionParser.g -> AssertionParserTokenTypes.txt$
 AssertionParser    // output token vocab name
 EXCEPT=4
 COMMA("','")=5
