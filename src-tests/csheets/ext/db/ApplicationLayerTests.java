@@ -28,7 +28,7 @@ public class ApplicationLayerTests {
     private static Workbook workbook;
     private static Spreadsheet spreadsheet;
 
-    private static DatabaseExportInterface dbDriver;
+    private static DatabaseInterface dbDriver;
 
     private static int columns;
     private static int rows;
@@ -59,7 +59,7 @@ public class ApplicationLayerTests {
 	// let's save this workbook, it may contain precious info
 	saveTestWorkbook();
 
-	dbDriver = new HSQLdbExporter();
+	dbDriver = new HSQLdbDriver();
 
 	System.out.println("Done creating a " + columns + "x" + rows
 		+ " table to export using " + dbDriver.getName() + " driver!");
