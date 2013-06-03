@@ -18,7 +18,7 @@ public class DatabaseDriverManager {
 
     private static final String DRIVERS_FILENAME = "drivers.props";
 
-    private List<DatabaseExportInterface> drivers;
+    private List<DatabaseInterface> drivers;
 
     /**
      * Creates an instance if it's null otherwise just returns it
@@ -34,7 +34,7 @@ public class DatabaseDriverManager {
      * Default constructor for the DriverManager
      */
     private DatabaseDriverManager() {
-	drivers = new ArrayList<DatabaseExportInterface>();
+	drivers = new ArrayList<DatabaseInterface>();
 
 	Properties driversList = new Properties();
 	InputStream stream = CleanSheets.class
@@ -83,7 +83,7 @@ public class DatabaseDriverManager {
      * @return a list of the supported drivers
      */
 
-    public List<DatabaseExportInterface> getAvailableDrivers() {
+    public List<DatabaseInterface> getAvailableDrivers() {
 	return drivers;
     }
     
@@ -108,7 +108,7 @@ public class DatabaseDriverManager {
 
     public void load(Class extensionClass) {
 	try {
-	    DatabaseExportInterface driver = (DatabaseExportInterface) extensionClass
+	    DatabaseInterface driver = (DatabaseInterface) extensionClass
 		    .newInstance();
 	    drivers.add(driver);
 	} catch (IllegalAccessException iae) {
