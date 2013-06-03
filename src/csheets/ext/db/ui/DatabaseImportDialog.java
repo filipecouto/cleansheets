@@ -35,11 +35,15 @@ import javax.swing.JList;
  */
 
 public class DatabaseImportDialog extends JDialog {
+    
     private JFileChooser fileChooser;
     private JTextField url;
     private JTextField username;
     private JTextField password;
+    private JComboBox<String> format; 
     private JList tables;
+    private JRadioButton currentSheet;
+    private JRadioButton newSheet;
 
     private JPanel panelButtons;
 
@@ -48,7 +52,7 @@ public class DatabaseImportDialog extends JDialog {
     private SpreadsheetTable table;
 
     public DatabaseImportDialog(DatabaseExtension extension) {
-	super((JFrame) null, "Import to Spreadsheet", true);
+	super((JFrame) null, "Import from database", true);
 
 	this.extension = extension;
 
@@ -114,7 +118,7 @@ public class DatabaseImportDialog extends JDialog {
 
 	    @Override
 	    public void run() {
-		if (exportController == null) {
+		/*if (exportController == null) {
 		    exportController = new DatabaseExportController();
 		    exportController.setDriver(extension.getAvailableDrivers()
 			    .get(format.getSelectedIndex()));
@@ -162,7 +166,8 @@ public class DatabaseImportDialog extends JDialog {
 					+ e.getMessage(), "Error",
 				JOptionPane.PLAIN_MESSAGE);
 		    }
-		}
+		}*/
+		
 		enableButtons(true);
 		setVisible(false);
 	    }
@@ -178,10 +183,9 @@ public class DatabaseImportDialog extends JDialog {
 	layout.setAutoCreateContainerGaps(true);
 
 	final JLabel lUrl = new JLabel("URL");
-	final JLabel lTableName = new JLabel("Table name");
-	final JLabel lFormat = new JLabel("Format");
-	final JLabel lExport = new JLabel("Export");
-	final JLabel lUserName = new JLabel("User name");
+	final JLabel lExport = new JLabel("Import");
+	final JLabel lFormat = new JLabel("Driver");
+	final JLabel lUserName = new JLabel("Username");
 	final JLabel lPassword = new JLabel("Password");
 
 	url = new JTextField();
@@ -196,7 +200,6 @@ public class DatabaseImportDialog extends JDialog {
 		url.selectAll();
 	    }
 	});
-	tableName = new JTextField();
 
 	final List<DatabaseInterface> availableDrivers = extension
 		.getAvailableDrivers();
@@ -215,13 +218,13 @@ public class DatabaseImportDialog extends JDialog {
 	    }
 	});
 
-	JPanel export = new JPanel();
-	export.setLayout(new BoxLayout(export, BoxLayout.Y_AXIS));
+	JPanel importPanel = new JPanel();
+	importPanel.setLayout(new BoxLayout(importPanel, BoxLayout.Y_AXIS));
 
-	exportWhole = new JRadioButton("Whole current sheet");
-	export.add(exportWhole);
-	exportSelected = new JRadioButton("Selected area");
-	export.add(exportSelected);
+	newSheet = new JRadioButton("Create a new sheet");
+	importPanel.add(newSheet);
+	currentSheet = new JRadioButton("To current sheet");
+	importPanel.add(currentSheet);
 
 	username = new JTextField();
 	username.setEnabled(false);
@@ -235,14 +238,11 @@ public class DatabaseImportDialog extends JDialog {
 			layout.createSequentialGroup().addComponent(lUrl)
 				.addComponent(url))
 		.addGroup(
-			layout.createSequentialGroup().addComponent(lTableName)
-				.addComponent(tableName))
-		.addGroup(
 			layout.createSequentialGroup().addComponent(lFormat)
 				.addComponent(format))
 		.addGroup(
 			layout.createSequentialGroup().addComponent(lExport)
-				.addComponent(export))
+				.addComponent(importPanel))
 		.addGroup(
 			layout.createSequentialGroup().addComponent(lUserName)
 				.addComponent(username))
@@ -258,16 +258,11 @@ public class DatabaseImportDialog extends JDialog {
 		.addGroup(
 			layout.createParallelGroup(
 				GroupLayout.Alignment.BASELINE)
-				.addComponent(lTableName)
-				.addComponent(tableName))
-		.addGroup(
-			layout.createParallelGroup(
-				GroupLayout.Alignment.BASELINE)
 				.addComponent(lFormat).addComponent(format))
 		.addGroup(
 			layout.createParallelGroup(
 				GroupLayout.Alignment.BASELINE)
-				.addComponent(lExport).addComponent(export))
+				.addComponent(lExport).addComponent(importPanel))
 		.addGroup(
 			layout.createParallelGroup(
 				GroupLayout.Alignment.BASELINE)
@@ -278,8 +273,8 @@ public class DatabaseImportDialog extends JDialog {
 				.addComponent(lPassword).addComponent(password)));
 
 	ButtonGroup group = new ButtonGroup();
-	group.add(exportSelected);
-	group.add(exportWhole);
+	group.add(currentSheet);
+	group.add(newSheet);
 
 	// prepare GUI for this driver
 	if (availableDrivers.size() != 0) {
@@ -312,8 +307,8 @@ public class DatabaseImportDialog extends JDialog {
 	} else
 	    hasInterestingSelection = false;
 
-	exportSelected.setEnabled(hasInterestingSelection);
-	exportSelected.setSelected(hasInterestingSelection);
-	exportWhole.setSelected(!hasInterestingSelection);
+	currentSheet.setEnabled(hasInterestingSelection);
+	currentSheet.setSelected(hasInterestingSelection);
+	newSheet.setSelected(!hasInterestingSelection);
     }
 }
