@@ -19,12 +19,12 @@ public class DatabaseExtension extends Extension {
     }
 
     /**
-     * Gets all available export drivers (DatabaseExportInterface's) gathering
+     * Gets all available export drivers (DatabaseInterface's) gathering
      * them from the DatabaseDriverManager
      * 
      * @return A list containing all available drivers
      */
-    public List<DatabaseExportInterface> getAvailableDrivers() {
+    public List<DatabaseInterface> getAvailableDrivers() {
 	return DatabaseDriverManager.getInstance().getAvailableDrivers();
     }
 
