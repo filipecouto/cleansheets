@@ -1,25 +1,25 @@
 package csheets.ext.db;
 
 /**
- * Class in charge of communicating with the DatabaseExportInterface drivers in
+ * Class in charge of communicating with the DatabaseInterface drivers in
  * order to export data according to its attributes.
  * 
  * @author gil_1110484 & Filipe_1110688
  */
 public class DatabaseExportBuilder {
-    private DatabaseExportInterface driver; // database driver
+    private DatabaseInterface driver; // database driver
     private String tableName; // table name
     private String database; // database name
     private String[] columns; // columns for the table
     private String[][] values; // values for the table
     private boolean createTable;
 
-    public DatabaseExportBuilder(DatabaseExportInterface driver) {
+    public DatabaseExportBuilder(DatabaseInterface driver) {
 	setDriver(driver);
     }
 
     // getters & setters
-    public DatabaseExportInterface getDriver() {
+    public DatabaseInterface getDriver() {
 	return driver;
     }
 
@@ -43,7 +43,7 @@ public class DatabaseExportBuilder {
 	return createTable;
     }
 
-    public void setDriver(DatabaseExportInterface driver) {
+    public void setDriver(DatabaseInterface driver) {
 	this.driver = driver;
     }
 
