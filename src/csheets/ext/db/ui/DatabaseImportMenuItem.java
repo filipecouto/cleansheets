@@ -13,7 +13,7 @@ import csheets.ui.ctrl.FocusOwnerAction;
 public class DatabaseImportMenuItem extends FocusOwnerAction {
     private DatabaseExtension extension;
 
-    private DatabaseExportDialog dialog;
+    private DatabaseImportDialog dialog;
 
     public DatabaseImportMenuItem(DatabaseExtension extension) {
 	this.extension = extension;
@@ -22,7 +22,7 @@ public class DatabaseImportMenuItem extends FocusOwnerAction {
     @Override
     public void actionPerformed(ActionEvent e) {
 	if (dialog == null) {
-	    dialog = new DatabaseExportDialog(extension);
+	    dialog = new DatabaseImportDialog(extension);
 	}
 	dialog.prepareDialog(focusOwner);
 	dialog.setVisible(true);
