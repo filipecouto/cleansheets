@@ -58,18 +58,6 @@ tryAgain:
 		try {   // for char stream error handling
 			try {   // for lexical error handling
 				switch ( LA(1)) {
-				case '$':  case 'a':  case 'b':  case 'c':
-				case 'd':  case 'e':  case 'f':  case 'g':
-				case 'h':  case 'i':  case 'j':  case 'k':
-				case 'l':  case 'm':  case 'n':  case 'o':
-				case 'p':  case 'q':  case 'r':  case 's':
-				case 't':  case 'u':  case 'v':  case 'w':
-				case 'x':  case 'y':  case 'z':
-				{
-					mALPHABETICAL(true);
-					theRetToken=_returnToken;
-					break;
-				}
 				case '(':
 				{
 					mLPAR(true);
@@ -181,7 +169,15 @@ tryAgain:
 					break;
 				}
 				default:
-					if ((LA(1)==':') && (LA(2)=='=')) {
+					if ((LA(1)=='w') && (LA(2)=='h') && (LA(3)=='i') && (LA(4)=='l')) {
+						mWHILE(true);
+						theRetToken=_returnToken;
+					}
+					else if ((_tokenSet_0.member(LA(1))) && (_tokenSet_1.member(LA(2))) && (true) && (true)) {
+						mALPHABETICAL(true);
+						theRetToken=_returnToken;
+					}
+					else if ((LA(1)==':') && (LA(2)=='=')) {
 						mATR(true);
 						theRetToken=_returnToken;
 					}
@@ -235,6 +231,19 @@ tryAgain:
 	}
 }
 
+	public final void mWHILE(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
+		int _ttype; Token _token=null; int _begin=text.length();
+		_ttype = WHILE;
+		int _saveIndex;
+		
+		match("while");
+		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
+			_token = makeToken(_ttype);
+			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));
+		}
+		_returnToken = _token;
+	}
+	
 	protected final void mLETTER(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
 		int _ttype; Token _token=null; int _begin=text.length();
 		_ttype = LETTER;
@@ -255,49 +264,49 @@ tryAgain:
 		_ttype = ALPHABETICAL;
 		int _saveIndex;
 		
-		boolean synPredMatched44 = false;
-		if ((((LA(1) >= 'a' && LA(1) <= 'z')) && (_tokenSet_0.member(LA(2))) && (true) && (true))) {
-			int _m44 = mark();
-			synPredMatched44 = true;
+		boolean synPredMatched47 = false;
+		if ((((LA(1) >= 'a' && LA(1) <= 'z')) && (_tokenSet_2.member(LA(2))) && (true) && (true))) {
+			int _m47 = mark();
+			synPredMatched47 = true;
 			inputState.guessing++;
 			try {
 				{
 				{
-				int _cnt43=0;
-				_loop43:
+				int _cnt46=0;
+				_loop46:
 				do {
 					if (((LA(1) >= 'a' && LA(1) <= 'z'))) {
 						mLETTER(false);
 					}
 					else {
-						if ( _cnt43>=1 ) { break _loop43; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+						if ( _cnt46>=1 ) { break _loop46; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 					}
 					
-					_cnt43++;
+					_cnt46++;
 				} while (true);
 				}
 				mLPAR(false);
 				}
 			}
 			catch (RecognitionException pe) {
-				synPredMatched44 = false;
+				synPredMatched47 = false;
 			}
-			rewind(_m44);
+			rewind(_m47);
 			inputState.guessing--;
 		}
-		if ( synPredMatched44 ) {
+		if ( synPredMatched47 ) {
 			{
-			int _cnt46=0;
-			_loop46:
+			int _cnt49=0;
+			_loop49:
 			do {
 				if (((LA(1) >= 'a' && LA(1) <= 'z'))) {
 					mLETTER(false);
 				}
 				else {
-					if ( _cnt46>=1 ) { break _loop46; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt49>=1 ) { break _loop49; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt46++;
+				_cnt49++;
 			} while (true);
 			}
 			_saveIndex=text.length();
@@ -314,7 +323,7 @@ tryAgain:
 						
 			}
 		}
-		else if ((_tokenSet_1.member(LA(1))) && (_tokenSet_2.member(LA(2))) && (true) && (true)) {
+		else if ((_tokenSet_0.member(LA(1))) && (_tokenSet_3.member(LA(2))) && (true) && (true)) {
 			{
 			switch ( LA(1)) {
 			case '$':
@@ -384,17 +393,17 @@ tryAgain:
 			}
 			}
 			{
-			int _cnt51=0;
-			_loop51:
+			int _cnt54=0;
+			_loop54:
 			do {
 				if (((LA(1) >= '0' && LA(1) <= '9'))) {
 					mDIGIT(false);
 				}
 				else {
-					if ( _cnt51>=1 ) { break _loop51; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt54>=1 ) { break _loop54; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt51++;
+				_cnt54++;
 			} while (true);
 			}
 			if ( inputState.guessing==0 ) {
@@ -462,15 +471,15 @@ tryAgain:
 		mQUOT(false);
 		text.setLength(_saveIndex);
 		{
-		_loop54:
+		_loop57:
 		do {
 			// nongreedy exit test
-			if ((LA(1)=='"') && (true)) break _loop54;
+			if ((LA(1)=='"') && (true)) break _loop57;
 			if (((LA(1) >= '\u0000' && LA(1) <= '\u007f')) && ((LA(2) >= '\u0000' && LA(2) <= '\u007f'))) {
 				matchNot(EOF_CHAR);
 			}
 			else {
-				break _loop54;
+				break _loop57;
 			}
 			
 		} while (true);
@@ -504,34 +513,34 @@ tryAgain:
 		int _saveIndex;
 		
 		{
-		int _cnt58=0;
-		_loop58:
+		int _cnt61=0;
+		_loop61:
 		do {
 			if (((LA(1) >= '0' && LA(1) <= '9'))) {
 				mDIGIT(false);
 			}
 			else {
-				if ( _cnt58>=1 ) { break _loop58; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+				if ( _cnt61>=1 ) { break _loop61; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 			}
 			
-			_cnt58++;
+			_cnt61++;
 		} while (true);
 		}
 		{
 		if ((LA(1)==',')) {
 			mCOMMA(false);
 			{
-			int _cnt61=0;
-			_loop61:
+			int _cnt64=0;
+			_loop64:
 			do {
 				if (((LA(1) >= '0' && LA(1) <= '9'))) {
 					mDIGIT(false);
 				}
 				else {
-					if ( _cnt61>=1 ) { break _loop61; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt64>=1 ) { break _loop64; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt61++;
+				_cnt64++;
 			} while (true);
 			}
 		}
@@ -878,19 +887,24 @@ tryAgain:
 	
 	
 	private static final long[] mk_tokenSet_0() {
-		long[] data = { 1099511627776L, 576460743713488896L, 0L, 0L};
+		long[] data = { 68719476736L, 576460743713488896L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
 	private static final long[] mk_tokenSet_1() {
-		long[] data = { 68719476736L, 576460743713488896L, 0L, 0L};
+		long[] data = { 287950069406105600L, 576460743713488896L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
 	private static final long[] mk_tokenSet_2() {
-		long[] data = { 287948969894477824L, 576460743713488896L, 0L, 0L};
+		long[] data = { 1099511627776L, 576460743713488896L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
+	private static final long[] mk_tokenSet_3() {
+		long[] data = { 287948969894477824L, 576460743713488896L, 0L, 0L};
+		return data;
+	}
+	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
 	
 	}

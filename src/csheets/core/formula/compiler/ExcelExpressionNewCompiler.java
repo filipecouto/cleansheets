@@ -23,6 +23,7 @@ import csheets.core.formula.lang.Language;
 import csheets.core.formula.lang.RangeReference;
 import csheets.core.formula.lang.ReferenceOperation;
 import csheets.core.formula.lang.UnknownElementException;
+import csheets.core.formula.lang.WhileCycle;
 
 import csheets.core.formula.newcompiler.FormulaLexer;
 import csheets.core.formula.newcompiler.FormulaParser;
@@ -73,10 +74,19 @@ public class ExcelExpressionNewCompiler implements ExpressionCompiler {
 	 */
 	protected Expression convert(Cell cell, AST node)
 			throws FormulaCompilationException {
-		// System.out.println("Converting node '" + node.getText() + "' of tree '"
-		// + node.toStringTree() + "' with " + node.getNumberOfChildren()
-		// + " children.");
-		if (node.getText().equals(";")) {
+		final int type = node.getType();
+		/*System.out.println("Converting node '" + node.getText() + "' (" + type
+				+ ") of tree '" + node.toStringTree() + "' with "
+				+ node.getNumberOfChildren() + " children.");*/
+		if (type == FormulaParserTokenTypes.WHILE) {
+			AST exps = node.getFirstChild().getFirstChild();
+			Expression stopCriteria = convert(cell, exps);
+			List<Expression> args = new ArrayList<Expression>();
+			while ((exps = exps.getNextSibling()) != null)
+				args.add(convert(cell, exps));
+			Expression[] argArray = args.toArray(new Expression[args.size()]);
+			return new WhileCycle(stopCriteria, argArray);
+		} else if (type == FormulaParserTokenTypes.LBRAC) {
 			ExpressionSet exps = new ExpressionSet();
 			AST exp = node.getFirstChild();
 			do {
@@ -86,7 +96,7 @@ public class ExcelExpressionNewCompiler implements ExpressionCompiler {
 		} else {
 			if (node.getNumberOfChildren() == 0) {
 				try {
-					switch (node.getType()) {
+					switch (type) {
 						case FormulaParserTokenTypes.NUMBER:
 							return new Literal(Value.parseNumericValue(node.getText()));
 						case FormulaParserTokenTypes.STRING:

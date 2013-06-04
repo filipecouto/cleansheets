@@ -35,11 +35,19 @@ options {
  * The start rule for formula expressions.
  */
 content
-	: HASHTAG! ( expression | (LBRAC! (expression SEMI^)+ RBRAC!) ) EOF!
+	: HASHTAG! ( expression | expressions ) EOF!
+	;
+
+expressions
+	: LBRAC^ expression (SEMI! expression)+ (SEMI!)? RBRAC!
 	;
 
 expression
-    : (attribution|comparison)
+    : (whilecycle|attribution|comparison)
+	;
+	
+whilecycle
+	: WHILE^ expressions
 	;
 
 attribution
@@ -117,6 +125,9 @@ options {
 	caseSensitive = false;
 	caseSensitiveLiterals = false;
 }
+
+/* Keywords */
+WHILE	: "while";
 
 /* Function calls, named ranges and cell references */
 protected LETTER: ('a'..'z') ;

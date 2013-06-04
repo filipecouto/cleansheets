@@ -72,7 +72,7 @@ public class Attribution implements BinaryOperator {
 	}
 
 	public Value.Type getOperandValueType() {
-		return Value.Type.NUMERIC;
+		return Value.Type.UNDEFINED;
 	}
 
 	public String toString() {
