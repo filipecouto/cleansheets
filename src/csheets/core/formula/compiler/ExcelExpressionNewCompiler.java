@@ -23,7 +23,7 @@ import csheets.core.formula.lang.Language;
 import csheets.core.formula.lang.RangeReference;
 import csheets.core.formula.lang.ReferenceOperation;
 import csheets.core.formula.lang.UnknownElementException;
-import csheets.core.formula.lang.WhileCycle;
+import csheets.core.formula.lang.Cycle;
 
 import csheets.core.formula.newcompiler.FormulaLexer;
 import csheets.core.formula.newcompiler.FormulaParser;
@@ -85,7 +85,7 @@ public class ExcelExpressionNewCompiler implements ExpressionCompiler {
 			while ((exps = exps.getNextSibling()) != null)
 				args.add(convert(cell, exps));
 			Expression[] argArray = args.toArray(new Expression[args.size()]);
-			return new WhileCycle(stopCriteria, argArray);
+			return new Cycle(stopCriteria, argArray);
 		} else if (type == FormulaParserTokenTypes.LBRAC) {
 			ExpressionSet exps = new ExpressionSet();
 			AST exp = node.getFirstChild();
