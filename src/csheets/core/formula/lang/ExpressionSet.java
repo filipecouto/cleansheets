@@ -27,13 +27,6 @@ public class ExpressionSet implements Expression {
 	 */
 	public void addExpression(Expression expression) {
 		if (expression != null) {
-			try {
-				System.out.println("Adding expression (" + expression.evaluate()
-						+ ")...");
-			} catch (IllegalValueTypeException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			expressions.add(expression);
 		}
 	}
@@ -49,10 +42,10 @@ public class ExpressionSet implements Expression {
 
 	@Override
 	public Object accept(ExpressionVisitor visitor) {
-//		Object result = null;
-//		for (Expression e : expressions) {
-//			result = e.accept(visitor);
-//		}
+		// Object result = null;
+		// for (Expression e : expressions) {
+		// result = e.accept(visitor);
+		// }
 		return null;
 	}
 
