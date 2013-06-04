@@ -57,14 +57,14 @@ public class Attribution implements BinaryOperator {
 
 	public Value applyTo(Expression leftOperand, Expression rightOperand)
 			throws IllegalValueTypeException {
-		CellReference cellRef = (CellReference) leftOperand;
-		Cell newCell = cellRef.getCell();
+		final CellReference cellRef = (CellReference) leftOperand;
+		final Cell newCell = cellRef.getCell();
+		final Value value = rightOperand.evaluate();
 		try {
-			newCell.setContent(rightOperand.evaluate().toString());
+			newCell.setContent(value.toString());
 		} catch (FormulaCompilationException e) {
-			System.out.println(e);
 		}
-		return new Value(rightOperand.evaluate().toDouble());
+		return value;
 	}
 
 	public String getIdentifier() {
