@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
+import java.util.List;
 
 /**
  * Class responsible for working with H2 databases
@@ -99,5 +100,10 @@ public class H2Driver implements DatabaseInterface {
     @Override
     public boolean requiresPassword() {
 	return false;
+    }
+
+    @Override
+    public List<String> getTables() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
