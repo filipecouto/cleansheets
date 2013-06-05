@@ -29,10 +29,21 @@ public class Cycle implements Expression {
 
 	@Override
 	public Object accept(ExpressionVisitor visitor) {
-//		Object accept = null;
-//		for (Expression e : expressions) {
-//			accept = e.accept(visitor);
-//		}
-		return null;
+		stopCriteria.accept(visitor);
+		Object accept = null;
+		for (Expression e : expressions) {
+			accept = e.accept(visitor);
+		}
+		return accept;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("while(" + stopCriteria + ") {");
+		for (Expression e : expressions) {
+			builder.append(" *" + e.toString());
+		}
+		builder.append('}');
+		return builder.toString();
 	}
 }

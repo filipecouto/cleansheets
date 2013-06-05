@@ -41,6 +41,7 @@ import csheets.ext.ExtensionManager;
 
 /**
  * The implementation of the <code>Cell</code> interface.
+ * 
  * @author Einar Pehrson
  */
 public class CellImpl implements Cell {
@@ -70,19 +71,23 @@ public class CellImpl implements Cell {
 	private SortedSet<Cell> dependents = new TreeSet<Cell>();
 
 	/** The cell listeners that have been registered on the cell */
-	private transient List<CellListener> listeners
-		= new ArrayList<CellListener>();
+	private transient List<CellListener> listeners = new ArrayList<CellListener>();
 
 	/** The cell extensions that have been instantiated */
-	private transient Map<String, CellExtension> extensions = 
-		new HashMap<String, CellExtension>();
+	private transient Map<String, CellExtension> extensions = new HashMap<String, CellExtension>();
+
+	/** Used to avoid infinite loops due to formula languages supporting multiple expressions */ 
+	private transient boolean ignorePossibleRecursion = false;
 
 	/**
-	 * Creates a new cell at the given address in the given spreadsheet.
-	 * (not intended to be used directly).
+	 * Creates a new cell at the given address in the given spreadsheet. (not
+	 * intended to be used directly).
+	 * 
 	 * @see Spreadsheet#getCell(Address)
-	 * @param spreadsheet the spreadsheet
-	 * @param address the address of the cell
+	 * @param spreadsheet
+	 *           the spreadsheet
+	 * @param address
+	 *           the address of the cell
 	 */
 	CellImpl(Spreadsheet spreadsheet, Address address) {
 		this.spreadsheet = spreadsheet;
@@ -92,21 +97,27 @@ public class CellImpl implements Cell {
 	/**
 	 * Creates a new cell at the given address in the given spreadsheet,
 	 * initialized with the given content (not intended to be used directly).
+	 * 
 	 * @see Spreadsheet#getCell(Address)
-	 * @param spreadsheet the spreadsheet
-	 * @param address the address of the cell
-	 * @param content the content of the cell
-	 * @throws ExpressionSyntaxException if an incorrectly formatted formula was entered
+	 * @param spreadsheet
+	 *           the spreadsheet
+	 * @param address
+	 *           the address of the cell
+	 * @param content
+	 *           the content of the cell
+	 * @throws ExpressionSyntaxException
+	 *            if an incorrectly formatted formula was entered
 	 */
-	CellImpl(Spreadsheet spreadsheet, Address address, String content) throws FormulaCompilationException {
+	CellImpl(Spreadsheet spreadsheet, Address address, String content)
+			throws FormulaCompilationException {
 		this(spreadsheet, address);
 		storeContent(content);
 		reevaluate();
 	}
 
-/*
- * LOCATION
- */
+	/*
+	 * LOCATION
+	 */
 
 	public Spreadsheet getSpreadsheet() {
 		return spreadsheet;
@@ -116,9 +127,9 @@ public class CellImpl implements Cell {
 		return address;
 	}
 
-/*
- * VALUE
- */
+	/*
+	 * VALUE
+	 */
 
 	public Value getValue() {
 		return value;
@@ -128,6 +139,9 @@ public class CellImpl implements Cell {
 	 * Updates the cell's value, and fires an event if it changed.
 	 */
 	private void reevaluate() {
+		// Don't allow a formula that edits something to recall us
+		ignorePossibleRecursion = true;
+		
 		Value oldValue = value;
 
 		// Fetches the new value
@@ -145,8 +159,11 @@ public class CellImpl implements Cell {
 		value = newValue;
 
 		// Checks for change
-		if (!newValue.equals(oldValue))
+		if (newValue == null || !newValue.equals(oldValue))
 			fireValueChanged();
+		
+		// It's safe again
+		ignorePossibleRecursion = false;
 	}
 
 	/**
@@ -161,13 +178,13 @@ public class CellImpl implements Cell {
 		// Notifies dependents of the changed value
 		for (Cell dependent : dependents) {
 			if (dependent instanceof CellImpl)
-				((CellImpl)dependent).reevaluate();
+				((CellImpl) dependent).reevaluate();
 		}
 	}
 
-/*
- * CONTENT
- */
+	/*
+	 * CONTENT
+	 */
 
 	public String getContent() {
 		return content;
@@ -180,7 +197,8 @@ public class CellImpl implements Cell {
 	public void clear() {
 		try {
 			setContent("");
-		} catch (FormulaCompilationException e) {}
+		} catch (FormulaCompilationException e) {
+		}
 		fireCellCleared();
 	}
 
@@ -188,14 +206,25 @@ public class CellImpl implements Cell {
 		if (!this.content.equals(content)) {
 			storeContent(content);
 			fireContentChanged();
-			reevaluate();
+			// Are we about to get stuck in an infinite loop?
+			if (ignorePossibleRecursion) {
+				// Yes, then let's just prepare our new text to show
+				Value newValue = Value.parseValue(content);
+				value = newValue;
+			} else {
+				// No, it's safe to evaluate the content
+				reevaluate();
+			}
 		}
 	}
 
 	/**
 	 * Updates the cell's content, and registers dependencies.
-	 * @param content the content to store
-	 * @throws FormulaCompilationException if an incorrectly formatted formula was entered
+	 * 
+	 * @param content
+	 *           the content to store
+	 * @throws FormulaCompilationException
+	 *            if an incorrectly formatted formula was entered
 	 */
 	private void storeContent(String content) throws FormulaCompilationException {
 		// Parses formula
@@ -215,7 +244,7 @@ public class CellImpl implements Cell {
 	private void updateDependencies() {
 		// Deregisters as dependent with each old precedent
 		for (Cell precedent : precedents)
-			((CellImpl)precedent).removeDependent(this);
+			((CellImpl) precedent).removeDependent(this);
 		precedents.clear();
 
 		if (formula != null)
@@ -224,7 +253,7 @@ public class CellImpl implements Cell {
 				for (Cell precedent : reference.getCells()) {
 					if (!this.equals(precedent)) {
 						precedents.add(precedent);
-						((CellImpl)precedent).addDependent(this);
+						((CellImpl) precedent).addDependent(this);
 					}
 				}
 	}
@@ -249,9 +278,9 @@ public class CellImpl implements Cell {
 			extension.cellCleared(this);
 	}
 
-/*
- * DEPENDENCIES
- */
+	/*
+	 * DEPENDENCIES
+	 */
 
 	public SortedSet<Cell> getPrecedents() {
 		return new TreeSet<Cell>(precedents);
@@ -264,7 +293,9 @@ public class CellImpl implements Cell {
 	/**
 	 * Adds the given cell as a dependent of this cell, to be notified when its
 	 * value changes.
-	 * @param cell the dependent to add
+	 * 
+	 * @param cell
+	 *           the dependent to add
 	 */
 	private void addDependent(Cell cell) {
 		dependents.add(cell);
@@ -273,7 +304,9 @@ public class CellImpl implements Cell {
 
 	/**
 	 * Removes the given cell as a dependent of this cell.
-	 * @param cell the dependent to remove
+	 * 
+	 * @param cell
+	 *           the dependent to remove
 	 */
 	private void removeDependent(Cell cell) {
 		dependents.remove(cell);
@@ -290,24 +323,23 @@ public class CellImpl implements Cell {
 			extension.dependentsChanged(this);
 	}
 
-/*
- * CLIPBOARD
- */
+	/*
+	 * CLIPBOARD
+	 */
 
 	public void copyFrom(Cell source) {
 		// Copies content
 		if (source.getFormula() == null)
 			try {
 				setContent(source.getContent());
-			} catch (FormulaCompilationException e) {}
+			} catch (FormulaCompilationException e) {
+			}
 		else {
 			// Copies and transposes formula
-			this.formula = new Formula(this,
-				new ReferenceTransposer(
-					getAddress().getColumn() - source.getAddress().getColumn(),
-					getAddress().getRow() - source.getAddress().getRow()
-				).getExpression(source.getFormula().getExpression())
-			);
+			this.formula = new Formula(this, new ReferenceTransposer(getAddress()
+					.getColumn() - source.getAddress().getColumn(), getAddress()
+					.getRow() - source.getAddress().getRow()).getExpression(source
+					.getFormula().getExpression()));
 			this.content = source.getContent().charAt(0) + formula.toString();
 			updateDependencies();
 			fireContentChanged();
@@ -320,13 +352,15 @@ public class CellImpl implements Cell {
 		// Change the address of the source cell
 		// Remove the target cell from the spreadsheet
 		// Flag the target cell as overwritten!
-		
+
 		// fireCellCopied(source);
 	}
 
 	/**
 	 * Notifies all registered listeners that the cell was copied (or moved).
-	 * @param source the cell from which data was copied
+	 * 
+	 * @param source
+	 *           the cell from which data was copied
 	 */
 	private void fireCellCopied(Cell source) {
 		for (CellListener listener : listeners)
@@ -335,9 +369,9 @@ public class CellImpl implements Cell {
 			extension.cellCopied(this, source);
 	}
 
-/*
- * EVENT HANDLING
- */
+	/*
+	 * EVENT HANDLING
+	 */
 
 	public void addCellListener(CellListener listener) {
 		listeners.add(listener);
@@ -351,9 +385,9 @@ public class CellImpl implements Cell {
 		return listeners.toArray(new CellListener[listeners.size()]);
 	}
 
-/*
- * EXTENSIONS
- */
+	/*
+	 * EXTENSIONS
+	 */
 
 	public Cell getExtension(String name) {
 		// Looks for an existing cell extension
@@ -370,15 +404,18 @@ public class CellImpl implements Cell {
 		return extension;
 	}
 
-/*
- * GENERAL
- */
+	/*
+	 * GENERAL
+	 */
 
 	/**
-	 * Compares this cell with the specified cell for order,
-	 * by comparing their addresses.
-	 * @param cell the cell to be compared
-	 * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+	 * Compares this cell with the specified cell for order, by comparing their
+	 * addresses.
+	 * 
+	 * @param cell
+	 *           the cell to be compared
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
 	 */
 	public int compareTo(Cell cell) {
 		if (spreadsheet != cell.getSpreadsheet())
@@ -389,6 +426,7 @@ public class CellImpl implements Cell {
 
 	/**
 	 * Returns a string representation of the cell.
+	 * 
 	 * @return the cell's content
 	 */
 	public String toString() {
@@ -398,11 +436,16 @@ public class CellImpl implements Cell {
 	/**
 	 * Customizes deserialization by recreating the listener list and by catching
 	 * exceptions when extensions are not found.
-	 * @param stream the object input stream from which the object is to be read
-	 * @throws IOException If any of the usual Input/Output related exceptions occur
-	 * @throws ClassNotFoundException If the class of a serialized object cannot be found.
+	 * 
+	 * @param stream
+	 *           the object input stream from which the object is to be read
+	 * @throws IOException
+	 *            If any of the usual Input/Output related exceptions occur
+	 * @throws ClassNotFoundException
+	 *            If the class of a serialized object cannot be found.
 	 */
-	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+	private void readObject(ObjectInputStream stream) throws IOException,
+			ClassNotFoundException {
 		stream.defaultReadObject();
 		listeners = new ArrayList<CellListener>();
 
@@ -411,16 +454,20 @@ public class CellImpl implements Cell {
 		int extCount = stream.readInt();
 		for (int i = 0; i < extCount; i++) {
 			try {
-				CellExtension extension = (CellExtension)stream.readObject();
+				CellExtension extension = (CellExtension) stream.readObject();
 				extensions.put(extension.getName(), extension);
-			} catch (ClassNotFoundException e) {}
+			} catch (ClassNotFoundException e) {
+			}
 		}
 	}
 
 	/**
 	 * Customizes serialization by writing extensions separately.
-	 * @param stream the object output stream to which the object is to be written
-	 * @throws IOException If any of the usual Input/Output related exceptions occur
+	 * 
+	 * @param stream
+	 *           the object output stream to which the object is to be written
+	 * @throws IOException
+	 *            If any of the usual Input/Output related exceptions occur
 	 */
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.defaultWriteObject();

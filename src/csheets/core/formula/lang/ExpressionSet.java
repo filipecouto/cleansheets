@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import csheets.core.IllegalValueTypeException;
 import csheets.core.Value;
+import csheets.core.formula.BinaryOperation;
 import csheets.core.formula.Expression;
 import csheets.core.formula.util.ExpressionVisitor;
 
@@ -42,11 +43,19 @@ public class ExpressionSet implements Expression {
 
 	@Override
 	public Object accept(ExpressionVisitor visitor) {
-		// Object result = null;
-		// for (Expression e : expressions) {
-		// result = e.accept(visitor);
-		// }
-		return null;
+		Object result = null;
+		for (Expression e : expressions) {
+			result = e.accept(visitor);
+		}
+		return result;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (Expression e : expressions) {
+			builder.append(" *" + e.toString());
+		}
+		return builder.toString();
+	}
 }
