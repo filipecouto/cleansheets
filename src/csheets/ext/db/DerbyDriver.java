@@ -123,4 +123,8 @@ public class DerbyDriver implements DatabaseInterface{
 	return false;
     }
     
+    @Override
+    public String[][] getData(String table) {
+	return null;
+    }
 }

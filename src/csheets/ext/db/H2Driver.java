@@ -126,4 +126,9 @@ public class H2Driver implements DatabaseInterface {
         }
         return tables;
     }
+    
+    @Override
+    public String[][] getData(String table) {
+	return null;
+    }
 }

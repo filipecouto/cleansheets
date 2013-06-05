@@ -87,4 +87,11 @@ public interface DatabaseInterface {
      
     public boolean requiresFile();
     
+    
+    /**
+     * 
+     * 
+     */
+    
+    public String[][] getData(String table);
 }

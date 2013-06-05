@@ -129,5 +129,10 @@ public class HSQLdbDriver implements DatabaseInterface {
 	}
 	return tables;
     }
+    
+    @Override
+    public String[][] getData(String table) {
+	return null;
+    }
 
 }
