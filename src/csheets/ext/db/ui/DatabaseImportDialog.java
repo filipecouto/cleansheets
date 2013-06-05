@@ -20,17 +20,15 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import csheets.core.Cell;
-import csheets.ext.db.DatabaseExportController;
+import csheets.ext.db.DatabaseImportController;
 import csheets.ext.db.DatabaseInterface;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.sheet.SpreadsheetTable;
-import javax.swing.JList;
 
 /*
  * 
@@ -44,7 +42,7 @@ public class DatabaseImportDialog extends JDialog {
     private JTextField username;
     private JTextField password;
     private JComboBox<String> format; 
-    private JList tables;
+    private JComboBox<String> tables;
     private JRadioButton currentSheet;
     private JRadioButton newSheet;
     private JButton browse;
@@ -62,10 +60,6 @@ public class DatabaseImportDialog extends JDialog {
 
 	getContentPane().setLayout(
 		new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-
-	/*fileChooser = new JFileChooser();
-	fileChooser.remove(fileChooser.getComponentCount() - 1);
-	add(fileChooser);*/
 
 	add(createOptionsPanel());
 	add(createButtonsPanel());
@@ -118,60 +112,32 @@ public class DatabaseImportDialog extends JDialog {
 	revalidate();
 	repaint();
 	Thread exportThread = new Thread(new Runnable() {
-	    DatabaseExportController exportController;
+	    DatabaseImportController importController;
 
 	    @Override
 	    public void run() {
-		/*if (exportController == null) {
-		    exportController = new DatabaseExportController();
-		    exportController.setDriver(extension.getAvailableDrivers()
+		if (importController == null) {
+                    // controller
+		    importController = new DatabaseImportController();
+                    // driver
+		    importController.setDriver(extension.getAvailableDrivers()
 			    .get(format.getSelectedIndex()));
-		    if (exportWhole.isSelected()) {
-			exportController.setCells(table.getSpreadsheet());
-		    } else if (exportSelected.isSelected()) {
-			exportController.setCells(table.getSelectedCells());
-		    }
-		    exportController.setCreateTable(true);
+                    // URL
 		    String dbUrl = url.getText();
 		    if (!dbUrl.contains("/") && !dbUrl.contains("/"))
 			dbUrl = fileChooser.getCurrentDirectory()
 				.getAbsolutePath() + "/" + dbUrl;
-		    exportController.setDatabase(dbUrl.length() == 0 ? fileChooser
+		    importController.setDatabase(dbUrl.length() == 0 ? fileChooser
 			    .getSelectedFile().getAbsolutePath() : dbUrl);
-		    exportController.setTableName(tableName.getText());
+                    //----
+                    importController.setTableName(tables.getSelectedItem().toString());
+                    
 		}
 		try {
-		    exportController.export();
+		    importController.importM();
 		} catch (Exception e) {
-		    if (e.getMessage() != null
-			    && e.getMessage().equals("Table already exists")) {
-			Object[] options = { "Yes", "No" };
-			int n = JOptionPane
-				.showOptionDialog(
-					getContentPane(),
-					"Table already exists, would you like to append your data to the table? ",
-					"Table exists",
-					JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE, null,
-					options, options[1]);
-			switch (n) {
-			case 0:
-			    exportController.setCreateTable(false);
-			    run();
-			    return;
-			case 1:
-			    enableButtons(true);
-			    return;
-			}
-		    } else {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(getContentPane(),
-				"An error has occured while exporting your table: "
-					+ e.getMessage(), "Error",
-				JOptionPane.PLAIN_MESSAGE);
-		    }
-		}*/
-		
+                    System.out.println(e);
+		}
 		enableButtons(true);
 		setVisible(false);
 	    }
@@ -191,6 +157,7 @@ public class DatabaseImportDialog extends JDialog {
 	final JLabel lFormat = new JLabel("Driver");
 	final JLabel lUserName = new JLabel("Username");
 	final JLabel lPassword = new JLabel("Password");
+        final JLabel lTables = new JLabel("Tables");
 
 	JPanel urlBrowse = new JPanel();
 	urlBrowse.setLayout(new BoxLayout(urlBrowse, BoxLayout.X_AXIS));
@@ -218,6 +185,7 @@ public class DatabaseImportDialog extends JDialog {
 				    File curFile = chooser.getSelectedFile();
 				    DatabaseImportDialog.this.url
 					    .setText(curFile.getAbsolutePath());
+                                    DatabaseImportDialog.this.updateComboBox(curFile.getName());
 				}
 			    }
 			});
@@ -227,7 +195,7 @@ public class DatabaseImportDialog extends JDialog {
 	});
 
 	url = new JTextField();
-	url.setText("Choose a file from above or type here a new file or the URL of the database");
+	url.setText("");
 	url.addFocusListener(new FocusListener() {
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
@@ -249,6 +217,10 @@ public class DatabaseImportDialog extends JDialog {
 	for (int i = 0; i < availableDriverNames.length; i++) {
 	    availableDriverNames[i] = availableDrivers.get(i).getName();
 	}
+        
+        TableNamesAdapter adapter = new TableNamesAdapter();
+        tables = new JComboBox<String>();
+        tables.setModel(adapter);
 
 	format = new JComboBox<String>(availableDriverNames);
 	format.addItemListener(new ItemListener() {
@@ -281,6 +253,9 @@ public class DatabaseImportDialog extends JDialog {
 		.addGroup(
 			layout.createSequentialGroup().addComponent(lFormat)
 				.addComponent(format))
+                .addGroup(
+			layout.createSequentialGroup().addComponent(lTables)
+				.addComponent(tables))
 		.addGroup(
 			layout.createSequentialGroup().addComponent(lExport)
 				.addComponent(importPanel))
@@ -300,6 +275,10 @@ public class DatabaseImportDialog extends JDialog {
 			layout.createParallelGroup(
 				GroupLayout.Alignment.BASELINE)
 				.addComponent(lFormat).addComponent(format))
+                .addGroup(
+			layout.createParallelGroup(
+				GroupLayout.Alignment.BASELINE)
+				.addComponent(lTables).addComponent(tables))
 		.addGroup(
 			layout.createParallelGroup(
 				GroupLayout.Alignment.BASELINE)
@@ -328,6 +307,16 @@ public class DatabaseImportDialog extends JDialog {
     private void onFormatSelected(DatabaseInterface driver) {
 	username.setEnabled(driver.requiresUsername());
 	password.setEnabled(driver.requiresUsername());
+    }
+    
+    private void updateComboBox(String database) {
+        DatabaseImportController controller = new DatabaseImportController();
+        controller.setDatabase(database);
+        controller.setDriver(extension.getAvailableDrivers()
+			    .get(format.getSelectedIndex()));
+        List<String> values = controller.getTables();
+        TableNamesAdapter adapter = (TableNamesAdapter) tables.getModel();
+        adapter.update(values);
     }
 
     public void prepareDialog(SpreadsheetTable table) {
