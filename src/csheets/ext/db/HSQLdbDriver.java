@@ -106,6 +106,11 @@ public class HSQLdbDriver implements DatabaseInterface {
     }
 
     @Override
+    public boolean requiresFile() {
+	return true;
+    }
+
+    @Override
     public List<String> getTables() {
         List<String> tables = new ArrayList<String>();
         try{
