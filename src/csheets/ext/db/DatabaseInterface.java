@@ -1,5 +1,7 @@
 package csheets.ext.db;
 
+import java.util.List;
+
 /**
  * An interface to be implemented by many database drivers in order to establish
  * a communication with the application
@@ -73,9 +75,9 @@ public interface DatabaseInterface {
     
     /**
      * Invoked by the Import Controller to find the tables
-     * @return String [] name of tables
+     * @return List<String> name of tables
      */
     
-    public String [] getTables();
+    public List<String> getTables();
     
 }
