@@ -25,6 +25,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import csheets.core.Cell;
+import csheets.core.Spreadsheet;
 import csheets.ext.db.DatabaseImportController;
 import csheets.ext.db.DatabaseInterface;
 import csheets.ext.db.DatabaseExtension;
@@ -53,10 +54,11 @@ public class DatabaseImportDialog extends JDialog {
 
     private SpreadsheetTable table;
 
-    public DatabaseImportDialog(DatabaseExtension extension) {
+    public DatabaseImportDialog(DatabaseExtension extension, SpreadsheetTable table) {
 	super((JFrame) null, "Import from database", true);
 
 	this.extension = extension;
+	this.table = table;
 
 	getContentPane().setLayout(
 		new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -124,14 +126,13 @@ public class DatabaseImportDialog extends JDialog {
 			    .get(format.getSelectedIndex()));
                     // URL
 		    String dbUrl = url.getText();
-		    if (!dbUrl.contains("/") && !dbUrl.contains("/"))
-			dbUrl = fileChooser.getCurrentDirectory()
-				.getAbsolutePath() + "/" + dbUrl;
-		    importController.setDatabase(dbUrl.length() == 0 ? fileChooser
-			    .getSelectedFile().getAbsolutePath() : dbUrl);
+		    importController.setDatabase(dbUrl);
                     //----
                     importController.setTableName(tables.getSelectedItem().toString());
                     
+                    importController.setSpreadsheet(table.getSpreadsheet());
+                    
+                    importController.setCell(table.getSelectedCell());
 		}
 		try {
 		    importController.importM();
@@ -170,27 +171,14 @@ public class DatabaseImportDialog extends JDialog {
 		DatabaseImportDialog.this.fileChooser = new JFileChooser();
 		DatabaseImportDialog.this.fileChooser
 			.setMultiSelectionEnabled(false);
-		DatabaseImportDialog.this.fileChooser
-			.addPropertyChangeListener(new PropertyChangeListener() {
-
-			    @Override
-			    public void propertyChange(PropertyChangeEvent evt) {
-				if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY
-					.equals(evt.getPropertyName())) {
-				    JFileChooser chooser = (JFileChooser) evt
-					    .getSource();
-				    File oldFile = (File) evt.getOldValue();
-				    File newFile = (File) evt.getNewValue();
-
-				    File curFile = chooser.getSelectedFile();
-				    DatabaseImportDialog.this.url
-					    .setText(curFile.getAbsolutePath());
-                                    DatabaseImportDialog.this.updateComboBox(curFile.getName());
-				}
-			    }
-			});
-		DatabaseImportDialog.this.fileChooser.showDialog(
+		int status = DatabaseImportDialog.this.fileChooser.showDialog(
 			DatabaseImportDialog.this, "Choose File");
+		
+		if(status == JFileChooser.APPROVE_OPTION) {
+		    DatabaseImportDialog.this.url.setText(DatabaseImportDialog.this.fileChooser.getSelectedFile().getAbsolutePath());
+		} else {
+		    DatabaseImportDialog.this.url.setText("No file was selected");
+		}
 	    }
 	});
 
