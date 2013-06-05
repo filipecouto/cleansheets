@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,6 +126,35 @@ public class DerbyDriver implements DatabaseInterface{
     
     @Override
     public String[][] getData(String table) {
-	return null;
+        String sql = "Select * from "+table;
+        String [][] info=null;
+        int columnsNumber=0,rowsNumber=0,i=0,j=0;
+        try{
+            PreparedStatement statement = databaseConnection.prepareStatement(sql, 
+                ResultSet.TYPE_SCROLL_INSENSITIVE, 
+                ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = statement.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            columnsNumber = rsmd.getColumnCount();
+            rs.last();
+            rowsNumber = rs.getRow() + 1;
+            rs.beforeFirst();
+            System.out.println("Linhas = "+rowsNumber+" Colunas = "+columnsNumber);
+            info = new String[rowsNumber][columnsNumber];
+            for(j=1;j<=columnsNumber;j++){
+                info[i][j-1]=rsmd.getColumnName(j);
+            }
+            i++;
+            while(rs.next()){
+                for(j=1;j<=columnsNumber;j++){
+                    info[i][j-1]=rs.getString(j);
+                }
+                i++;
+            }
+            System.out.println("done");
+        }catch(SQLException e){
+            System.out.println(e);
+        }
+	return info;
     }
 }
