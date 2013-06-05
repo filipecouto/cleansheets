@@ -18,7 +18,7 @@ import csheets.core.formula.Literal;
 import csheets.core.formula.Reference;
 import csheets.core.formula.UnaryOperation;
 import csheets.core.formula.lang.CellReference;
-import csheets.core.formula.lang.Cycle;
+import csheets.core.formula.lang.Loop;
 import csheets.core.formula.lang.ExpressionSet;
 import csheets.core.formula.lang.Language;
 import csheets.core.formula.lang.RangeReference;
@@ -86,7 +86,7 @@ public class ExcelExpressionNewCompiler implements ExpressionCompiler {
 			while ((exps = exps.getNextSibling()) != null)
 				args.add(convert(cell, exps));
 			Expression[] argArray = args.toArray(new Expression[args.size()]);
-			return new Cycle(stopCriteria, argArray);
+			return new Loop(stopCriteria, argArray);
 		} else if (type == FormulaParserTokenTypes.LBRAC) {
 			ExpressionSet exps = new ExpressionSet();
 			AST exp = node.getFirstChild();

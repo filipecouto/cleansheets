@@ -6,12 +6,12 @@ import csheets.core.formula.Expression;
 import csheets.core.formula.util.ExpressionVisitor;
 
 /**
- * This Expression represents a cycle (initially made in order to support
+ * This Expression represents a loop (initially made in order to support
  * <code>whyledo</code> keyword).
  * 
  * @author Gil Castro (gil_1110484)
  */
-public class Cycle implements Expression {
+public class Loop implements Expression {
 	private static final long MAX_ITERATIONS = Integer.MAX_VALUE;
 
 	private static final long serialVersionUID = -8962867441373667963L;
@@ -20,16 +20,16 @@ public class Cycle implements Expression {
 	private Expression[] expressions;
 
 	/**
-	 * Constructor. Cycle will evaluate the given <code>expressions</code> while
+	 * Constructor. Loop will evaluate the given <code>expressions</code> while
 	 * <code>stopCriteria</code> is <code>true</code>.
 	 * 
 	 * @param stopCriteria
 	 *           an expression that should have boolean value which will
-	 *           determine when to stop the cycle
+	 *           determine when to stop the loop
 	 * @param expressions
-	 *           the expressions to evaluate while the cycle runs
+	 *           the expressions to evaluate while the loop runs
 	 */
-	public Cycle(Expression stopCriteria, Expression... expressions) {
+	public Loop(Expression stopCriteria, Expression... expressions) {
 		this.stopCriteria = stopCriteria;
 		this.expressions = expressions;
 	}
