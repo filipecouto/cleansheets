@@ -3,8 +3,10 @@ package csheets.ext.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.management.RuntimeErrorException;
@@ -105,7 +107,20 @@ public class HSQLdbDriver implements DatabaseInterface {
 
     @Override
     public List<String> getTables() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<String> tables = new ArrayList<String>();
+        try{
+            ResultSet rs = databaseConnection.getMetaData().getTables(null, "PUBLIC", "%",
+		    null);
+            while (rs.next()) {
+                tables.add(rs.getString(3));
+                System.out.println(rs.getString(3));
+            }
+            rs.close();
+            databaseConnection.close();
+        } catch(SQLException e){
+            System.out.println(e);
+        }
+        return tables;
     }
 
 }
