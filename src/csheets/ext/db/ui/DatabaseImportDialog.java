@@ -186,9 +186,11 @@ public class DatabaseImportDialog extends JDialog {
 		int status = DatabaseImportDialog.this.fileChooser.showDialog(
 			DatabaseImportDialog.this, "Choose File");
 		if (status == JFileChooser.APPROVE_OPTION) {
+		    
 		    DatabaseImportDialog.this.url
 			    .setText(DatabaseImportDialog.this.fileChooser
 				    .getSelectedFile().getName());
+		    updateComboBox(url.getText());
 		} else {
 		    DatabaseImportDialog.this.url
 			    .setText("No file was selected");
