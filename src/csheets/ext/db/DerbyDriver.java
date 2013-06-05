@@ -118,4 +118,9 @@ public class DerbyDriver implements DatabaseInterface{
         return tables;
     }
     
+    @Override
+    public boolean requiresFile() {
+	return false;
+    }
+    
 }
