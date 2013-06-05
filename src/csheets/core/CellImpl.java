@@ -88,7 +88,7 @@ public class CellImpl implements Cell {
 	/** Used to avoid infinite loops due to formula languages supporting multiple expressions */ 
 	private transient boolean ignorePossibleRecursion = false;
 
-	CellImpl() {
+	public CellImpl() {
 	
 	}
 	
