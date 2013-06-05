@@ -6,6 +6,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -204,6 +206,29 @@ public class DatabaseImportDialog extends JDialog {
 	    @Override
 	    public void focusGained(FocusEvent arg0) {
 		url.selectAll();
+	    }
+	});
+	
+	url.addKeyListener(new KeyListener() {
+	    
+	    @Override
+	    public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	    }
+	    
+	    @Override
+	    public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	    }
+	    
+	    @Override
+	    public void keyPressed(KeyEvent e) {
+		if(e.getKeyChar() == KeyEvent.VK_ENTER) {
+		    updateComboBox(url.getText());
+		}
+		
 	    }
 	});
 
