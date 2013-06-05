@@ -1,6 +1,5 @@
 package csheets.ext.db.ui;
 
-import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -23,13 +22,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileFilter;
 
 import csheets.core.Cell;
-import csheets.ext.db.DatabaseExportBuilder;
 import csheets.ext.db.DatabaseExportController;
 import csheets.ext.db.DatabaseInterface;
 import csheets.ext.db.DatabaseExtension;
@@ -45,7 +41,6 @@ public class DatabaseExportDialog extends JDialog {
     private JTextField username;
     private JTextField password;
     private JButton browse;
-    private boolean choseUrl;
 
     private JPanel panelButtons;
 
@@ -57,16 +52,10 @@ public class DatabaseExportDialog extends JDialog {
 	super((JFrame) null, "Export to Database", true);
 
 	this.extension = extension;
-
+        
 	getContentPane().setLayout(
 		new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-
-	/*
-	 * fileChooser = new JFileChooser();
-	 * fileChooser.remove(fileChooser.getComponentCount() - 1);
-	 * add(fileChooser);
-	 */
-
+        
 	add(createOptionsPanel());
 	add(createButtonsPanel());
 
@@ -133,11 +122,7 @@ public class DatabaseExportDialog extends JDialog {
 		    }
 		    exportController.setCreateTable(true);
 		    String dbUrl = url.getText();
-		    if (!dbUrl.contains("/") && !dbUrl.contains("/"))
-			dbUrl = fileChooser.getCurrentDirectory()
-				.getAbsolutePath() + "/" + dbUrl;
-		    exportController.setDatabase(dbUrl.length() == 0 ? fileChooser
-			    .getSelectedFile().getAbsolutePath() : dbUrl);
+		    exportController.setDatabase(dbUrl);
 		    exportController.setTableName(tableName.getText());
 		}
 		try {
@@ -200,7 +185,9 @@ public class DatabaseExportDialog extends JDialog {
 
 	    @Override
 	    public void actionPerformed(ActionEvent arg0) {
-		DatabaseExportDialog.this.fileChooser = new JFileChooser();
+		if (fileChooser == null) {
+                    DatabaseExportDialog.this.fileChooser = new JFileChooser();
+                }
 		DatabaseExportDialog.this.fileChooser
 			.setMultiSelectionEnabled(false);
 		DatabaseExportDialog.this.fileChooser
@@ -227,7 +214,7 @@ public class DatabaseExportDialog extends JDialog {
 	});
 
 	url = new JTextField();
-	url.setText("Choose a file from above or type here a new file or the URL of the database");
+	url.setText("");
 	url.addFocusListener(new FocusListener() {
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
