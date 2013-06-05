@@ -7,6 +7,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -23,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileFilter;
 
 import csheets.core.Cell;
 import csheets.ext.db.DatabaseExportBuilder;
@@ -40,6 +44,8 @@ public class DatabaseExportDialog extends JDialog {
     private JRadioButton exportSelected;
     private JTextField username;
     private JTextField password;
+    private JButton browse;
+    private boolean choseUrl;
 
     private JPanel panelButtons;
 
@@ -55,9 +61,11 @@ public class DatabaseExportDialog extends JDialog {
 	getContentPane().setLayout(
 		new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-	fileChooser = new JFileChooser();
-	fileChooser.remove(fileChooser.getComponentCount() - 1);
-	add(fileChooser);
+	/*
+	 * fileChooser = new JFileChooser();
+	 * fileChooser.remove(fileChooser.getComponentCount() - 1);
+	 * add(fileChooser);
+	 */
 
 	add(createOptionsPanel());
 	add(createButtonsPanel());
@@ -184,6 +192,40 @@ public class DatabaseExportDialog extends JDialog {
 	final JLabel lUserName = new JLabel("User name");
 	final JLabel lPassword = new JLabel("Password");
 
+	JPanel urlBrowse = new JPanel();
+	urlBrowse.setLayout(new BoxLayout(urlBrowse, BoxLayout.X_AXIS));
+
+	browse = new JButton("Browse");
+	browse.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		DatabaseExportDialog.this.fileChooser = new JFileChooser();
+		DatabaseExportDialog.this.fileChooser
+			.setMultiSelectionEnabled(false);
+		DatabaseExportDialog.this.fileChooser
+			.addPropertyChangeListener(new PropertyChangeListener() {
+
+			    @Override
+			    public void propertyChange(PropertyChangeEvent evt) {
+				if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY
+					.equals(evt.getPropertyName())) {
+				    JFileChooser chooser = (JFileChooser) evt
+					    .getSource();
+				    File oldFile = (File) evt.getOldValue();
+				    File newFile = (File) evt.getNewValue();
+
+				    File curFile = chooser.getSelectedFile();
+				    DatabaseExportDialog.this.url
+					    .setText(curFile.getAbsolutePath());
+				}
+			    }
+			});
+		DatabaseExportDialog.this.fileChooser.showDialog(
+			DatabaseExportDialog.this, "Choose File");
+	    }
+	});
+
 	url = new JTextField();
 	url.setText("Choose a file from above or type here a new file or the URL of the database");
 	url.addFocusListener(new FocusListener() {
@@ -196,6 +238,10 @@ public class DatabaseExportDialog extends JDialog {
 		url.selectAll();
 	    }
 	});
+
+	urlBrowse.add(url);
+	urlBrowse.add(browse);
+
 	tableName = new JTextField();
 
 	final List<DatabaseInterface> availableDrivers = extension
@@ -233,7 +279,7 @@ public class DatabaseExportDialog extends JDialog {
 		.createParallelGroup(GroupLayout.Alignment.LEADING)
 		.addGroup(
 			layout.createSequentialGroup().addComponent(lUrl)
-				.addComponent(url))
+				.addComponent(urlBrowse))
 		.addGroup(
 			layout.createSequentialGroup().addComponent(lTableName)
 				.addComponent(tableName))
@@ -254,7 +300,7 @@ public class DatabaseExportDialog extends JDialog {
 		.addGroup(
 			layout.createParallelGroup(
 				GroupLayout.Alignment.BASELINE)
-				.addComponent(lUrl).addComponent(url))
+				.addComponent(lUrl).addComponent(urlBrowse))
 		.addGroup(
 			layout.createParallelGroup(
 				GroupLayout.Alignment.BASELINE)

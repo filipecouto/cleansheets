@@ -6,6 +6,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -44,6 +47,7 @@ public class DatabaseImportDialog extends JDialog {
     private JList tables;
     private JRadioButton currentSheet;
     private JRadioButton newSheet;
+    private JButton browse;
 
     private JPanel panelButtons;
 
@@ -59,9 +63,9 @@ public class DatabaseImportDialog extends JDialog {
 	getContentPane().setLayout(
 		new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-	fileChooser = new JFileChooser();
+	/*fileChooser = new JFileChooser();
 	fileChooser.remove(fileChooser.getComponentCount() - 1);
-	add(fileChooser);
+	add(fileChooser);*/
 
 	add(createOptionsPanel());
 	add(createButtonsPanel());
@@ -188,6 +192,40 @@ public class DatabaseImportDialog extends JDialog {
 	final JLabel lUserName = new JLabel("Username");
 	final JLabel lPassword = new JLabel("Password");
 
+	JPanel urlBrowse = new JPanel();
+	urlBrowse.setLayout(new BoxLayout(urlBrowse, BoxLayout.X_AXIS));
+
+	browse = new JButton("Browse");
+	browse.addActionListener(new ActionListener() {
+
+	    @Override
+	    public void actionPerformed(ActionEvent arg0) {
+		DatabaseImportDialog.this.fileChooser = new JFileChooser();
+		DatabaseImportDialog.this.fileChooser
+			.setMultiSelectionEnabled(false);
+		DatabaseImportDialog.this.fileChooser
+			.addPropertyChangeListener(new PropertyChangeListener() {
+
+			    @Override
+			    public void propertyChange(PropertyChangeEvent evt) {
+				if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY
+					.equals(evt.getPropertyName())) {
+				    JFileChooser chooser = (JFileChooser) evt
+					    .getSource();
+				    File oldFile = (File) evt.getOldValue();
+				    File newFile = (File) evt.getNewValue();
+
+				    File curFile = chooser.getSelectedFile();
+				    DatabaseImportDialog.this.url
+					    .setText(curFile.getAbsolutePath());
+				}
+			    }
+			});
+		DatabaseImportDialog.this.fileChooser.showDialog(
+			DatabaseImportDialog.this, "Choose File");
+	    }
+	});
+
 	url = new JTextField();
 	url.setText("Choose a file from above or type here a new file or the URL of the database");
 	url.addFocusListener(new FocusListener() {
@@ -200,6 +238,9 @@ public class DatabaseImportDialog extends JDialog {
 		url.selectAll();
 	    }
 	});
+
+	urlBrowse.add(url);
+	urlBrowse.add(browse);
 
 	final List<DatabaseInterface> availableDrivers = extension
 		.getAvailableDrivers();
@@ -236,7 +277,7 @@ public class DatabaseImportDialog extends JDialog {
 		.createParallelGroup(GroupLayout.Alignment.LEADING)
 		.addGroup(
 			layout.createSequentialGroup().addComponent(lUrl)
-				.addComponent(url))
+				.addComponent(urlBrowse))
 		.addGroup(
 			layout.createSequentialGroup().addComponent(lFormat)
 				.addComponent(format))
@@ -254,7 +295,7 @@ public class DatabaseImportDialog extends JDialog {
 		.addGroup(
 			layout.createParallelGroup(
 				GroupLayout.Alignment.BASELINE)
-				.addComponent(lUrl).addComponent(url))
+				.addComponent(lUrl).addComponent(urlBrowse))
 		.addGroup(
 			layout.createParallelGroup(
 				GroupLayout.Alignment.BASELINE)
