@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import csheets.core.IllegalValueTypeException;
 import csheets.core.Value;
-import csheets.core.formula.BinaryOperation;
 import csheets.core.formula.Expression;
 import csheets.core.formula.util.ExpressionVisitor;
 
