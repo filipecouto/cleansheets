@@ -2,6 +2,11 @@ package csheets.ext.db;
 
 import java.util.List;
 
+/*
+ * 
+ * @author Filipe_1110687 & Filipe_1110688
+ */
+
 public class DatabaseImportController {
     private DatabaseInterface driver; // database driver
     private String tableName; // table name
@@ -36,15 +41,9 @@ public class DatabaseImportController {
 	return database;
     }
     
-    /*public void export() {
-	DatabaseExportBuilder exportBuilder = new DatabaseExportBuilder(driver);
-	exportBuilder.setCreateTable(createTable);
-	exportBuilder.setDatabase(database);
-	exportBuilder.setTableName(tableName);
-	exportBuilder.setColumns(columns);
-	exportBuilder.setValues(values);
-	exportBuilder.export();
-    }*/
+    public void importM() {
+        driver.openDatabase(database);
+    }
     
     public List<String> getTables() {
 	driver.openDatabase(database);
