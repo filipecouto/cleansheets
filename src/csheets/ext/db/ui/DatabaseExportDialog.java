@@ -227,7 +227,7 @@ public class DatabaseExportDialog extends JDialog {
 	});
 
 	url = new JTextField();
-	url.setText("Choose a file from above or type here a new file or the URL of the database");
+	url.setText("");
 	url.addFocusListener(new FocusListener() {
 	    @Override
 	    public void focusLost(FocusEvent arg0) {
