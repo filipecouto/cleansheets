@@ -2,6 +2,8 @@ package csheets.ext.db.ui;
 
 import java.awt.event.ActionEvent;
 
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.ctrl.FocusOwnerAction;
 
@@ -22,7 +24,7 @@ public class DatabaseImportMenuItem extends FocusOwnerAction {
     @Override
     public void actionPerformed(ActionEvent e) {
 	if (dialog == null) {
-	    dialog = new DatabaseImportDialog(extension);
+	    dialog = new DatabaseImportDialog(extension, focusOwner);
 	}
 	dialog.prepareDialog(focusOwner);
 	dialog.setVisible(true);
