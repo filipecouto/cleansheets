@@ -103,6 +103,11 @@ public class H2Driver implements DatabaseInterface {
     public boolean requiresPassword() {
 	return false;
     }
+    
+    @Override
+    public boolean requiresFile() {
+	return true;
+    }
 
     @Override
     public List<String> getTables() {

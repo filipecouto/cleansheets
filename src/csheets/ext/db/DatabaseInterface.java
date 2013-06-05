@@ -80,4 +80,11 @@ public interface DatabaseInterface {
     
     public List<String> getTables();
     
+    /**
+     * Specifies if the required database requires a directory or a file
+     * 
+     */
+     
+    public boolean requiresFile();
+    
 }

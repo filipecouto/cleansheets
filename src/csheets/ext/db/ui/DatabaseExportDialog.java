@@ -20,6 +20,7 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -41,6 +42,7 @@ public class DatabaseExportDialog extends JDialog {
     private JTextField username;
     private JTextField password;
     private JButton browse;
+    private JList<String> primaryKeys;
 
     private JPanel panelButtons;
 
