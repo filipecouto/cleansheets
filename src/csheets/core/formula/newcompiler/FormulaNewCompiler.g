@@ -39,7 +39,7 @@ content
 	;
 
 expressions
-	: LBRAC^ expression (SEMI! expression)+ (SEMI!)? RBRAC!
+	: LBRAC^ expression (SEMI! expression)* (SEMI!)? RBRAC!
 	;
 
 expression
@@ -127,7 +127,7 @@ options {
 }
 
 /* Keywords */
-WHILE	: "while";
+WHILE	: "whiledo";
 
 /* Function calls, named ranges and cell references */
 protected LETTER: ('a'..'z') ;

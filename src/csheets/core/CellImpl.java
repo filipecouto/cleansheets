@@ -52,11 +52,11 @@ import csheets.ext.ExtensionManager;
 public class CellImpl implements Cell {
 
 	/** The unique version identifier used for serialization */
- 	private static final long serialVersionUID = 926673794084390673L;
+	private static final long serialVersionUID = 926673794084390673L;
 
 	/** The spreadsheet to which the cell belongs */
 	private Spreadsheet spreadsheet;
-	
+
 	/** The id of the database */
 	@Id
 	private int id;
@@ -85,13 +85,16 @@ public class CellImpl implements Cell {
 	/** The cell extensions that have been instantiated */
 	private transient Map<String, CellExtension> extensions = new HashMap<String, CellExtension>();
 
-	/** Used to avoid infinite loops due to formula languages supporting multiple expressions */ 
+	/**
+	 * Used to avoid infinite loops due to formula languages supporting multiple
+	 * expressions
+	 */
 	private transient boolean ignorePossibleRecursion = false;
 
-	public CellImpl() {
-	
+	CellImpl() {
+
 	}
-	
+
 	/**
 	 * Creates a new cell at the given address in the given spreadsheet. (not
 	 * intended to be used directly).
@@ -154,7 +157,7 @@ public class CellImpl implements Cell {
 	private void reevaluate() {
 		// Don't allow a formula that edits something to recall us
 		ignorePossibleRecursion = true;
-		
+
 		Value oldValue = value;
 
 		// Fetches the new value
@@ -168,13 +171,17 @@ public class CellImpl implements Cell {
 		else
 			newValue = Value.parseValue(content);
 
+		if (newValue == null) {
+			newValue = value == null ? new Value() : value;
+		}
+
 		// Stores value
 		value = newValue;
 
 		// Checks for change
-		if (newValue == null || !newValue.equals(oldValue))
+		if (newValue != null && !newValue.equals(oldValue))
 			fireValueChanged();
-		
+
 		// It's safe again
 		ignorePossibleRecursion = false;
 	}
@@ -222,8 +229,7 @@ public class CellImpl implements Cell {
 			// Are we about to get stuck in an infinite loop?
 			if (ignorePossibleRecursion) {
 				// Yes, then let's just prepare our new text to show
-				Value newValue = Value.parseValue(content);
-				value = newValue;
+				value = Value.parseValue(content);
 			} else {
 				// No, it's safe to evaluate the content
 				reevaluate();

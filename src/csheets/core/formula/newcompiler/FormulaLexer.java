@@ -236,7 +236,7 @@ tryAgain:
 		_ttype = WHILE;
 		int _saveIndex;
 		
-		match("while");
+		match("whiledo");
 		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
 			_token = makeToken(_ttype);
 			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));

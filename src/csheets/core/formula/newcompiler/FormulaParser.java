@@ -137,7 +137,6 @@ public FormulaParser(ParserSharedInputState state) {
 		expression();
 		astFactory.addASTChild(currentAST, returnAST);
 		{
-		int _cnt5=0;
 		_loop5:
 		do {
 			if ((LA(1)==SEMI) && (_tokenSet_2.member(LA(2)))) {
@@ -146,10 +145,9 @@ public FormulaParser(ParserSharedInputState state) {
 				astFactory.addASTChild(currentAST, returnAST);
 			}
 			else {
-				if ( _cnt5>=1 ) { break _loop5; } else {throw new NoViableAltException(LT(1), getFilename());}
+				break _loop5;
 			}
 			
-			_cnt5++;
 		} while (true);
 		}
 		{

@@ -18,13 +18,12 @@ import csheets.core.formula.Literal;
 import csheets.core.formula.Reference;
 import csheets.core.formula.UnaryOperation;
 import csheets.core.formula.lang.CellReference;
+import csheets.core.formula.lang.Cycle;
 import csheets.core.formula.lang.ExpressionSet;
 import csheets.core.formula.lang.Language;
 import csheets.core.formula.lang.RangeReference;
 import csheets.core.formula.lang.ReferenceOperation;
 import csheets.core.formula.lang.UnknownElementException;
-import csheets.core.formula.lang.Cycle;
-
 import csheets.core.formula.newcompiler.FormulaLexer;
 import csheets.core.formula.newcompiler.FormulaParser;
 import csheets.core.formula.newcompiler.FormulaParserTokenTypes;
@@ -32,7 +31,7 @@ import csheets.core.formula.newcompiler.FormulaParserTokenTypes;
 /**
  * A compiler that generates new formulas from strings based on Excel-style.
  * 
- * @author Filipe Silva
+ * @author Filipe Silva & Gil Castro (gil_1110484)
  */
 public class ExcelExpressionNewCompiler implements ExpressionCompiler {
 	/* The character that signals that a cell's content is a formula ('#') */
@@ -75,9 +74,11 @@ public class ExcelExpressionNewCompiler implements ExpressionCompiler {
 	protected Expression convert(Cell cell, AST node)
 			throws FormulaCompilationException {
 		final int type = node.getType();
-		/*System.out.println("Converting node '" + node.getText() + "' (" + type
-				+ ") of tree '" + node.toStringTree() + "' with "
-				+ node.getNumberOfChildren() + " children.");*/
+		/*
+		 * System.out.println("Converting node '" + node.getText() + "' (" + type
+		 * + ") of tree '" + node.toStringTree() + "' with " +
+		 * node.getNumberOfChildren() + " children.");
+		 */
 		if (type == FormulaParserTokenTypes.WHILE) {
 			AST exps = node.getFirstChild().getFirstChild();
 			Expression stopCriteria = convert(cell, exps);
