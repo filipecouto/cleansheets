@@ -3,39 +3,23 @@ package csheets.ext.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
 /**
- * Class responsible for working with HSQL Databases
+ * Class responsible for working with Derby databases
  * 
- * @author Filipe_1110688
- * 
+ * @author Filipe Silva
  */
-
-public class HSQLdbDriver implements DatabaseInterface {
-
+public class DerbyDriver implements DatabaseInterface{
+    
     private Connection databaseConnection;
 
     @Override
-    public void openDatabase(String database) {
-	try {
-	    Class.forName("org.hsqldb.jdbcDriver");
-	    databaseConnection = DriverManager.getConnection("jdbc:hsqldb:"
-		    + database);
-	} catch (ClassNotFoundException e) {
-	    e.printStackTrace();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    @Override
     public boolean createTable(String name, String[] columns) {
-	try {
+        try {
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
 		Statement += DatabaseExportHelper.PrepareColumnName(columns[i],i) + " varchar(512)";
@@ -57,7 +41,7 @@ public class HSQLdbDriver implements DatabaseInterface {
 
     @Override
     public boolean addLine(String table, String[] values) {
-	try {
+        try {
 	    PreparedStatement preparedStatement;
 	    String Statement = "INSERT INTO " + table + " VALUES(";
 	    for (int i = 0; i < values.length; i++) {
@@ -80,8 +64,21 @@ public class HSQLdbDriver implements DatabaseInterface {
     }
 
     @Override
+    public void openDatabase(String database) {
+        try {
+	    Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+	    databaseConnection = DriverManager.getConnection("jdbc:derby:"
+		    + database);
+	} catch (ClassNotFoundException e) {
+	    e.printStackTrace();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    @Override
     public void closeDatabase() {
-	try {
+        try {
 	    databaseConnection.close();
 	} catch (SQLException e) {
 	    e.printStackTrace();
@@ -90,22 +87,35 @@ public class HSQLdbDriver implements DatabaseInterface {
 
     @Override
     public String getName() {
-	return "HSQL";
+        return "Derby";
     }
 
     @Override
     public boolean requiresUsername() {
-	return false;
+        return false;
     }
 
     @Override
     public boolean requiresPassword() {
-	return false;
+        return false;
     }
 
     @Override
     public List<String> getTables() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<String> tables = new ArrayList<String>();
+        try{
+            ResultSet rs = databaseConnection.getMetaData().getTables(null, "PUBLIC", "%",
+		    null);
+            while (rs.next()) {
+                tables.add(rs.getString(3));
+                System.out.println(rs.getString(3));
+            }
+            rs.close();
+            databaseConnection.close();
+        } catch(SQLException e){
+            System.out.println(e);
+        }
+        return tables;
     }
-
+    
 }
