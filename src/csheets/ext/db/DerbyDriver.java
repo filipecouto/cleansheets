@@ -68,7 +68,7 @@ public class DerbyDriver implements DatabaseInterface{
         try {
 	    Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 	    databaseConnection = DriverManager.getConnection("jdbc:derby:"
-		    + database);
+		    + database + ";create=true");
 	} catch (ClassNotFoundException e) {
 	    e.printStackTrace();
 	} catch (SQLException e) {
