@@ -186,7 +186,7 @@ public class DatabaseImportDialog extends JDialog {
 		if (status == JFileChooser.APPROVE_OPTION) {
 		    DatabaseImportDialog.this.url
 			    .setText(DatabaseImportDialog.this.fileChooser
-				    .getSelectedFile().getAbsolutePath());
+				    .getSelectedFile().getName());
 		} else {
 		    DatabaseImportDialog.this.url
 			    .setText("No file was selected");
