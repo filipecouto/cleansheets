@@ -1,5 +1,4 @@
-import csheets.core.Cell;
-import csheets.core.Spreadsheet;
+package csheets.ext.db;
 
 public class DatabaseImportController {
     private DatabaseInterface driver; // database driver
