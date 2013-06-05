@@ -26,8 +26,9 @@ public class HSQLdbDriver implements DatabaseInterface {
     public void openDatabase(String database) {
 	try {
 	    Class.forName("org.hsqldb.jdbcDriver");
+	    System.out.println("Database: " + database);
 	    databaseConnection = DriverManager.getConnection("jdbc:hsqldb:"
-		    + database);
+		    +  database);
 	} catch (ClassNotFoundException e) {
 	    e.printStackTrace();
 	} catch (SQLException e) {
@@ -40,7 +41,8 @@ public class HSQLdbDriver implements DatabaseInterface {
 	try {
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
-		Statement += DatabaseExportHelper.PrepareColumnName(columns[i],i) + " varchar(512)";
+		Statement += DatabaseExportHelper.PrepareColumnName(columns[i],
+			i) + " varchar(512)";
 		if ((i + 1) != columns.length) {
 		    Statement += ",";
 		}
@@ -48,7 +50,7 @@ public class HSQLdbDriver implements DatabaseInterface {
 	    Statement += ")";
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (SQLException e) {
-	    if(e.getMessage().contains("object name already exists")) {
+	    if (e.getMessage().contains("object name already exists")) {
 		throw new RuntimeException("Table name already exists");
 	    }
 	    e.printStackTrace();
@@ -71,7 +73,7 @@ public class HSQLdbDriver implements DatabaseInterface {
 	    Statement += ")";
 	    preparedStatement = databaseConnection.prepareStatement(Statement);
 	    for (int i = 1; i <= values.length; i++) {
-		preparedStatement.setString(i, values[i-1]);
+		preparedStatement.setString(i, values[i - 1]);
 	    }
 	    preparedStatement.execute();
 	} catch (SQLException e) {
@@ -112,20 +114,20 @@ public class HSQLdbDriver implements DatabaseInterface {
 
     @Override
     public List<String> getTables() {
-        List<String> tables = new ArrayList<String>();
-        try{
-            ResultSet rs = databaseConnection.getMetaData().getTables(null, "PUBLIC", "%",
-		    null);
-            while (rs.next()) {
-                tables.add(rs.getString(3));
-                System.out.println(rs.getString(3));
-            }
-            rs.close();
-            databaseConnection.close();
-        } catch(SQLException e){
-            System.out.println(e);
-        }
-        return tables;
+	List<String> tables = new ArrayList<String>();
+	try {
+	    ResultSet rs = databaseConnection.getMetaData().getTables(null,
+		    "PUBLIC", "%", null);
+	    while (rs.next()) {
+		tables.add(rs.getString(3));
+		System.out.println(rs.getString(3));
+	    }
+	    rs.close();
+	    databaseConnection.close();
+	} catch (SQLException e) {
+	    System.out.println(e);
+	}
+	return tables;
     }
 
 }

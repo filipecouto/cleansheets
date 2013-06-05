@@ -51,7 +51,7 @@ public class DatabaseImportDialog extends JDialog {
     private JRadioButton newSheet;
     private JButton browse;
     private String databaseName;
-    
+
     private JPanel panelButtons;
 
     private DatabaseExtension extension;
@@ -177,7 +177,8 @@ public class DatabaseImportDialog extends JDialog {
 		DatabaseImportDialog.this.fileChooser = new JFileChooser();
 		DatabaseImportDialog.this.fileChooser
 			.setMultiSelectionEnabled(false);
-		// Checks if the required driver needs a folder or a file to work with
+		// Checks if the required driver needs a folder or a file to
+		// work with
 		if (!DatabaseImportDialog.this.extension
 			.getAvailableDrivers()
 			.get(DatabaseImportDialog.this.format
@@ -188,7 +189,7 @@ public class DatabaseImportDialog extends JDialog {
 		int status = DatabaseImportDialog.this.fileChooser.showDialog(
 			DatabaseImportDialog.this, "Choose File");
 		if (status == JFileChooser.APPROVE_OPTION) {
-		    
+
 		    DatabaseImportDialog.this.url
 			    .setText(DatabaseImportDialog.this.fileChooser
 				    .getSelectedFile().getAbsolutePath());
@@ -212,32 +213,27 @@ public class DatabaseImportDialog extends JDialog {
 		url.selectAll();
 	    }
 	});
-	
+
 	url.addKeyListener(new KeyListener() {
-	    
+
 	    @Override
 	    public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	    }
-	    
+
 	    @Override
 	    public void keyReleased(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	    }
-	    
+
 	    @Override
 	    public void keyPressed(KeyEvent e) {
-		if(e.getKeyChar() == KeyEvent.VK_ENTER) {
-		    try {
-			updateComboBox(url.getDocument().getText(0, 0));
-		    } catch (BadLocationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		    }
+		if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+		    updateComboBox(url.getText());
 		}
-		
+
 	    }
 	});
 
