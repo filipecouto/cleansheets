@@ -76,6 +76,6 @@ public interface DatabaseInterface {
      * @return String [] name of tables
      */
     
-    public String getTables();
+    public String [] getTables();
     
 }
