@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
 
 import csheets.core.Cell;
 import csheets.core.Spreadsheet;
@@ -35,7 +36,7 @@ import csheets.ui.sheet.SpreadsheetTable;
 
 /*
  * 
- * @author Filipe Silva
+ * @author Filipe Silva & Filipe Couto
  */
 
 public class DatabaseImportDialog extends JDialog {
@@ -49,7 +50,8 @@ public class DatabaseImportDialog extends JDialog {
     private JRadioButton currentSheet;
     private JRadioButton newSheet;
     private JButton browse;
-
+    private String databaseName;
+    
     private JPanel panelButtons;
 
     private DatabaseExtension extension;
@@ -189,7 +191,7 @@ public class DatabaseImportDialog extends JDialog {
 		    
 		    DatabaseImportDialog.this.url
 			    .setText(DatabaseImportDialog.this.fileChooser
-				    .getSelectedFile().getName());
+				    .getSelectedFile().getAbsolutePath());
 		    updateComboBox(url.getText());
 		} else {
 		    DatabaseImportDialog.this.url
@@ -228,7 +230,12 @@ public class DatabaseImportDialog extends JDialog {
 	    @Override
 	    public void keyPressed(KeyEvent e) {
 		if(e.getKeyChar() == KeyEvent.VK_ENTER) {
-		    updateComboBox(url.getText());
+		    try {
+			updateComboBox(url.getDocument().getText(0, 0));
+		    } catch (BadLocationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		    }
 		}
 		
 	    }
