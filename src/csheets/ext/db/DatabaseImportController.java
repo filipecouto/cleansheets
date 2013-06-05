@@ -1,5 +1,7 @@
 package csheets.ext.db;
 
+import java.util.List;
+
 public class DatabaseImportController {
     private DatabaseInterface driver; // database driver
     private String tableName; // table name
@@ -44,9 +46,9 @@ public class DatabaseImportController {
 	exportBuilder.export();
     }*/
     
-    public String[] getTables() {
+    public List<String> getTables() {
 	driver.openDatabase(database);
-	String [] tables = driver.getTables();
+	List<String> tables = driver.getTables();
 	return tables;
     }
 }
