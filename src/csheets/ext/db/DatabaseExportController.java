@@ -125,7 +125,5 @@ public class DatabaseExportController {
 	exportBuilder.setColumns(columns);
 	exportBuilder.setValues(values);
 	exportBuilder.export();
-
     }
-
 }

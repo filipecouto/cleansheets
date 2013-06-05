@@ -71,5 +71,11 @@ public interface DatabaseInterface {
      */
     public boolean requiresPassword();
     
+    /**
+     * Invoked by the Import Controller to find the tables
+     * @return String [] name of tables
+     */
+    
+    public String getTables();
     
 }
