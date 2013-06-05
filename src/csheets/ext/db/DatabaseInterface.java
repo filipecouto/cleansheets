@@ -89,8 +89,8 @@ public interface DatabaseInterface {
     
     
     /**
-     * 
-     * 
+     * Invoked by the controller to get the table content
+     * @return String[][] table content
      */
     
     public String[][] getData(String table);
