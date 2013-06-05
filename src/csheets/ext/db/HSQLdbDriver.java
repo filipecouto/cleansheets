@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
+import java.util.List;
 
 import javax.management.RuntimeErrorException;
 
@@ -100,6 +101,11 @@ public class HSQLdbDriver implements DatabaseInterface {
     @Override
     public boolean requiresPassword() {
 	return false;
+    }
+
+    @Override
+    public List<String> getTables() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
