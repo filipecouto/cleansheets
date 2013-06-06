@@ -32,5 +32,6 @@ public class PrimaryKeysAdapter implements ListModel<String> {
 
     public void setValues(List<String> list) {
 	this.list = list;
+        listener.contentsChanged(null);
     }
 }
