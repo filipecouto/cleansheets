@@ -28,7 +28,7 @@ public class MulticastServer {
 
 			// Send to multicast IP address and port
 			InetAddress address = InetAddress
-				.getByName("224.2.2.3");
+				.getByName("239.0.0.0");
 			outPacket = new DatagramPacket(outBuf, outBuf.length,
 				address, port);
 			socket.send(outPacket);
