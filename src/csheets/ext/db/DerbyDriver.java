@@ -48,8 +48,7 @@ public class DerbyDriver implements DatabaseInterface{
                 Statement = Statement.substring(0, Statement.length()-1);
                 Statement += ")";
             }
-	    Statement += ");";
-            System.out.println(Statement);
+	    Statement += ")";
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (SQLSyntaxErrorException e) {
 	    if(e.getMessage().contains("already exists")) {
@@ -66,7 +65,7 @@ public class DerbyDriver implements DatabaseInterface{
     public boolean addLine(String table, String[] values) {
         try {
 	    PreparedStatement preparedStatement;
-	    String Statement = "INSERT INTO " + table + " VALUES(";
+	    String Statement = "INSERT INTO " + table.toUpperCase() + " VALUES(";
 	    for (int i = 0; i < values.length; i++) {
 		Statement += "?";
 		if ((i + 1) != values.length) {
@@ -91,7 +90,7 @@ public class DerbyDriver implements DatabaseInterface{
         try {
 	    Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 	    databaseConnection = DriverManager.getConnection("jdbc:derby:"
-		    + database + ";create=true");
+		    + database + ";create=true", "" , "");
             System.out.println(database);
 	} catch (ClassNotFoundException e) {
 	    e.printStackTrace();
@@ -116,12 +115,12 @@ public class DerbyDriver implements DatabaseInterface{
 
     @Override
     public boolean requiresUsername() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean requiresPassword() {
-        return false;
+        return true;
     }
 
     @Override

@@ -63,8 +63,7 @@ public class H2Driver implements DatabaseInterface {
                 Statement = Statement.substring(0, Statement.length()-1);
                 Statement += ")";
             }
-	    Statement += ");";
-            System.out.println(Statement);
+	    Statement += ")";
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (SQLSyntaxErrorException e) {
 	    if(e.getMessage().contains("already exists")) {
