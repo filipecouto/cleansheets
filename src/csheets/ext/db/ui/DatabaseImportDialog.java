@@ -57,6 +57,8 @@ public class DatabaseImportDialog extends JDialog {
     private DatabaseExtension extension;
 
     private SpreadsheetTable table;
+    
+    private boolean importToCurrentSheet;
 
     public DatabaseImportDialog(DatabaseExtension extension,
 	    SpreadsheetTable table) {
@@ -133,12 +135,15 @@ public class DatabaseImportDialog extends JDialog {
 		    String dbUrl = url.getText();
 		    importController.setDatabase(dbUrl);
 		    // ----
+                    // table name
 		    importController.setTableName(tables.getSelectedItem()
 			    .toString());
-
+                    // spreadsheet
 		    importController.setSpreadsheet(table.getSpreadsheet());
-
+                    // cell
 		    importController.setCell(table.getSelectedCell());
+                    // importToCurrentSheet decides if it's to import into the current sheet or into a new one
+                    importController.setImportToCurrentSheet(importToCurrentSheet);
 		}
 		try {
 		    importController.importM();
@@ -265,8 +270,28 @@ public class DatabaseImportDialog extends JDialog {
 	importPanel.setLayout(new BoxLayout(importPanel, BoxLayout.Y_AXIS));
 
 	newSheet = new JRadioButton("Create a new sheet");
+        newSheet.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("newSheet");
+                importToCurrentSheet=false;
+                newSheet.setSelected(!importToCurrentSheet);
+                currentSheet.setSelected(importToCurrentSheet);
+            }
+        });
 	importPanel.add(newSheet);
 	currentSheet = new JRadioButton("To current sheet");
+        currentSheet.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("currentSheet");
+                importToCurrentSheet=true;
+                newSheet.setSelected(!importToCurrentSheet);
+                currentSheet.setSelected(importToCurrentSheet);
+            }
+        });
 	importPanel.add(currentSheet);
 
 	username = new JTextField();
@@ -352,24 +377,8 @@ public class DatabaseImportDialog extends JDialog {
 
     public void prepareDialog(SpreadsheetTable table) {
 	this.table = table;
-
-	// check whether the user selected a range of cells
-	// if he/she did: exportSelected will be checked
-	// if he/she didn't: exportWhile will be checked and exportSelected will
-	// be disabled
-	final Cell[][] selectedCells = table.getSelectedCells();
-	final int rowCount = selectedCells.length;
-	boolean hasInterestingSelection = true;
-
-	if (rowCount != 0) {
-	    final int columnCount = selectedCells[0].length;
-	    if (rowCount == 1 && columnCount == 1)
-		hasInterestingSelection = false;
-	} else
-	    hasInterestingSelection = false;
-
-	currentSheet.setEnabled(hasInterestingSelection);
-	currentSheet.setSelected(hasInterestingSelection);
-	newSheet.setSelected(!hasInterestingSelection);
+        importToCurrentSheet=false;
+	newSheet.setSelected(!importToCurrentSheet);
+        currentSheet.setSelected(importToCurrentSheet);
     }
 }
