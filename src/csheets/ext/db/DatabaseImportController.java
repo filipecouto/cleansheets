@@ -4,6 +4,7 @@ import java.util.List;
 
 import csheets.core.Cell;
 import csheets.core.Spreadsheet;
+import csheets.core.Workbook;
 import csheets.core.formula.compiler.FormulaCompilationException;
 
 /*
@@ -17,6 +18,7 @@ public class DatabaseImportController {
     private String database; // database name
     private Spreadsheet table;
     private Cell cell;
+    private boolean importToCurrentSheet;
 
     public DatabaseImportController() {
 
@@ -41,6 +43,10 @@ public class DatabaseImportController {
     public void setDatabase(String database) {
 	this.database = database;
     }
+    
+    public void setImportToCurrentSheet(boolean importToCurrentSheet){
+        this.importToCurrentSheet=importToCurrentSheet;
+    }
 
     public DatabaseInterface getDriver() {
 	return driver;
@@ -59,16 +65,27 @@ public class DatabaseImportController {
         String [][] info = driver.getData(tableName);
         int i=0,j=0;
         int cellCol,cellRow;
-        cellCol=cell.getAddress().getColumn();
-        cellRow=cell.getAddress().getRow();
-        try{
-            for(i=0;i<info.length;i++){
-                for(j=0;j<info[0].length;j++){
-                    table.getCell(cellCol+j, cellRow+i).setContent(info[i][j].toString());
+        // Import into a new sheet
+        if(!importToCurrentSheet){
+            Workbook workbook = table.getWorkbook();
+            workbook.addSpreadsheet(info);
+            workbook.getSpreadsheet(workbook.getSpreadsheetCount()-1).setTitle(tableName); // Doesn't set the title graphically
+            System.out.println(workbook.getSpreadsheet(workbook.getSpreadsheetCount()-1).getTitle());
+            //TODO get focus on the new sheet
+        }
+        // Import into the current sheet starting at the selected cell
+        else{ //TODO verify if its going to overlap cells
+            cellCol=cell.getAddress().getColumn();
+            cellRow=cell.getAddress().getRow();
+            try{
+                for(i=0;i<info.length;i++){
+                    for(j=0;j<info[0].length;j++){
+                        table.getCell(cellCol+j, cellRow+i).setContent(info[i][j].toString());
+                    }
                 }
+            }catch(FormulaCompilationException e){
+                System.out.println(e);
             }
-        }catch(FormulaCompilationException e){
-            System.out.println(e);
         }
         driver.closeDatabase();
     }
