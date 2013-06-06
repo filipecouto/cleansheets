@@ -146,7 +146,6 @@ public class HSQLdbDriver implements DatabaseInterface {
             rs.last();
             rowsNumber = rs.getRow() + 1;
             rs.beforeFirst();
-            System.out.println("Linhas = "+rowsNumber+" Colunas = "+columnsNumber);
             info = new String[rowsNumber][columnsNumber];
             for(j=1;j<=columnsNumber;j++){
                 info[i][j-1]=rsmd.getColumnName(j);
@@ -154,12 +153,10 @@ public class HSQLdbDriver implements DatabaseInterface {
             i++;
             while(rs.next()){
                 for(j=1;j<=columnsNumber;j++){
-                    System.out.println(info[i][j-1]);
                     info[i][j-1]=rs.getString(j);
                 }
                 i++;
             }
-            System.out.println("done");
         }catch(SQLException e){
             System.out.println(e);
         }
