@@ -131,21 +131,25 @@ public class DatabaseExportDialog extends JDialog {
                 } catch (Exception e) {
                     if (e.getMessage() != null
                             && e.getMessage().equals("Table already exists")) {
-                        Object[] options = {"Yes", "No"};
+                        Object[] options = {"Merge", "New Table", "Cancel"};
                         int n = JOptionPane
                                 .showOptionDialog(
                                 getContentPane(),
-                                "Table already exists, would you like to append your data to the table? ",
+                                "Table already exists, would you like to merge tables or create a new one? ",
                                 "Table exists",
                                 JOptionPane.YES_NO_CANCEL_OPTION,
                                 JOptionPane.QUESTION_MESSAGE, null,
-                                options, options[1]);
+                                options, options[2]);
                         switch (n) {
                             case 0:
                                 exportController.setCreateTable(false);
                                 run();
                                 return;
                             case 1:
+                                exportController.setDropTable(true);
+                                run();
+                                return;
+                            case 2:
                                 enableButtons(true);
                                 return;
                         }
