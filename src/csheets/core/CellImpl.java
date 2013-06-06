@@ -30,10 +30,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrimaryKeyJoinColumn;
-
 import csheets.core.formula.Formula;
 import csheets.core.formula.Reference;
 import csheets.core.formula.compiler.FormulaCompilationException;
@@ -48,7 +44,6 @@ import csheets.ext.ExtensionManager;
  * 
  * @author Einar Pehrson
  */
-@Entity
 public class CellImpl implements Cell {
 
 	/** The unique version identifier used for serialization */
@@ -56,10 +51,6 @@ public class CellImpl implements Cell {
 
 	/** The spreadsheet to which the cell belongs */
 	private Spreadsheet spreadsheet;
-
-	/** The id of the database */
-	@Id
-	private int id;
 
 	/** The address of the cell */
 	private Address address;
