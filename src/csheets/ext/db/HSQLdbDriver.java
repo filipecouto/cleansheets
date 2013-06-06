@@ -66,16 +66,14 @@ public class HSQLdbDriver implements DatabaseInterface {
                 Statement = Statement.substring(0, Statement.length()-1);
                 Statement += ")";
             }
-	    Statement += ");";
+	    Statement += ")";
             System.out.println(Statement);
 	    databaseConnection.prepareStatement(Statement).execute();
-	} catch (SQLSyntaxErrorException e) {
+	} catch (Exception e) {
 	    if(e.getMessage().contains("already exists")) {
 		throw new RuntimeException("Table already exists");
 	    }
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	    return false;
+            e.printStackTrace();
 	}
 	return true;
     }
