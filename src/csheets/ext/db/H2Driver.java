@@ -35,16 +35,36 @@ public class H2Driver implements DatabaseInterface {
     }
 
     @Override
-    public boolean createTable(String name, String[] columns) {
+    public boolean createTable(String name, String[] columns, List<String> primaryKeys) {
 	try {
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
-		Statement += DatabaseExportHelper.PrepareColumnName(columns[i], i) + " text";
+                boolean check=false;
+		for(String key:primaryKeys){
+                    if(DatabaseExportHelper.PrepareColumnName(columns[i], i).compareTo(key)==0){
+                        check=true;
+                    }
+                }
+                if(check){
+                    Statement += DatabaseExportHelper.PrepareColumnName(columns[i], i) + " varchar(255) not null";
+                }
+                else{
+                    Statement += DatabaseExportHelper.PrepareColumnName(columns[i], i) + " varchar(255)";
+                }
 		if ((i + 1) != columns.length) {
 		    Statement += ",";
 		}
 	    }
-	    Statement += ")";
+            if(!primaryKeys.isEmpty()){
+                Statement += ", PRIMARY KEY (";
+                for(String key:primaryKeys){
+                    Statement += key + ",";
+                }
+                Statement = Statement.substring(0, Statement.length()-1);
+                Statement += ")";
+            }
+	    Statement += ");";
+            System.out.println(Statement);
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (SQLSyntaxErrorException e) {
 	    if(e.getMessage().contains("already exists")) {
