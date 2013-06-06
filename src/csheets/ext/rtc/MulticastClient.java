@@ -7,7 +7,6 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-
 public class MulticastClient {
     private MulticastSocket socket;
     private DatagramPacket inPacket;
@@ -27,8 +26,10 @@ public class MulticastClient {
 			socket.receive(inPacket);
 			String msg = new String(inBuf, 0, inPacket.getLength());
 			String[] info = splitMsg(msg);
-			onShareFoundListener.onShareFound(new ServersInformation(info[1], Integer
-				.parseInt(info[0]), inPacket.getAddress()));
+			onShareFoundListener
+				.onShareFound(new ServerInformation(info[1],
+					Integer.parseInt(info[0]), inPacket
+						.getAddress()));
 		    }
 		} catch (IOException ioe) {
 		}
@@ -42,7 +43,11 @@ public class MulticastClient {
     }
 
     private static String[] splitMsg(String msg) {
-	return msg.split(";");
+	int pos = msg.indexOf(";");
+	String[] tmp = new String[2];
+	tmp[0] = (String) msg.subSequence(0, (pos));
+	tmp[1] = (String) msg.subSequence(pos + 1, msg.length());
+	return tmp;
     }
 
     public void setPort(int port) throws UnknownHostException, IOException {

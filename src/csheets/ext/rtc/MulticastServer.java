@@ -18,7 +18,6 @@ public class MulticastServer {
 	this.serverName = username;
 	this.serverNrClients = nrClients;
 	searcher = new Runnable() {
-
 	    @Override
 	    public void run() {
 		try {
@@ -39,7 +38,6 @@ public class MulticastServer {
 			}
 		    }
 		} catch (IOException ioe) {
-		    System.out.println(ioe);
 		}
 	    }
 
@@ -48,7 +46,7 @@ public class MulticastServer {
     }
 
     private String setMsg() {
-	return (serverNrClients + ";" + serverName);
+	return ((serverNrClients+1) + ";" + serverName);
     }
 
     public void serverNrClient(int nrClient) throws UnknownHostException,

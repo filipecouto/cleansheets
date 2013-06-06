@@ -30,8 +30,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import csheets.ext.rtc.MulticastClient;
-import csheets.ext.rtc.ServerListAdapter;
-import csheets.ext.rtc.ServersInformation;
+import csheets.ext.rtc.ServerInformation;
 import csheets.ext.rtc.OnShareFoundListener;
 
 ;
@@ -116,7 +115,7 @@ public class ConnectionDialog extends JDialog {
 	    @Override
 	    public void valueChanged(ListSelectionEvent e) {
 		selectedIndex = serverList.getSelectedIndex();
-		ServersInformation server = testAdapter
+		ServerInformation server = testAdapter
 			.getElementAt(selectedIndex);
 		String ip = server.getIp().toString();
 		addressTextField.setText(ip);
@@ -126,7 +125,18 @@ public class ConnectionDialog extends JDialog {
 	JLabel userNameLabel = new JLabel("User name");
 
 	userNameTextField = new JTextField();
+	userNameTextField.setText("User" + (int)(Math.random() * 1000));
 	userNameTextField.setColumns(10);
+	userNameTextField.addFocusListener(new FocusListener() {
+	    @Override
+	    public void focusLost(FocusEvent arg0) {
+	    }
+
+	    @Override
+	    public void focusGained(FocusEvent arg0) {
+		userNameTextField.selectAll();
+	    }
+	});
 
 	JLabel addressLabel = new JLabel("Address");
 
@@ -218,7 +228,7 @@ public class ConnectionDialog extends JDialog {
 
 	searcher = new MulticastClient(new OnShareFoundListener() {
 	    @Override
-	    public void onShareFound(ServersInformation shareInfo) {
+	    public void onShareFound(ServerInformation shareInfo) {
 		testAdapter.addShareInfo(shareInfo);
 	    }
 	});
