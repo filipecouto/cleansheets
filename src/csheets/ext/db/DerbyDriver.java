@@ -184,7 +184,7 @@ public class DerbyDriver implements DatabaseInterface{
         String sql = "Drop table " + table;
         try{
             PreparedStatement statement = databaseConnection.prepareStatement(sql);
-            statement.executeQuery();
+            statement.execute();
         } catch(SQLException e){
             System.out.println(e);
         }
