@@ -21,7 +21,7 @@ public interface DatabaseInterface {
      *            an array of strings setting the table columns names
      * @return true if successful , false if not
      */
-    public boolean createTable(String name, String[] column);
+    public boolean createTable(String name, String[] column, List<String> primaryKeys);
 
     /**
      * Invoked by the application to insert a line in a table in the determined
