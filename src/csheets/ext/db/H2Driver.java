@@ -18,7 +18,8 @@ import java.util.List;
 
 public class H2Driver implements DatabaseInterface {
     private Connection databaseConnection;
-
+    private List<String> columnsNames = new ArrayList<String>();
+    private List<String> primaryKeysNames;
     @Override
     public void openDatabase(String database) {
 	try {
@@ -37,8 +38,10 @@ public class H2Driver implements DatabaseInterface {
     @Override
     public boolean createTable(String name, String[] columns, List<String> primaryKeys) {
 	try {
+            primaryKeysNames=primaryKeys;
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
+                columnsNames.add(DatabaseExportHelper.PrepareColumnName(columns[i], i));
                 boolean check=false;
 		for(String key:primaryKeys){
                     if(DatabaseExportHelper.PrepareColumnName(columns[i], i).compareTo(key)==0){
@@ -92,7 +95,60 @@ public class H2Driver implements DatabaseInterface {
 		preparedStatement.setString(i, "'" + values[i - 1] + "'");
 	    }
 	    preparedStatement.execute();
-	} catch (SQLException e) {
+	} catch (Exception e) {
+            if (e.getMessage() != null
+                            && e.getMessage().contains("primary key violation")) {
+                String sql = "Update "+table+" Set ";
+                int data=0;
+                boolean check,comma=false;
+                for(String col:columnsNames){
+                    System.out.println(data);
+                    check=false;
+                    for(String prim:primaryKeysNames){
+                        if(col.compareTo(prim)==0){
+                            check=true;
+                        }
+                    }
+                    if(!check){
+                        if(!comma){
+                            sql += col + "='" + values[data] + "' ";
+                            comma=true;
+                        }
+                        else{
+                            sql += ", " + col + "='" + values[data] + "' ";
+                        }
+                    }
+                    data++;
+                }
+                sql += " Where ";
+                int pos=0;
+                comma=false;
+                for(String prim:primaryKeysNames){
+                    data=0;
+                    for(String col:columnsNames){
+                        if(prim.compareTo(col)==0){
+                            pos=data;
+                        }
+                        data++;
+                    }
+                    if(!comma){
+                        sql += prim + "='" + values[pos] + "' ";
+                        comma=true;
+                    }
+                    else{
+                        sql += ", " + prim + "='" + values[pos] + "' ";
+                    }
+                }
+                System.out.println(sql);
+                try{
+                    PreparedStatement statement = databaseConnection.prepareStatement(sql);
+                    statement.execute();
+                    System.out.println("DONE!!!");
+                    return true;
+                }catch(SQLException sqle){
+                    System.out.println(sqle);
+                }
+            }
 	    e.printStackTrace();
 	    return false;
 	}
