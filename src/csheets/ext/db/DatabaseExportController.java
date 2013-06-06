@@ -1,9 +1,9 @@
 package csheets.ext.db;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 import csheets.core.Cell;
 import csheets.core.Spreadsheet;
+import java.util.List;
 
 public class DatabaseExportController {
     private DatabaseInterface driver; // database driver
@@ -13,6 +13,7 @@ public class DatabaseExportController {
     private String[][] values;
     private boolean createTable;
     private boolean justSelection;
+    private List<String> primaryKeys;
 
     public DatabaseExportController() {
 
@@ -88,6 +89,10 @@ public class DatabaseExportController {
     public void setJustSelection(boolean justSelection) {
 	this.justSelection = justSelection;
     }
+    
+    public void setPrimaryKeys(List<String> primaryKeys){
+        this.primaryKeys=primaryKeys;
+    }
 
     public DatabaseInterface getDriver() {
 	return driver;
@@ -124,6 +129,7 @@ public class DatabaseExportController {
 	exportBuilder.setTableName(tableName);
 	exportBuilder.setColumns(columns);
 	exportBuilder.setValues(values);
+        exportBuilder.setPrimaryKeys(primaryKeys);
 	exportBuilder.export();
     }
 }
