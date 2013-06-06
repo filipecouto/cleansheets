@@ -20,7 +20,6 @@ public class MulticastClient {
 	    @Override
 	    public void run() {
 		try {
-		    // Prepare to join multicast group
 		    createConnection();
 		    while (true) {
 			socket.receive(inPacket);
