@@ -14,6 +14,7 @@ public class DatabaseExportController {
     private boolean createTable;
     private boolean justSelection;
     private List<String> primaryKeys;
+    private boolean dropTable;
 
     public DatabaseExportController() {
 
@@ -93,6 +94,10 @@ public class DatabaseExportController {
     public void setPrimaryKeys(List<String> primaryKeys){
         this.primaryKeys=primaryKeys;
     }
+    
+    public void setDropTable(boolean dropTable){
+        this.dropTable=dropTable;
+    }
 
     public DatabaseInterface getDriver() {
 	return driver;
@@ -130,6 +135,7 @@ public class DatabaseExportController {
 	exportBuilder.setColumns(columns);
 	exportBuilder.setValues(values);
         exportBuilder.setPrimaryKeys(primaryKeys);
+        exportBuilder.setDropTable(dropTable);
 	exportBuilder.export();
     }
 }

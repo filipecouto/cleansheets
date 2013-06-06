@@ -16,6 +16,7 @@ public class DatabaseExportBuilder {
     private String[][] values; // values for the table
     private boolean createTable;
     private List<String> primaryKeys;
+    private boolean dropTable;
 
     public DatabaseExportBuilder(DatabaseInterface driver) {
 	setDriver(driver);
@@ -79,6 +80,10 @@ public class DatabaseExportBuilder {
     public void setPrimaryKeys(List<String> primaryKeys){
         this.primaryKeys = primaryKeys;
     }
+    
+    public void setDropTable(boolean dropTable){
+        this.dropTable=dropTable;
+    }
 
     /**
      * Proceeds to the exportation to the database, checks if creation of table
@@ -88,6 +93,9 @@ public class DatabaseExportBuilder {
 	// TODO maybe check if everything is ready to export, throw a
 	// RuntimeException if not
 	driver.openDatabase(database);
+        if(dropTable){
+            driver.dropTable(tableName);
+        }
 	if (createTable) {
 	    if (!driver.createTable(tableName, columns, primaryKeys)) {
 		throw new RuntimeException("Error inserting");
