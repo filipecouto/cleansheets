@@ -31,9 +31,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
 import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.Extension;
 import csheets.ext.ExtensionManager;
@@ -43,8 +40,6 @@ import csheets.ext.SpreadsheetExtension;
  * The implementation of the <code>Spreadsheet</code> interface.
  * @author Einar Pehrson
  */
-
-@Entity
 public class SpreadsheetImpl implements Spreadsheet {
 
 	/** The unique version identifier used for serialization */
@@ -52,10 +47,6 @@ public class SpreadsheetImpl implements Spreadsheet {
 
 	/** The base of the titles of new spreadsheets */
 	public static final String BASE_TITLE = "Sheet ";
-	
-	/** id */
-	@Id
-	private int id;
 
 	/** The workbook to which the spreadsheet belongs */
 	private Workbook workbook;

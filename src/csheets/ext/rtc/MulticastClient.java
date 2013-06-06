@@ -64,7 +64,7 @@ public class MulticastClient {
 
     private void createConnection() throws IOException, UnknownHostException {
 	socket = new MulticastSocket(port);
-	InetAddress address = InetAddress.getByName("224.2.2.3");
+	InetAddress address = InetAddress.getByName("224.0.1.0");
 	socket.joinGroup(address);
 	inPacket = new DatagramPacket(inBuf, inBuf.length);
     }
