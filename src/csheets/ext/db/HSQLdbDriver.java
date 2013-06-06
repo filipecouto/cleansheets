@@ -181,4 +181,15 @@ public class HSQLdbDriver implements DatabaseInterface {
 	return info;
     }
 
+    @Override
+    public void dropTable(String table) {
+        String sql = "Drop table " + table;
+        try{
+            PreparedStatement statement = databaseConnection.prepareStatement(sql);
+            statement.executeQuery();
+        } catch(SQLException e){
+            System.out.println(e);
+        }
+    }
+
 }

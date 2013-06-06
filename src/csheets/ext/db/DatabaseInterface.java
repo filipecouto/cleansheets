@@ -94,4 +94,10 @@ public interface DatabaseInterface {
      */
     
     public String[][] getData(String table);
+    
+    /*
+     * 
+     * 
+     */
+    public void dropTable(String table);
 }
