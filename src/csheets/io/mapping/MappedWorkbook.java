@@ -22,7 +22,7 @@ public class MappedWorkbook {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "workbook")
 	private List<MappedSpreadsheet> spreadsheets;
 
-	private MappedWorkbook() {
+	MappedWorkbook() {
 		// empty
 	}
 

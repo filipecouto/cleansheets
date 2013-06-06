@@ -34,7 +34,7 @@ public class MappedCell {
 	private int horizontalAlignment;
 	private int verticalAlignment;
 
-	private MappedCell() {
+	MappedCell() {
 		// empty
 	}
 

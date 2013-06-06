@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import csheets.core.Cell;
@@ -15,6 +16,7 @@ class MappedSpreadsheet {
 	@Id
 	private int id;
 
+	@ManyToOne(cascade = CascadeType.ALL, optional = false)
 	private MappedWorkbook workbook;
 
 	private String title;
@@ -22,7 +24,7 @@ class MappedSpreadsheet {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "spreadsheet")
 	private List<MappedCell> cells;
 
-	private MappedSpreadsheet() {
+	MappedSpreadsheet() {
 		// empty
 	}
 
