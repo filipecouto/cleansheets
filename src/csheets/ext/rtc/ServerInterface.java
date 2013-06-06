@@ -3,6 +3,7 @@ package csheets.ext.rtc;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import csheets.core.Address;
@@ -64,7 +65,6 @@ public class ServerInterface implements RtcCommunicator {
 		}
 	    }).start();
 	} catch (IOException e) {
-	    System.out.println("!");
 	    connected = false;
 	    listener.onConnectionFailed(e);
 	}
@@ -181,6 +181,7 @@ public class ServerInterface implements RtcCommunicator {
 	    synchronized (clients) {
 		clients.add(newClient);
 		newClient.run();
+		multserver.serverNrClient(clients.size());
 	    }
 	} catch (IOException e) {
 	    e.printStackTrace();
@@ -261,6 +262,15 @@ public class ServerInterface implements RtcCommunicator {
     private void removeUser(ClientInfo id) {
 	synchronized (clients) {
 	    final int len = clients.size();
+	    try {
+		multserver.serverNrClient(len);
+	    } catch (UnknownHostException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
 	    for (int i = 0; i < len; i++) {
 		if (clients.get(i).getInfo() == id) {
 		    clients.remove(i);

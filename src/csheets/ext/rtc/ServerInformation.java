@@ -2,20 +2,20 @@ package csheets.ext.rtc;
 
 import java.net.InetAddress;
 
-public class ServersInformation {
+public class ServerInformation {
 
     private String nome;
     private int pessoas;
     private InetAddress ip;
 
-    public ServersInformation(String nome, int pessoas, InetAddress ip) {
+    public ServerInformation(String nome, int pessoas, InetAddress ip) {
 	this.nome = nome;
 	this.pessoas = pessoas;
 	this.ip = ip;
     }
 
     public String toString() {
-	return (nome + " - " + ip.toString() + " - " + pessoas + "pessoas");
+	return (nome + " - " + getIp() + " - " + pessoas + " pessoa(s)");
     }
 
     public String getNome() {

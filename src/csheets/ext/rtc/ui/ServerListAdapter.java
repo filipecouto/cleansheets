@@ -1,13 +1,15 @@
-package csheets.ext.rtc;
+package csheets.ext.rtc.ui;
 
 import java.util.ArrayList;
 
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 
+import csheets.ext.rtc.ServerInformation;
+
 public class ServerListAdapter implements ListModel {
     ListDataListener listener;
-    ArrayList<ServersInformation> information = new ArrayList<ServersInformation>();
+    ArrayList<ServerInformation> information = new ArrayList<ServerInformation>();
 
     @Override
     public void addListDataListener(ListDataListener arg0) {
@@ -15,7 +17,7 @@ public class ServerListAdapter implements ListModel {
     }
 
     @Override
-    public ServersInformation getElementAt(int index) {
+    public ServerInformation getElementAt(int index) {
 	return information.get(index);
     }
 
@@ -24,7 +26,7 @@ public class ServerListAdapter implements ListModel {
 	return information.size();
     }
 
-    public void addShareInfo(ServersInformation shareInfo) {
+    public void addShareInfo(ServerInformation shareInfo) {
 	if (!existInArray(shareInfo)) {
 	    information.add(shareInfo);
 	}
@@ -36,7 +38,7 @@ public class ServerListAdapter implements ListModel {
 	listener.contentsChanged(null);
     }
 
-    private boolean existInArray(ServersInformation shareInfo) {
+    private boolean existInArray(ServerInformation shareInfo) {
 	for (int i = 0; i < information.size(); i++) {
 	    if (shareInfo.getIp().equals(information.get(i).getIp())) {
 		return true;
