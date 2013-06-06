@@ -33,6 +33,7 @@ import java.util.TreeSet;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.Extension;
@@ -44,7 +45,6 @@ import csheets.ext.SpreadsheetExtension;
  * @author Einar Pehrson
  */
 
-@Entity
 public class SpreadsheetImpl implements Spreadsheet {
 
 	/** The unique version identifier used for serialization */
@@ -52,10 +52,6 @@ public class SpreadsheetImpl implements Spreadsheet {
 
 	/** The base of the titles of new spreadsheets */
 	public static final String BASE_TITLE = "Sheet ";
-	
-	/** id */
-	@Id
-	private int id;
 
 	/** The workbook to which the spreadsheet belongs */
 	private Workbook workbook;
@@ -83,10 +79,6 @@ public class SpreadsheetImpl implements Spreadsheet {
 	private transient Map<String, SpreadsheetExtension> extensions = 
 		new HashMap<String, SpreadsheetExtension>();
 
-	
-	public SpreadsheetImpl() {
-
-	}
 	
 	/**
 	 * Creates a new spreadsheet.

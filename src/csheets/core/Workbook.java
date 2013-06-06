@@ -29,20 +29,17 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  * A workbook which can contain several spreadsheets.
  * @author Einar Pehrson
  */
-@Entity
 public class Workbook implements Iterable<Spreadsheet>, Serializable {
 
 	/** The unique version identifier used for serialization */
 	private static final long serialVersionUID = -6324252462576447242L;
 	
-	/** id */
-	@Id
-	private int id;
 
 	/** The spreadsheets of which the workbook consists */
 	private List<Spreadsheet> spreadsheets = new ArrayList<Spreadsheet>();

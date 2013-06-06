@@ -32,6 +32,7 @@ import java.util.TreeSet;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 
 import csheets.core.formula.Formula;
@@ -48,7 +49,6 @@ import csheets.ext.ExtensionManager;
  * 
  * @author Einar Pehrson
  */
-@Entity
 public class CellImpl implements Cell {
 
 	/** The unique version identifier used for serialization */
@@ -56,10 +56,6 @@ public class CellImpl implements Cell {
 
 	/** The spreadsheet to which the cell belongs */
 	private Spreadsheet spreadsheet;
-
-	/** The id of the database */
-	@Id
-	private int id;
 
 	/** The address of the cell */
 	private Address address;
@@ -90,10 +86,6 @@ public class CellImpl implements Cell {
 	 * expressions
 	 */
 	private transient boolean ignorePossibleRecursion = false;
-
-	CellImpl() {
-
-	}
 
 	/**
 	 * Creates a new cell at the given address in the given spreadsheet. (not

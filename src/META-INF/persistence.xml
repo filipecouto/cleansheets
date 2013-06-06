@@ -2,9 +2,6 @@
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 	<persistence-unit name="lapr4_cleansheets_2012_13">
 		<jar-file>dbunit-2.4.9.jar</jar-file>
-		<class>csheets.core.SpreadsheetImpl</class>
-		<class>csheets.core.Workbook</class>
-		<class>csheets.core.CellImpl</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 	
 	</persistence-unit>
