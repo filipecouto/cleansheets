@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,21 +20,41 @@ public class DerbyDriver implements DatabaseInterface{
     private Connection databaseConnection;
 
     @Override
-    public boolean createTable(String name, String[] columns) {
+    public boolean createTable(String name, String[] columns, List<String> primaryKeys) {
         try {
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
-		Statement += DatabaseExportHelper.PrepareColumnName(columns[i],i) + " varchar(512)";
+                boolean check=false;
+		for(String key:primaryKeys){
+                    if(DatabaseExportHelper.PrepareColumnName(columns[i], i).compareTo(key)==0){
+                        check=true;
+                    }
+                }
+                if(check){
+                    Statement += DatabaseExportHelper.PrepareColumnName(columns[i], i) + " varchar(255) not null";
+                }
+                else{
+                    Statement += DatabaseExportHelper.PrepareColumnName(columns[i], i) + " varchar(255)";
+                }
 		if ((i + 1) != columns.length) {
 		    Statement += ",";
 		}
 	    }
+            if(!primaryKeys.isEmpty()){
+                Statement += ", PRIMARY KEY (";
+                for(String key:primaryKeys){
+                    Statement += key + ",";
+                }
+                Statement = Statement.substring(0, Statement.length()-1);
+                Statement += ")";
+            }
 	    Statement += ")";
 	    databaseConnection.prepareStatement(Statement).execute();
-	} catch (SQLException e) {
-	    if(e.getMessage().contains("object name already exists")) {
-		throw new RuntimeException("Table name already exists");
+	} catch (SQLSyntaxErrorException e) {
+	    if(e.getMessage().contains("already exists")) {
+		throw new RuntimeException("Table already exists");
 	    }
+	} catch (SQLException e) {
 	    e.printStackTrace();
 	    return false;
 	}
@@ -44,7 +65,7 @@ public class DerbyDriver implements DatabaseInterface{
     public boolean addLine(String table, String[] values) {
         try {
 	    PreparedStatement preparedStatement;
-	    String Statement = "INSERT INTO " + table + " VALUES(";
+	    String Statement = "INSERT INTO " + table.toUpperCase() + " VALUES(";
 	    for (int i = 0; i < values.length; i++) {
 		Statement += "?";
 		if ((i + 1) != values.length) {
@@ -69,7 +90,8 @@ public class DerbyDriver implements DatabaseInterface{
         try {
 	    Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 	    databaseConnection = DriverManager.getConnection("jdbc:derby:"
-		    + database + ";create=true");
+		    + database + ";create=true", "" , "");
+            System.out.println(database);
 	} catch (ClassNotFoundException e) {
 	    e.printStackTrace();
 	} catch (SQLException e) {
@@ -93,12 +115,12 @@ public class DerbyDriver implements DatabaseInterface{
 
     @Override
     public boolean requiresUsername() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean requiresPassword() {
-        return false;
+        return true;
     }
 
     @Override

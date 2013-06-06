@@ -1,5 +1,7 @@
 package csheets.ext.db;
 
+import java.util.List;
+
 /**
  * Class in charge of communicating with the DatabaseInterface drivers in
  * order to export data according to its attributes.
@@ -13,6 +15,7 @@ public class DatabaseExportBuilder {
     private String[] columns; // columns for the table
     private String[][] values; // values for the table
     private boolean createTable;
+    private List<String> primaryKeys;
 
     public DatabaseExportBuilder(DatabaseInterface driver) {
 	setDriver(driver);
@@ -72,6 +75,10 @@ public class DatabaseExportBuilder {
     public void setCreateTable(boolean createTable) {
 	this.createTable = createTable;
     }
+    
+    public void setPrimaryKeys(List<String> primaryKeys){
+        this.primaryKeys = primaryKeys;
+    }
 
     /**
      * Proceeds to the exportation to the database, checks if creation of table
@@ -82,7 +89,7 @@ public class DatabaseExportBuilder {
 	// RuntimeException if not
 	driver.openDatabase(database);
 	if (createTable) {
-	    if (!driver.createTable(tableName, columns)) {
+	    if (!driver.createTable(tableName, columns, primaryKeys)) {
 		throw new RuntimeException("Error inserting");
 	    }
 	}

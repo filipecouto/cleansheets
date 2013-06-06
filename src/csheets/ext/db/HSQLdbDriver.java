@@ -38,22 +38,41 @@ public class HSQLdbDriver implements DatabaseInterface {
     }
 
     @Override
-    public boolean createTable(String name, String[] columns) {
+    public boolean createTable(String name, String[] columns, List<String> primaryKeys) {
 	try {
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
-		Statement += DatabaseExportHelper.PrepareColumnName(columns[i],
-			i) + " varchar(512)";
+                boolean check=false;
+		for(String key:primaryKeys){
+                    if(DatabaseExportHelper.PrepareColumnName(columns[i], i).compareTo(key)==0){
+                        check=true;
+                    }
+                }
+                if(check){
+                    Statement += DatabaseExportHelper.PrepareColumnName(columns[i], i) + " varchar(512) not null";
+                }
+                else{
+                    Statement += DatabaseExportHelper.PrepareColumnName(columns[i], i) + " varchar(512)";
+                }
 		if ((i + 1) != columns.length) {
 		    Statement += ",";
 		}
 	    }
+            if(!primaryKeys.isEmpty()){
+                Statement += ", PRIMARY KEY (";
+                for(String key:primaryKeys){
+                    Statement += key + ",";
+                }
+                Statement = Statement.substring(0, Statement.length()-1);
+                Statement += ")";
+            }
 	    Statement += ")";
 	    databaseConnection.prepareStatement(Statement).execute();
-	} catch (SQLException e) {
-	    if (e.getMessage().contains("object name already exists")) {
-		throw new RuntimeException("Table name already exists");
+	} catch (SQLSyntaxErrorException e) {
+	    if(e.getMessage().contains("already exists")) {
+		throw new RuntimeException("Table already exists");
 	    }
+	} catch (SQLException e) {
 	    e.printStackTrace();
 	    return false;
 	}
