@@ -65,14 +65,13 @@ public class H2Driver implements DatabaseInterface {
             }
 	    Statement += ")";
 	    databaseConnection.prepareStatement(Statement).execute();
-	} catch (SQLSyntaxErrorException e) {
+	} catch (Exception e) {
 	    if(e.getMessage().contains("already exists")) {
 		throw new RuntimeException("Table already exists");
-	    }
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	    return false;
-	}
+            }
+            e.printStackTrace();
+        }
+            
 	return true;
     }
 
