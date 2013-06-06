@@ -143,6 +143,7 @@ public class DatabaseExportDialog extends JDialog {
                         switch (n) {
                             case 0:
                                 exportController.setCreateTable(false);
+                                exportController.setDropTable(false);
                                 run();
                                 return;
                             case 1:
