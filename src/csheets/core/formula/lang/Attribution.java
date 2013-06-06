@@ -32,6 +32,7 @@ package csheets.core.formula.lang;
 import csheets.core.Cell;
 import csheets.core.IllegalValueTypeException;
 import csheets.core.Value;
+import csheets.core.Value.Type;
 import csheets.core.formula.BinaryOperator;
 import csheets.core.formula.Expression;
 import csheets.core.formula.compiler.FormulaCompilationException;
@@ -64,7 +65,7 @@ public class Attribution implements BinaryOperator {
 			newCell.setContent(value.toString());
 		} catch (FormulaCompilationException e) {
 		}
-		return value;
+		return newCell.getValue();
 	}
 
 	public String getIdentifier() {
