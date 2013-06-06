@@ -146,6 +146,7 @@ public class DatabaseExportDialog extends JDialog {
                                 run();
                                 return;
                             case 1:
+                                exportController.setCreateTable(true);
                                 exportController.setDropTable(true);
                                 run();
                                 return;
