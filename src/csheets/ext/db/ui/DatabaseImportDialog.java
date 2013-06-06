@@ -274,7 +274,6 @@ public class DatabaseImportDialog extends JDialog {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("newSheet");
                 importToCurrentSheet=false;
                 newSheet.setSelected(!importToCurrentSheet);
                 currentSheet.setSelected(importToCurrentSheet);
@@ -286,7 +285,6 @@ public class DatabaseImportDialog extends JDialog {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("currentSheet");
                 importToCurrentSheet=true;
                 newSheet.setSelected(!importToCurrentSheet);
                 currentSheet.setSelected(importToCurrentSheet);
