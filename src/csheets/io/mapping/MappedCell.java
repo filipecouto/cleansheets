@@ -15,6 +15,12 @@ import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
 
+/**
+ * This class holds all the data needed to store a Cell in the database and also
+ * builds a new one from its contained data
+ * 
+ * @author Gil Castro (gil_1110484)
+ */
 @Entity(name = "Cell")
 public class MappedCell {
 	@Id
@@ -34,10 +40,24 @@ public class MappedCell {
 	private int horizontalAlignment;
 	private int verticalAlignment;
 
+	/**
+	 * Constructor needed to rebuild the data from a persistent source
+	 */
 	MappedCell() {
 		// empty
 	}
 
+	/**
+	 * Constructor that stores all the needed data.
+	 * 
+	 * This constructor should be used when the user wishes to save his/her
+	 * workbook and then pass this instance to the persistence target.
+	 * 
+	 * @param spreadsheet
+	 *           the parent of this Cell representation
+	 * @param cell
+	 *           the Cell to store
+	 */
 	MappedCell(MappedSpreadsheet spreadsheet, Cell cell) {
 		this.spreadsheet = spreadsheet;
 
@@ -56,6 +76,14 @@ public class MappedCell {
 		}
 	}
 
+	/**
+	 * Restores all the stored data into this <code>cell</code>.
+	 * 
+	 * This should be used when the user wishes to open his/her workbook.
+	 * 
+	 * @param cell
+	 *           the Cell where to restore this data into
+	 */
 	void makeCell(Cell cell) {
 		try {
 			cell.setContent(content);
@@ -75,7 +103,12 @@ public class MappedCell {
 			style.setVerticalAlignment(verticalAlignment);
 		}
 	}
-	
+
+	/**
+	 * Gets the address of this cell
+	 * 
+	 * @return the address
+	 */
 	Address getAddress() {
 		return address;
 	}
