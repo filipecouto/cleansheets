@@ -2,11 +2,14 @@ package csheets.io;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.beans.Statement;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.SwingConstants;
@@ -19,12 +22,17 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.SharedSessionContract;
 import org.hibernate.Transaction;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
@@ -61,7 +69,38 @@ public class XMLCodec implements Codec {
 			DOMException, FormulaCompilationException, Exception {
 		int totalCells = 0;
 		int totalSheets = 0;
+		
+		
+		try {
+		  //import from xml to database
+		    Class.forName("org.hsqldb.jdbcDriver");
+		    SessionFactory sessionFactory = Hibernate.getSessionFactory();
+    		    Session session = sessionFactory.openSession();
+    		    
+		    Connection jdbcConnection = DriverManager.getConnection("jdbc:hsqldb:mem:DBNAME", "sa", "");
+		    //jdbcConnection.prepareStatement("DROP SCHEMA PUBLIC CASCADE").execute();
+		    IDatabaseConnection connection = new DatabaseConnection(jdbcConnection);
+		    
+		    connection.getConfig().setProperty(DatabaseConfig.FEATURE_QUALIFIED_TABLE_NAMES, false);
+		    connection.getConfig().setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false); 
+		    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder(); 
+		    builder.setCaseSensitiveTableNames(false); 
+		    builder.setColumnSensing(true); 
+		    builder.setDtdMetadata(false); 
+		    IDataSet ds = builder.build(stream); 
+		    DatabaseOperation.REFRESH.execute(connection, ds);
+		    
+		    //gather the relevant information from the database and use it to load the workbook
+    		    Query query = session.createQuery("select * from Workbook order by version limit 1");
+    		    query.executeUpdate();
+    		    List list = query.list();
+    		    return ((MappedWorkbook) list.get(0)).makeWorkbook();
 
+		} catch(Exception e) {
+		    e.printStackTrace();
+		}
+		return new Workbook();
+/*
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document doc = dBuilder.parse(stream);
@@ -87,7 +126,7 @@ public class XMLCodec implements Codec {
 				}
 			}
 		}
-		return wb;
+		return wb;*/
 	}
 
 	/**
