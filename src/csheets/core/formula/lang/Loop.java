@@ -1,5 +1,33 @@
 package csheets.core.formula.lang;
 
+/**
+ * @startuml
+ * 
+ * participant Expression as exp
+ * participant Loop
+ * participant "stopCriteria:Expression" as stop
+ * participant "expressions:Expression" as exps
+ * 
+ * exp -> Loop: evaluate()
+ * activate Loop
+ * loop while shouldContinue
+ * 	Loop -> stop: evaluate.toBoolean()
+ * 	activate stop
+ * 	Loop <- stop: shouldContinue
+ * 	deactivate stop
+ * 	loop for each Expression in expressions
+ * 		Loop -> exps: evaluate()
+ * 		activate exps
+ * 		Loop <- exps: last
+ * 		deactivate exps
+ * 	end
+ * end
+ * exp <- Loop: last
+ * deactivate Loop
+ * 
+ * @enduml
+ */
+
 import csheets.core.IllegalValueTypeException;
 import csheets.core.Value;
 import csheets.core.formula.Expression;
@@ -12,7 +40,7 @@ import csheets.core.formula.util.ExpressionVisitor;
  * @author Gil Castro (gil_1110484)
  */
 public class Loop implements Expression {
-	private static final long MAX_ITERATIONS = Integer.MAX_VALUE;
+	private static final long MAX_ITERATIONS = Integer.MAX_VALUE/4;
 
 	private static final long serialVersionUID = -8962867441373667963L;
 
@@ -45,7 +73,7 @@ public class Loop implements Expression {
 			iterations++;
 			if (iterations == MAX_ITERATIONS) {
 				// maybe the user did something wrong, let's leave the cycle
-				break;
+				return null;
 			}
 		}
 		return last;
