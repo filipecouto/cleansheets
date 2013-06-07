@@ -38,6 +38,7 @@ public class H2Driver implements DatabaseInterface {
     @Override
     public boolean createTable(String name, String[] columns, List<String> primaryKeys) {
 	try {
+            columnsNames.clear();
             primaryKeysNames=primaryKeys;
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
@@ -92,7 +93,7 @@ public class H2Driver implements DatabaseInterface {
 	    Statement += ")";
 	    preparedStatement = databaseConnection.prepareStatement(Statement);
 	    for (int i = 1; i <= values.length; i++) {
-		preparedStatement.setString(i, "'" + values[i - 1] + "'");
+		preparedStatement.setString(i,values[i - 1]);
 	    }
 	    preparedStatement.execute();
 	} catch (Exception e) {
@@ -102,7 +103,7 @@ public class H2Driver implements DatabaseInterface {
                 int data=0;
                 boolean check,comma=false;
                 for(String col:columnsNames){
-                    System.out.println(data);
+                    //System.out.println(data + " " + col);
                     check=false;
                     for(String prim:primaryKeysNames){
                         if(col.compareTo(prim)==0){
@@ -143,6 +144,7 @@ public class H2Driver implements DatabaseInterface {
                 try{
                     PreparedStatement statement = databaseConnection.prepareStatement(sql);
                     statement.execute();
+                    databaseConnection.commit();
                     System.out.println("DONE!!!");
                     return true;
                 }catch(SQLException sqle){
@@ -224,7 +226,8 @@ public class H2Driver implements DatabaseInterface {
             i++;
             while(rs.next()){
                 for(j=1;j<=columnsNumber;j++){
-                    info[i][j-1]=rs.getString(j).substring(1, rs.getString(j).length()-1);
+                    //info[i][j-1]=rs.getString(j).substring(1, rs.getString(j).length()-1);
+                    info[i][j-1]=rs.getString(j);
                 }
                 i++;
             }
