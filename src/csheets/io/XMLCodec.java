@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 import javax.swing.BorderFactory;
 import javax.swing.SwingConstants;
@@ -17,6 +19,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -30,11 +39,13 @@ import csheets.core.Workbook;
 import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
+import csheets.io.mapping.Hibernate;
+import csheets.io.mapping.MappedWorkbook;
 
 /**
  * A codec for read and write XML files.
  * 
- * @author Filipe Silva & Rita Nogueira
+ * @author Filipe Silva & Rita Nogueira & Filipe Couto
  */
 public class XMLCodec implements Codec {
 
@@ -205,7 +216,28 @@ public class XMLCodec implements Codec {
 	@Override
 	public void write(Workbook workbook, OutputStream stream)
 			throws IOException, TransformerException, ParserConfigurationException {
-
+	    	// creates the database in memory
+	    	Transaction transaction = null;
+	    	SessionFactory sessionFactory = Hibernate.getSessionFactory();
+	    	Session session = sessionFactory.openSession();
+	    	transaction = session.beginTransaction();
+	    	session.persist(new MappedWorkbook(workbook));
+	    	transaction.commit();
+	    	
+	    	// exports the same database to an xml files
+	    	try {
+        	    	Class driverClass = Class.forName("org.hsqldb.jdbcDriver");
+        	        Connection jdbcConnection = DriverManager.getConnection(
+        	                "jdbc:hsqldb:mem:DBNAME", "sa", "");
+        	        IDatabaseConnection connection = new DatabaseConnection(jdbcConnection);
+        	    	IDataSet fullSet = connection.createDataSet();
+        	    	FlatXmlDataSet.write(fullSet, stream);
+	    	} catch (Exception e) {
+	    	    e.printStackTrace();
+	    	}
+	    	
+	    	
+	    		/*
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -220,7 +252,7 @@ public class XMLCodec implements Codec {
 
 		transformer.transform(source, result);
 		// Frees resources
-		stream.close();
+		stream.close();*/
 	}
 
 	/**
