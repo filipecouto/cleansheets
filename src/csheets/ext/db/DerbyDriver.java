@@ -18,12 +18,17 @@ import java.util.List;
 public class DerbyDriver implements DatabaseInterface{
     
     private Connection databaseConnection;
+    private List<String> columnsNames = new ArrayList<String>();
+    private List<String> primaryKeysNames;
 
     @Override
     public boolean createTable(String name, String[] columns, List<String> primaryKeys) {
         try {
+            columnsNames.clear();
+            primaryKeysNames=primaryKeys;
 	    String Statement = "CREATE TABLE " + name + "(";
 	    for (int i = 0; i < columns.length; i++) {
+                columnsNames.add(DatabaseExportHelper.PrepareColumnName(columns[i], i));
                 boolean check=false;
 		for(String key:primaryKeys){
                     if(DatabaseExportHelper.PrepareColumnName(columns[i], i).compareTo(key)==0){
@@ -74,10 +79,62 @@ public class DerbyDriver implements DatabaseInterface{
 	    Statement += ")";
 	    preparedStatement = databaseConnection.prepareStatement(Statement);
 	    for (int i = 1; i <= values.length; i++) {
-		preparedStatement.setString(i, values[i-1]);
+		preparedStatement.setString(i, "'" + values[i - 1] + "'");
 	    }
 	    preparedStatement.execute();
-	} catch (SQLException e) {
+	} catch (Exception e) {
+            if (e.getMessage() != null
+                            && e.getMessage().contains("integrity constraint violation")) {
+                String sql = "Update "+table+" Set ";
+                int data=0;
+                boolean check,comma=false;
+                for(String col:columnsNames){
+                    //System.out.println(data + " " + col);
+                    check=false;
+                    for(String prim:primaryKeysNames){
+                        if(col.compareTo(prim)==0){
+                            check=true;
+                        }
+                    }
+                    if(!check){
+                        if(!comma){
+                            sql += col + "='" + values[data] + "' ";
+                            comma=true;
+                        }
+                        else{
+                            sql += ", " + col + "='" + values[data] + "' ";
+                        }
+                    }
+                    data++;
+                }
+                sql += " Where ";
+                int pos=0;
+                comma=false;
+                for(String prim:primaryKeysNames){
+                    data=0;
+                    for(String col:columnsNames){
+                        if(prim.compareTo(col)==0){
+                            pos=data;
+                        }
+                        data++;
+                    }
+                    if(!comma){
+                        sql += prim + "='" + values[pos] + "' ";
+                        comma=true;
+                    }
+                    else{
+                        sql += ", " + prim + "='" + values[pos] + "' ";
+                    }
+                }
+                System.out.println(sql);
+                try{
+                    databaseConnection.prepareStatement(sql).executeUpdate();
+                    System.out.println("DONE!!!");
+                    return true;
+                }catch(SQLException sqle){
+                    System.out.println("Exception: " + sqle);
+                }
+            }
 	    e.printStackTrace();
 	    return false;
 	}
@@ -160,7 +217,6 @@ public class DerbyDriver implements DatabaseInterface{
             rs.last();
             rowsNumber = rs.getRow() + 1;
             rs.beforeFirst();
-            System.out.println("Linhas = "+rowsNumber+" Colunas = "+columnsNumber);
             info = new String[rowsNumber][columnsNumber];
             for(j=1;j<=columnsNumber;j++){
                 info[i][j-1]=rsmd.getColumnName(j);
@@ -168,11 +224,10 @@ public class DerbyDriver implements DatabaseInterface{
             i++;
             while(rs.next()){
                 for(j=1;j<=columnsNumber;j++){
-                    info[i][j-1]=rs.getString(j);
+                    info[i][j-1]=rs.getString(j).substring(1, rs.getString(j).length()-1);
                 }
                 i++;
             }
-            System.out.println("done");
         }catch(SQLException e){
             System.out.println(e);
         }

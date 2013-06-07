@@ -29,10 +29,13 @@ import javax.swing.text.BadLocationException;
 
 import csheets.core.Cell;
 import csheets.core.Spreadsheet;
+import csheets.core.Workbook;
+import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.db.DatabaseImportController;
 import csheets.ext.db.DatabaseInterface;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ui.sheet.SpreadsheetTable;
+import javax.swing.SwingUtilities;
 
 /*
  * 
@@ -120,7 +123,7 @@ public class DatabaseImportDialog extends JDialog {
 	// force the GUI to redraw the window so the label can be seen
 	revalidate();
 	repaint();
-	Thread exportThread = new Thread(new Runnable() {
+	Thread importThread = new Thread(new Runnable() {
 	    DatabaseImportController importController;
 
 	    @Override
@@ -146,15 +149,50 @@ public class DatabaseImportDialog extends JDialog {
                     importController.setImportToCurrentSheet(importToCurrentSheet);
 		}
 		try {
-		    importController.importM();
+		    final String [][] info = importController.importM();
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            //Read matrix and put data into spreadsheet
+                            int i=0,j=0;
+                            int cellCol,cellRow;
+                            Cell cell = table.getSelectedCell();
+                            Spreadsheet sheet = table.getSpreadsheet();
+                            // Import into a new sheet
+                            if(!importToCurrentSheet){
+                                Workbook workbook = sheet.getWorkbook();
+                                workbook.addSpreadsheet(info);
+                                workbook.getSpreadsheet(workbook.getSpreadsheetCount()-1).setTitle(tables.getSelectedItem()
+			    .toString()); // Doesn't set the title graphically
+                                System.out.println(workbook.getSpreadsheet(workbook.getSpreadsheetCount()-1).getTitle());
+                                //TODO get focus on the new sheet
+                            }
+                            // Import into the current sheet starting at the selected cell
+                            else{ //TODO verify if its going to overlap cells
+                                cellCol=cell.getAddress().getColumn();
+                                cellRow=cell.getAddress().getRow();
+                                try{
+                                    for(i=0;i<info.length;i++){
+                                        for(j=0;j<info[0].length;j++){
+                                            sheet.getCell(cellCol+j, cellRow+i).setContent(info[i][j].toString());
+                                        }
+                                    }
+                                }catch(FormulaCompilationException e){
+                                    System.out.println(e);
+                                }
+                            }
+                        }
+                    });
 		} catch (Exception e) {
 		    System.out.println(e);
+                    e.printStackTrace();
 		}
 		enableButtons(true);
 		setVisible(false);
 	    }
 	});
-	exportThread.start();
+	importThread.start();
     }
 
     private JPanel createOptionsPanel() {

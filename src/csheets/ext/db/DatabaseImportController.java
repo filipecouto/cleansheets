@@ -60,34 +60,11 @@ public class DatabaseImportController {
 	return database;
     }
     
-    public void importM() {
+    public String [][] importM() {
         driver.openDatabase(database);
         String [][] info = driver.getData(tableName);
-        int i=0,j=0;
-        int cellCol,cellRow;
-        // Import into a new sheet
-        if(!importToCurrentSheet){
-            Workbook workbook = table.getWorkbook();
-            workbook.addSpreadsheet(info);
-            workbook.getSpreadsheet(workbook.getSpreadsheetCount()-1).setTitle(tableName); // Doesn't set the title graphically
-            System.out.println(workbook.getSpreadsheet(workbook.getSpreadsheetCount()-1).getTitle());
-            //TODO get focus on the new sheet
-        }
-        // Import into the current sheet starting at the selected cell
-        else{ //TODO verify if its going to overlap cells
-            cellCol=cell.getAddress().getColumn();
-            cellRow=cell.getAddress().getRow();
-            try{
-                for(i=0;i<info.length;i++){
-                    for(j=0;j<info[0].length;j++){
-                        table.getCell(cellCol+j, cellRow+i).setContent(info[i][j].toString());
-                    }
-                }
-            }catch(FormulaCompilationException e){
-                System.out.println(e);
-            }
-        }
         driver.closeDatabase();
+        return info;
     }
     
     public List<String> getTables() {
