@@ -30,11 +30,13 @@ import csheets.core.Workbook;
 import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
+import csheets.io.mapping.Hibernate;
+import csheets.io.mapping.MappedWorkbook;
 
 /**
  * A codec for read and write XML files.
  * 
- * @author Filipe Silva & Rita Nogueira
+ * @author Filipe Silva & Rita Nogueira & Filipe Couto
  */
 public class XMLCodec implements Codec {
 
@@ -205,7 +207,8 @@ public class XMLCodec implements Codec {
 	@Override
 	public void write(Workbook workbook, OutputStream stream)
 			throws IOException, TransformerException, ParserConfigurationException {
-
+	    	Hibernate.getSessionFactory().openSession().persist(new MappedWorkbook(workbook));
+	    	
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
