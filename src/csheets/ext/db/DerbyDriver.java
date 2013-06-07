@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,17 +78,16 @@ public class DerbyDriver implements DatabaseInterface{
 	    Statement += ")";
 	    preparedStatement = databaseConnection.prepareStatement(Statement);
 	    for (int i = 1; i <= values.length; i++) {
-		preparedStatement.setString(i, "'" + values[i - 1] + "'");
+		preparedStatement.setString(i,values[i - 1]);
 	    }
 	    preparedStatement.execute();
 	} catch (Exception e) {
             if (e.getMessage() != null
-                            && e.getMessage().contains("integrity constraint violation")) {
+                            && e.getMessage().contains("duplicate key value")) {
                 String sql = "Update "+table+" Set ";
                 int data=0;
                 boolean check,comma=false;
                 for(String col:columnsNames){
-                    //System.out.println(data + " " + col);
                     check=false;
                     for(String prim:primaryKeysNames){
                         if(col.compareTo(prim)==0){
@@ -126,10 +124,10 @@ public class DerbyDriver implements DatabaseInterface{
                         sql += ", " + prim + "='" + values[pos] + "' ";
                     }
                 }
-                System.out.println(sql);
                 try{
-                    databaseConnection.prepareStatement(sql).executeUpdate();
-                    System.out.println("DONE!!!");
+                    PreparedStatement statement = databaseConnection.prepareStatement(sql);
+                    statement.execute();
+                    databaseConnection.commit();
                     return true;
                 }catch(SQLException sqle){
                     System.out.println("Exception: " + sqle);
@@ -183,7 +181,7 @@ public class DerbyDriver implements DatabaseInterface{
     public List<String> getTables() {
         List<String> tables = new ArrayList<String>();
         try{
-            ResultSet rs = databaseConnection.getMetaData().getTables(null, "PUBLIC", "%",
+            ResultSet rs = databaseConnection.getMetaData().getTables(null, "APP", "%",
 		    null);
             while (rs.next()) {
                 tables.add(rs.getString(3));
@@ -224,7 +222,7 @@ public class DerbyDriver implements DatabaseInterface{
             i++;
             while(rs.next()){
                 for(j=1;j<=columnsNumber;j++){
-                    info[i][j-1]=rs.getString(j).substring(1, rs.getString(j).length()-1);
+                    info[i][j-1]=rs.getString(j);
                 }
                 i++;
             }
