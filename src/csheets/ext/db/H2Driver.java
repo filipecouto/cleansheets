@@ -222,7 +222,6 @@ public class H2Driver implements DatabaseInterface {
             i++;
             while(rs.next()){
                 for(j=1;j<=columnsNumber;j++){
-                    //info[i][j-1]=rs.getString(j).substring(1, rs.getString(j).length()-1);
                     info[i][j-1]=rs.getString(j);
                 }
                 i++;
