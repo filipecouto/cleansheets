@@ -11,7 +11,7 @@ utility classes.
 
 */
 /**
- * iteração 1
+ * iteracao 1
  @startuml
  class Frame
  class CleanSheets {
@@ -52,7 +52,7 @@ utility classes.
  XMLValidator  <--CleanSheets
  @enduml
 
-iteração 2
+iteracao 2
 @startuml
  class Frame
  class CleanSheets {
@@ -99,7 +99,7 @@ iteração 2
  XMLCodec   <--CleanSheets
  @enduml
 
- iteração 1
+ iteracao 1
  @startuml 
  Interface->"CleanSheets":save()
  CleanSheets->"CleanSheets":saveAs()
@@ -113,7 +113,7 @@ iteração 2
  XMLCodec-->CleanSheets : Workbook
  @enduml
  
- iteração 2
+ iteracao 2
   @startuml 
  Interface->"CleanSheets":save()
  CleanSheets->"CleanSheets":saveAs()
