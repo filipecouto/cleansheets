@@ -60,7 +60,7 @@ public class DatabaseImportController {
 	return database;
     }
     
-    public String [][] importM() {
+    public String [][] importDatabase() {
         driver.openDatabase(database);
         String [][] info = driver.getData(tableName);
         driver.closeDatabase();

@@ -149,7 +149,7 @@ public class DatabaseImportDialog extends JDialog {
                     importController.setImportToCurrentSheet(importToCurrentSheet);
 		}
 		try {
-		    final String [][] info = importController.importM();
+		    final String [][] info = importController.importDatabase();
                     SwingUtilities.invokeLater(new Runnable() {
 
                         @Override
