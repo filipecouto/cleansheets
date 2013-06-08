@@ -27,6 +27,7 @@ public class ApplicationLayerTests {
     private static final String DATABASE_NAME = "testDatabase";
     private static Workbook workbook;
     private static Spreadsheet spreadsheet;
+    private static Spreadsheet spreadsheet2;
 
     private static DatabaseInterface dbDriver;
 
@@ -34,6 +35,8 @@ public class ApplicationLayerTests {
     private static int rows;
     private static int xOffset;
     private static int yOffset;
+    
+    private static String [][] data;
 
     /**
      * Starts up the tests, creating a random spreadsheet.
@@ -54,6 +57,7 @@ public class ApplicationLayerTests {
 	// let's create our workbook
 	workbook = new Workbook(3);
 	spreadsheet = workbook.getSpreadsheet(0);
+        spreadsheet2 = workbook.getSpreadsheet(1);
 	generateData(spreadsheet);
 
 	// let's save this workbook, it may contain precious info
@@ -65,6 +69,7 @@ public class ApplicationLayerTests {
 		+ " table to export using " + dbDriver.getName() + " driver!");
 
 	export();
+        importDatabase();
     }
 
     /**
@@ -91,6 +96,56 @@ public class ApplicationLayerTests {
 	    System.out.println("Table failed to export");
 	}
     }
+    
+    /*
+     * Imports the Database
+     */
+    public static void importDatabase(){
+        DatabaseImportController controller = new DatabaseImportController();
+        controller.setDriver(dbDriver);
+        controller.setDatabase(DATABASE_NAME);
+        controller.setTableName("Teste");
+        controller.setSpreadsheet(spreadsheet2);
+        Cell c1 = spreadsheet2.getCell(0, 0);
+        controller.setCell(c1);
+        controller.setImportToCurrentSheet(false);
+        String [][] values = controller.importDatabase();
+        //Read matrix and put data into spreadsheet
+        int i=0,j=0;
+        int cellCol,cellRow;
+        // Import into a new sheet
+        cellCol=c1.getAddress().getColumn();
+        cellRow=c1.getAddress().getRow();
+        try{
+            for(i=0;i<values.length;i++){
+                for(j=0;j<values[0].length;j++){
+                    spreadsheet2.getCell(cellCol+j, cellRow+i).setContent(values[i][j].toString());
+                }
+            }
+        }catch(FormulaCompilationException e){
+            System.out.println(e);
+        }
+        compareSpreadsheet(values);
+    }
+    
+    /*
+     * Verifies if the content of a matrix matches the content of a spreadsheet starting in the cell A1
+     */
+    public static boolean compareSpreadsheet(String [][] values){
+        int i=0,j=0;
+        int cellCol,cellRow;
+        Cell c1 = spreadsheet2.getCell(0, 0);
+        cellCol=c1.getAddress().getColumn();
+        cellRow=c1.getAddress().getRow();
+        for(i=0;i<values.length;i++){
+            for(j=0;j<values[0].length;j++){
+                if(values[i][j].compareTo(spreadsheet2.getCell(cellCol+j, cellRow+i).getContent())!=0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     /**
      * Saves this test workbook just in case
@@ -111,6 +166,8 @@ public class ApplicationLayerTests {
      * @param sheet the spreadsheet
      */
     private static void generateData(Spreadsheet sheet) {
+        String [][] data = new String[rows][columns];
+        String value;
 	for (int y = yOffset; y < rows + yOffset; y++) {
 	    for (int x = xOffset; x < columns + xOffset; x++) {
 		if (Math.random() > 0.08f) {
@@ -118,15 +175,18 @@ public class ApplicationLayerTests {
 		    if (Math.random() > 0) {
 			// 6 on 10 cells will contain text
 			try {
-			    sheet.getCell(x, y).setContent(makeRandomString());
+                            value=makeRandomString();
+                            data[y][x]=value;
+			    sheet.getCell(x, y).setContent(value);
 			} catch (FormulaCompilationException e) {
 			    e.printStackTrace();
 			}
 		    } else {
 			// 4 on 10 cells will contain numbers
 			try {
-			    sheet.getCell(x, y).setContent(
-				    String.valueOf(Math.random() * 1000000));
+                            value=String.valueOf(Math.random() * 1000000);
+                            data[y][x]=value;
+			    sheet.getCell(x, y).setContent(value);
 			} catch (FormulaCompilationException e) {
 			    e.printStackTrace();
 			}
