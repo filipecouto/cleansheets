@@ -3,7 +3,6 @@ package csheets.ext.rtc;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import csheets.core.Address;
@@ -17,7 +16,7 @@ import csheets.ui.ctrl.UIController;
  * This class creates the server, listens to incoming connections and sends them
  * to a Client instance in order to manage them.
  * 
- * @author gil_1110484
+ * @author gil_1110484; Rita Nogueira
  */
 public class ServerInterface implements RtcCommunicator {
     private ClientInfo info;
@@ -45,8 +44,7 @@ public class ServerInterface implements RtcCommunicator {
 
     @Override
     public void start() {
-	multserver = new MulticastServer(port, info.getName(),
-		clients.size());
+	multserver = new MulticastServer(port, info.getShareName(), clients.size());
 	try {
 	    server = new ServerSocket(port);
 	    connected = true;
@@ -159,7 +157,7 @@ public class ServerInterface implements RtcCommunicator {
 		    info[i] = clients.get(i).getInfo();
 		}
 		info[len] = this.info;
-		
+
 		return info;
 	    }
 	} else {
@@ -262,15 +260,6 @@ public class ServerInterface implements RtcCommunicator {
     private void removeUser(ClientInfo id) {
 	synchronized (clients) {
 	    final int len = clients.size();
-	    try {
-		multserver.serverNrClient(len);
-	    } catch (UnknownHostException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    } catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
 	    for (int i = 0; i < len; i++) {
 		if (clients.get(i).getInfo() == id) {
 		    clients.remove(i);
@@ -285,6 +274,7 @@ public class ServerInterface implements RtcCommunicator {
 	if (action instanceof Boolean) {
 	    if ((Boolean) action == false) {
 		removeUser(source);
+
 		synchronized (clients) {
 		    if (!connected && clients.size() == 0) {
 			close();
@@ -313,5 +303,9 @@ public class ServerInterface implements RtcCommunicator {
     @Override
     public boolean isConnected() {
 	return connected;
+    }
+    
+    public String toString() {
+	return info.getShareName();
     }
 }

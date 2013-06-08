@@ -1,53 +1,47 @@
 package csheets.ext.rtc.ui;
 
-import java.util.ArrayList;
-
 import javax.swing.ListModel;
+import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import csheets.ext.rtc.ServerInformation;
+import csheets.ext.rtc.RtcCommunicator;
 
-public class ServerListAdapter implements ListModel {
+/**
+ * Adapter to shares list
+ * 
+ * @author Rita Nogueira
+ * 
+ */
+public class ServerListAdapter implements ListModel<RtcCommunicator> {
     ListDataListener listener;
-    ArrayList<ServerInformation> information = new ArrayList<ServerInformation>();
+    private RtcCommunicator[] serverInfos = new RtcCommunicator[0];
 
     @Override
-    public void addListDataListener(ListDataListener arg0) {
-	listener = arg0;
+    public void addListDataListener(ListDataListener l) {
+	listener = l;
     }
 
     @Override
-    public ServerInformation getElementAt(int index) {
-	return information.get(index);
+    public RtcCommunicator getElementAt(int index) {
+	return serverInfos[index];
     }
 
     @Override
     public int getSize() {
-	return information.size();
-    }
-
-    public void addShareInfo(ServerInformation shareInfo) {
-	if (!existInArray(shareInfo)) {
-	    information.add(shareInfo);
-	}
-	listener.contentsChanged(null);
-    }
-
-    public void clear() {
-	information.clear();
-	listener.contentsChanged(null);
-    }
-
-    private boolean existInArray(ServerInformation shareInfo) {
-	for (int i = 0; i < information.size(); i++) {
-	    if (shareInfo.getIp().equals(information.get(i).getIp())) {
-		return true;
-	    }
-	}
-	return false;
+	return serverInfos == null ? 0 : serverInfos.length;
     }
 
     @Override
     public void removeListDataListener(ListDataListener arg0) {
+
     }
+
+    public void update(RtcCommunicator[] info) {
+	serverInfos = info;
+	if (listener != null) {
+	    listener.contentsChanged(new ListDataEvent(this,
+		    ListDataEvent.CONTENTS_CHANGED, 0, getSize()));
+	}
+    }
+
 }

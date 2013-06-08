@@ -13,7 +13,7 @@ import csheets.ui.ctrl.UIController;
  * This class is in charge of providing feedback to the application when
  * something is received from the connection.
  * 
- * @author gil_1110484
+ * @author gil_1110484; Rita Nogueira
  */
 public class RtcEventsResponder implements RtcListener {
     private UIController uiController;
@@ -31,16 +31,19 @@ public class RtcEventsResponder implements RtcListener {
     @Override
     public void onDisconnected(ClientInfo client) {
 	extension.onDisconnected();
-	extension.updateUsersList();
+	extension.updateUsersList(getCommunicator());
+	extension.updateServersList();
     }
 
     @Override
     public void onConnected(ClientInfo client) {
-	properties = communicator.getSharingProperties();
+	properties = getCommunicator().getSharingProperties();
 	extension.onConnected();
 	if (extension.isOwner()) {
-	    extension.updateUsersList();
+	    extension.updateUsersList(getCommunicator());
+	    extension.updateServersList();
 	}
+
     }
 
     public RtcSharingProperties getShareProperties() {
@@ -103,11 +106,16 @@ public class RtcEventsResponder implements RtcListener {
 
     @Override
     public void onUserAction(ClientInfo source, Object action) {
-	extension.updateUsersList();
+	extension.updateUsersList(getCommunicator());
+	extension.updateServersList();
     }
 
     @Override
     public void onConnectionFailed(Exception e) {
 	extension.onConnectionFailed(e);
+    }
+
+    public RtcCommunicator getCommunicator() {
+	return communicator;
     }
 }

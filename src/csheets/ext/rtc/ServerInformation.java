@@ -2,24 +2,30 @@ package csheets.ext.rtc;
 
 import java.net.InetAddress;
 
+/**
+ * Class for saving information from the message from MulticastServer
+ * 
+ * @author Rita Nogueira
+ * 
+ */
 public class ServerInformation {
 
-    private String nome;
-    private int pessoas;
+    private String shareName;
+    private int nrPersons;
     private InetAddress ip;
 
-    public ServerInformation(String nome, int pessoas, InetAddress ip) {
-	this.nome = nome;
-	this.pessoas = pessoas;
+    public ServerInformation(String shareName, int nrPersons, InetAddress ip) {
+	this.shareName = shareName;
+	this.nrPersons = nrPersons;
 	this.ip = ip;
     }
 
     public String toString() {
-	return (nome + " - " + getIp() + " - " + pessoas + " pessoa(s)");
+	return (shareName + " - " + getIp() + " - " + nrPersons + " pessoa(s)");
     }
 
-    public String getNome() {
-	return nome;
+    public String getShareName() {
+	return shareName;
     }
 
     public String getIp() {
@@ -30,7 +36,7 @@ public class ServerInformation {
 	return address;
     }
 
-    public int getPessoas() {
-	return pessoas;
+    public int getnrPersons() {
+	return nrPersons;
     }
 }
