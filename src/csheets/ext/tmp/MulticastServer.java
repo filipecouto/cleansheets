@@ -1,4 +1,4 @@
-package csheets.ext.rtc;
+package csheets.ext.tmp;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -6,6 +6,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/**
+ * Multicast server for propagating tpc server's ip address
+ * 
+ * @author Rita Nogueira
+ * 
+ */
 public class MulticastServer {
     private DatagramSocket socket;
     private DatagramPacket outPacket;
@@ -39,7 +45,6 @@ public class MulticastServer {
 			}
 		    }
 		} catch (IOException ioe) {
-		    System.out.println(ioe);
 		}
 	    }
 
@@ -47,10 +52,24 @@ public class MulticastServer {
 	startSearching();
     }
 
+    /**
+     * Creates the message with the name of the share and the number of persons
+     * connected to it
+     * 
+     * @return message
+     */
     private String setMsg() {
 	return (serverNrClients + ";" + serverName);
     }
 
+    /**
+     * method to stop the thread of the server, modify the value of the variable
+     * nrClients and restart the thread
+     * 
+     * @param nrClient
+     * @throws UnknownHostException
+     * @throws IOException
+     */
     public void serverNrClient(int nrClient) throws UnknownHostException,
 	    IOException {
 	stop();
@@ -58,10 +77,16 @@ public class MulticastServer {
 	startSearching();
     }
 
+    /**
+     * Starts the thread
+     */
     private void startSearching() {
 	new Thread(searcher).start();
     }
 
+    /**
+     * Stops the thread
+     */
     public void stop() {
 	if (socket != null && !socket.isClosed()) {
 	    socket.close();

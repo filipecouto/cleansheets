@@ -1,11 +1,14 @@
-package csheets.ext.rtc;
+package csheets.ext.tmp;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import csheets.core.Address;
 import csheets.ext.Extension;
+import csheets.ext.rtc.ClientInterface;
+import csheets.ext.rtc.RtcCommunicator;
 import csheets.ext.rtc.messages.RemoteCell;
+import csheets.ext.rtc.ui.RtcSharingProperties;
 import csheets.ext.rtc.ui.RtcUI;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
@@ -43,14 +46,15 @@ public class RealTimeCollaboration extends Extension {
      * Tells the side bar to refresh the list of connected users
      * 
      * @param com
-     * @param string
      */
     public void updateUsersList(RtcCommunicator com) {
 	rtcUI.updateUsersList(com.getConnectedUsers());
     }
 
+    /**
+     * Tells the side bar to refresh the list of shares
+     */
     public void updateServersList() {
-
 	RtcCommunicator[] array = new RtcCommunicator[communicators.size()];
 	communicators.toArray(array);
 	rtcUI.updateServersList(array);

@@ -1,14 +1,14 @@
-package csheets.ext.rtc.ui;
+package csheets.ext.tmp.ui;
 
 import java.util.ArrayList;
 
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 
-import csheets.ext.rtc.ServerInformation;
+import csheets.ext.tmp.ServerInformation;
 
 /**
- * Adapter for list in ConnectionDialog
+ * Adapter to the GUI (to update the list with the names of the shares)
  * 
  * @author Rita Nogueira
  * 
@@ -32,6 +32,12 @@ public class MulticastServerListAdapter implements ListModel {
 	return information.size();
     }
 
+    /**
+     * Adds a ServerInformation the array if it does not exist (preventing a
+     * share appear repeated)
+     * 
+     * @param shareInfo
+     */
     public void addShareInfo(ServerInformation shareInfo) {
 	if (!existInArray(shareInfo)) {
 	    information.add(shareInfo);
@@ -39,11 +45,20 @@ public class MulticastServerListAdapter implements ListModel {
 	listener.contentsChanged(null);
     }
 
+    /**
+     * Clears the array
+     */
     public void clear() {
 	information.clear();
 	listener.contentsChanged(null);
     }
 
+    /**
+     * see if the ServerInformation exists or not in the array
+     * 
+     * @param shareInfo
+     * @return true if exists false if not exists
+     */
     private boolean existInArray(ServerInformation shareInfo) {
 	for (int i = 0; i < information.size(); i++) {
 	    if (shareInfo.getIp().equals(information.get(i).getIp())) {

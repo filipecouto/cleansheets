@@ -6,7 +6,14 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
+import csheets.ext.tmp.ServerInformation;
 
+/**
+ * Multicast client for receiving all the information from multicast servers
+ * 
+ * @author Rita Nogueira
+ * 
+ */
 public class MulticastClient {
     private MulticastSocket socket;
     private DatagramPacket inPacket;
@@ -37,10 +44,18 @@ public class MulticastClient {
 	startSearching();
     }
 
+    /**
+     * Starts the thread
+     */
     private void startSearching() {
 	new Thread(searcher).start();
     }
 
+    /**
+     * Decomposes the message
+     * 
+     * @return message
+     */
     private static String[] splitMsg(String msg) {
 	int pos = msg.indexOf(";");
 	String[] tmp = new String[2];
@@ -49,18 +64,35 @@ public class MulticastClient {
 	return tmp;
     }
 
+    /**
+     * * method to stop the thread of the server, modify the value of the
+     * variable port and restart the thread
+     * 
+     * @param port
+     * @throws UnknownHostException
+     * @throws IOException
+     */
     public void setPort(int port) throws UnknownHostException, IOException {
 	stop();
 	this.port = port;
 	startSearching();
     }
 
+    /**
+     * Stops the thread
+     */
     public void stop() {
 	if (socket != null && !socket.isClosed()) {
 	    socket.close();
 	}
     }
 
+    /**
+     * Creates the connection to the server
+     * 
+     * @throws IOException
+     * @throws UnknownHostException
+     */
     private void createConnection() throws IOException, UnknownHostException {
 	socket = new MulticastSocket(port);
 	InetAddress address = InetAddress.getByName("224.2.2.3");
