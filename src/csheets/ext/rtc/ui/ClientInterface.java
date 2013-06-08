@@ -1,4 +1,4 @@
-package csheets.ext.rtc;
+package csheets.ext.rtc.ui;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -8,6 +8,9 @@ import java.net.UnknownHostException;
 
 import csheets.core.Address;
 import csheets.core.Workbook;
+import csheets.ext.rtc.Communicator;
+import csheets.ext.rtc.RtcCommunicator;
+import csheets.ext.rtc.RtcListener;
 import csheets.ext.rtc.messages.MessageTypes;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.messages.RemoteSpreadsheet;
@@ -212,5 +215,9 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     @Override
     public boolean isConnected() {
 	return connected;
+    }
+
+    public String toString() {
+	return info.getShareName();
     }
 }
