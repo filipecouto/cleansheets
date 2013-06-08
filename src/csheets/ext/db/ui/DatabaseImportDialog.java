@@ -96,7 +96,7 @@ public class DatabaseImportDialog extends JDialog {
 	ok.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		importM();
+		importDatabase();
 	    }
 	});
 	panelButtons.add(ok);
@@ -117,7 +117,7 @@ public class DatabaseImportDialog extends JDialog {
      * Creates a Dialog that is used to retrieve the exportation data from the
      * user in order to proceed to the exportation
      */
-    private void importM() {
+    private void importDatabase() {
 	panelButtons.getComponent(0).setEnabled(false);
 	panelButtons.getComponent(1).setEnabled(false);
 	// force the GUI to redraw the window so the label can be seen
