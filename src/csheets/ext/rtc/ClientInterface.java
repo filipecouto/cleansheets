@@ -14,7 +14,6 @@ import csheets.ext.rtc.messages.RemoteSpreadsheet;
 import csheets.ext.rtc.messages.RemoteWorkbook;
 import csheets.ext.rtc.messages.RtcMessage;
 import csheets.ext.rtc.ui.RtcSharingProperties;
-import csheets.ext.tmp.ClientInfo;
 
 /**
  * This class will be the client-side bridge of the connection (therefore the

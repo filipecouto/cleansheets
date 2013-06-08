@@ -6,7 +6,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
-import csheets.ext.tmp.ServerInformation;
 
 /**
  * Multicast client for receiving all the information from multicast servers

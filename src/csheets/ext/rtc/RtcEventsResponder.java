@@ -1,4 +1,4 @@
-package csheets.ext.tmp;
+package csheets.ext.rtc;
 
 import javax.swing.SwingUtilities;
 
@@ -6,8 +6,6 @@ import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.core.CellListener;
 import csheets.core.Workbook;
-import csheets.ext.rtc.RtcCommunicator;
-import csheets.ext.rtc.RtcListener;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.ui.RtcSharingProperties;
 import csheets.ui.ctrl.UIController;

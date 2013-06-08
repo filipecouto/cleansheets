@@ -1,4 +1,4 @@
-package csheets.ext.tmp;
+package csheets.ext.rtc;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -7,9 +7,6 @@ import java.util.ArrayList;
 
 import csheets.core.Address;
 import csheets.core.Spreadsheet;
-import csheets.ext.rtc.Client;
-import csheets.ext.rtc.RtcCommunicator;
-import csheets.ext.rtc.RtcListener;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.messages.RemoteSpreadsheet;
 import csheets.ext.rtc.messages.RemoteWorkbook;

@@ -1,11 +1,11 @@
-package csheets.ext.tmp.ui;
+package csheets.ext.rtc.ui;
 
 import java.util.ArrayList;
 
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 
-import csheets.ext.tmp.ServerInformation;
+import csheets.ext.rtc.ServerInformation;
 
 /**
  * Adapter to the GUI (to update the list with the names of the shares)

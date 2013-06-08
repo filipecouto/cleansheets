@@ -1,12 +1,10 @@
-package csheets.ext.tmp;
+package csheets.ext.rtc;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import csheets.core.Address;
 import csheets.ext.Extension;
-import csheets.ext.rtc.ClientInterface;
-import csheets.ext.rtc.RtcCommunicator;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.ui.RtcSharingProperties;
 import csheets.ext.rtc.ui.RtcUI;
