@@ -1,4 +1,4 @@
-package csheets.ext.rtc.ui;
+package csheets.ext.rtc;
 
 import java.awt.Color;
 import java.io.Serializable;

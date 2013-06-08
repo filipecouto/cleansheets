@@ -1,4 +1,4 @@
-package csheets.ext.rtc.ui;
+package csheets.ext.rtc;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -6,8 +6,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
-import csheets.ext.rtc.OnShareFoundListener;
-import csheets.ext.rtc.ServerInformation;
 
 public class MulticastClient {
     private MulticastSocket socket;

@@ -1,4 +1,4 @@
-package csheets.ext.rtc.ui;
+package csheets.ext.rtc;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -8,14 +8,12 @@ import java.net.UnknownHostException;
 
 import csheets.core.Address;
 import csheets.core.Workbook;
-import csheets.ext.rtc.Communicator;
-import csheets.ext.rtc.RtcCommunicator;
-import csheets.ext.rtc.RtcListener;
 import csheets.ext.rtc.messages.MessageTypes;
 import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.messages.RemoteSpreadsheet;
 import csheets.ext.rtc.messages.RemoteWorkbook;
 import csheets.ext.rtc.messages.RtcMessage;
+import csheets.ext.rtc.ui.RtcSharingProperties;
 
 /**
  * This class will be the client-side bridge of the connection (therefore the
