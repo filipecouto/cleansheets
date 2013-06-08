@@ -214,12 +214,13 @@ public class CleanSheets {
 		// Reads workbook data
 		stream = new FileInputStream(file);
 		// Call XML validator code
-
+/*
 		if (codec.getClass().isInstance(XMLCodec.class)) {
 		    FileInputStream streamValidate = new FileInputStream(file);
 		    XMLValidator validator = new XMLValidator();
 		    validator.validate(streamValidate);
 		}
+		*/
 		workbook = codec.read(stream);
 	    } finally {
 		try {
