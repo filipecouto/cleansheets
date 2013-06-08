@@ -1,4 +1,4 @@
-package csheets.ext.rtc.tmp;
+package csheets.ext.rtc.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,8 +31,6 @@ import javax.swing.event.ListSelectionListener;
 import csheets.ext.rtc.MulticastClient;
 import csheets.ext.rtc.OnShareFoundListener;
 import csheets.ext.rtc.ServerInformation;
-import csheets.ext.rtc.ui.MulticastServerListAdapter;
-import csheets.ext.rtc.ui.OnIPSelectListener;
 
 /**
  * 
