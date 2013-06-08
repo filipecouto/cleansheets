@@ -1,4 +1,4 @@
-package csheets.ext.rtc.ui;
+package csheets.ext.rtc.tmp;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,6 +31,8 @@ import javax.swing.event.ListSelectionListener;
 import csheets.ext.rtc.MulticastClient;
 import csheets.ext.rtc.OnShareFoundListener;
 import csheets.ext.rtc.ServerInformation;
+import csheets.ext.rtc.ui.MulticastServerListAdapter;
+import csheets.ext.rtc.ui.OnIPSelectListener;
 
 /**
  * 
@@ -48,7 +50,7 @@ public class ConnectionDialog extends JDialog {
     private String[] serverSelected;
     private int selectedIndex;
     private MulticastClient searcher;
-    private JList serverList;
+    private JList<MulticastServerListAdapter> serverList;
     private Timer time;
     private String shareName;
 
@@ -94,6 +96,7 @@ public class ConnectionDialog extends JDialog {
 			.getText());
 		listener.onIPSelected(ipAddress,shareName, userName, port);
 		ConnectionDialog.this.setVisible(false);
+		searcher.stop();
 		
 	    }
 	});
@@ -113,7 +116,7 @@ public class ConnectionDialog extends JDialog {
 	});
 
 	testAdapter = new MulticastServerListAdapter();
-	serverList = new JList(testAdapter);
+	serverList = new JList<MulticastServerListAdapter>(testAdapter);
 
 	serverList.setBorder(new LineBorder(Color.GRAY, 1, true));
 	serverList.addListSelectionListener(new ListSelectionListener() {
