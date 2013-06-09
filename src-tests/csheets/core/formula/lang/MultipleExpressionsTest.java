@@ -12,7 +12,7 @@ import org.junit.Test;
 import csheets.core.IllegalValueTypeException;
 import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
-import csheets.io.XMLCodec;
+import csheets.io.CLSCodec;
 
 /**
  * This class tests multiple expressions using the ExpressionSet and Loop
@@ -48,7 +48,7 @@ public class MultipleExpressionsTest {
 		testSheet.getCell(1, 0).setContent("#{whiledo{b4<b3;b4:=b4+1" + "}}");
 
 		// Let's save the file, if we ever need to check what was generated
-		XMLCodec codec = new XMLCodec();
+		CLSCodec codec = new CLSCodec();
 		codec.write(book, new FileOutputStream("MultipleExpressionsTestFile.xml"));
 	}
 
