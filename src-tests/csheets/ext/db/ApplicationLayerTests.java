@@ -35,8 +35,6 @@ public class ApplicationLayerTests {
     private static int rows;
     private static int xOffset;
     private static int yOffset;
-    
-    private static String [][] data;
 
     /**
      * Starts up the tests, creating a random spreadsheet.
@@ -82,6 +80,7 @@ public class ApplicationLayerTests {
 	    controller.setDatabase(DATABASE_NAME);
 	    controller.setTableName(TABLE_NAME);
 	    controller.setCreateTable(true);
+            controller.setDropTable(true);
 	    Cell[][] cells = new Cell[rows][columns];
 	    for (int y = 0; y < rows; y++) {
 		for (int x = 0; x < columns; x++) {
@@ -167,20 +166,18 @@ public class ApplicationLayerTests {
      * @param sheet the spreadsheet
      */
     private static void generateData(Spreadsheet sheet) {
-        String [][] data = new String[rows-yOffset-1][columns-xOffset-1];
         System.out.println((rows-yOffset) + " - " + (columns-xOffset));
         String value;
-        int xPos=0,yPos=0;
+        System.out.println(yOffset + " = " + (rows+yOffset));
+        System.out.println(xOffset + " = " + (columns+xOffset));
 	for (int y = yOffset; y < rows + yOffset; y++) {
 	    for (int x = xOffset; x < columns + xOffset; x++) {
-                System.out.println(xPos + " | " + yPos);
 		if (Math.random() > 0.08f) {
 		    // 8 on 100 cells will be empty
 		    if (Math.random() > 0) {
 			// 6 on 10 cells will contain text
 			try {
                             value=makeRandomString();
-                            data[yPos][xPos]=value;
 			    sheet.getCell(x, y).setContent(value);
 			} catch (FormulaCompilationException e) {
 			    e.printStackTrace();
@@ -189,16 +186,13 @@ public class ApplicationLayerTests {
 			// 4 on 10 cells will contain numbers
 			try {
                             value=String.valueOf(Math.random() * 1000000);
-                            data[yPos][xPos]=value;
 			    sheet.getCell(x, y).setContent(value);
 			} catch (FormulaCompilationException e) {
 			    e.printStackTrace();
 			}
 		    }
 		}
-                yPos++;
 	    }
-            xPos++;
 	}
     }
 
@@ -312,14 +306,14 @@ public class ApplicationLayerTests {
     @AfterClass
     public static void cleanUp() {
 	// TODO maybe remove database or table?
-//	try {
-//	    // connects to the database with the username and password
-//	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
-//		    + DATABASE_NAME,"SA","");
-//	    conn.prepareStatement("DROP TABLE testTable").execute();
-//	} catch (SQLException e) {
-//	    e.printStackTrace();
-//	}
+	try {
+	    // connects to the database with the username and password
+	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
+		    + DATABASE_NAME,"SA","");
+	    conn.prepareStatement("DROP TABLE testTable").execute();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
     }
 
 }
