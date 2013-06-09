@@ -125,7 +125,8 @@ public class ApplicationLayerTests {
         }catch(FormulaCompilationException e){
             System.out.println(e);
         }
-        compareSpreadsheet(values);
+        boolean result = compareSpreadsheet(values);
+        assertEquals(result, true);
     }
     
     /*
@@ -166,17 +167,20 @@ public class ApplicationLayerTests {
      * @param sheet the spreadsheet
      */
     private static void generateData(Spreadsheet sheet) {
-        String [][] data = new String[rows][columns];
+        String [][] data = new String[rows-yOffset-1][columns-xOffset-1];
+        System.out.println((rows-yOffset) + " - " + (columns-xOffset));
         String value;
+        int xPos=0,yPos=0;
 	for (int y = yOffset; y < rows + yOffset; y++) {
 	    for (int x = xOffset; x < columns + xOffset; x++) {
+                System.out.println(xPos + " | " + yPos);
 		if (Math.random() > 0.08f) {
 		    // 8 on 100 cells will be empty
 		    if (Math.random() > 0) {
 			// 6 on 10 cells will contain text
 			try {
                             value=makeRandomString();
-                            data[y][x]=value;
+                            data[yPos][xPos]=value;
 			    sheet.getCell(x, y).setContent(value);
 			} catch (FormulaCompilationException e) {
 			    e.printStackTrace();
@@ -185,14 +189,16 @@ public class ApplicationLayerTests {
 			// 4 on 10 cells will contain numbers
 			try {
                             value=String.valueOf(Math.random() * 1000000);
-                            data[y][x]=value;
+                            data[yPos][xPos]=value;
 			    sheet.getCell(x, y).setContent(value);
 			} catch (FormulaCompilationException e) {
 			    e.printStackTrace();
 			}
 		    }
 		}
+                yPos++;
 	    }
+            xPos++;
 	}
     }
 
@@ -221,7 +227,7 @@ public class ApplicationLayerTests {
 	try {
 	    Class.forName("org.hsqldb.jdbcDriver");
 	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
-		    + DATABASE_NAME);
+		    + DATABASE_NAME,"SA","");
 	    ResultSet rs = conn.getMetaData().getTables(null, "PUBLIC", "%",
 		    null);
 	    while (rs.next()) {
@@ -252,7 +258,7 @@ public class ApplicationLayerTests {
 	try {
 	    Class.forName("org.hsqldb.jdbcDriver");
 	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
-		    + DATABASE_NAME);
+		    + DATABASE_NAME,"SA","");
 	    String statement = "SELECT * FROM " + TABLE_NAME;
 	    ResultSet res = conn.prepareStatement(statement).executeQuery();
 	    int columnCount = columns;
@@ -285,7 +291,7 @@ public class ApplicationLayerTests {
 	try {
 	    Class.forName("org.hsqldb.jdbcDriver");
 	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
-		    + DATABASE_NAME);
+		    + DATABASE_NAME,"SA","");
 	    String statement = "SELECT * FROM " + TABLE_NAME;
 	    ResultSet res = conn.prepareStatement(statement).executeQuery();
 
@@ -306,14 +312,14 @@ public class ApplicationLayerTests {
     @AfterClass
     public static void cleanUp() {
 	// TODO maybe remove database or table?
-	try {
-	    // connects to the database with the username and password
-	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
-		    + DATABASE_NAME, "SA", "");
-	    conn.prepareStatement("DROP TABLE testTable").execute();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
+//	try {
+//	    // connects to the database with the username and password
+//	    Connection conn = DriverManager.getConnection("jdbc:hsqldb:"
+//		    + DATABASE_NAME,"SA","");
+//	    conn.prepareStatement("DROP TABLE testTable").execute();
+//	} catch (SQLException e) {
+//	    e.printStackTrace();
+//	}
     }
 
 }
