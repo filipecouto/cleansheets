@@ -18,7 +18,7 @@ public class Hibernate {
     
     static {
 	try {
-	    sessionFactory = new AnnotationConfiguration().configure("\\hibernate.cfg.xml").buildSessionFactory();
+	    sessionFactory = new AnnotationConfiguration().configure("hibernate.cfg.xml").buildSessionFactory();
 	} catch (Throwable e) {
 	    throw new ExceptionInInitializerError(e);
 	}
