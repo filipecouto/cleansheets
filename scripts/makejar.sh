@@ -9,9 +9,7 @@ echo Creating archive...
 jar cmf makejar.mf ../dist/csheets.jar -C ../tmp-build csheets
 
 echo Copiar as dependencias
-cp ../lib/antlr.jar ../dist/antlr.jar
-cp ../lib/h2-1.3.172.jar ../dist/h2-1.3.172.jar
-cp ../lib/hsqldb-2.2.9.jar ../dist/hsqldb-2.2.9.jar
+find ../lib -name "*.jar" -print0 | xargs -I{} -0 cp -v {} ../dist
 
 # echo Removing temporary files...
 # rm -R jar
