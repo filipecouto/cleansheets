@@ -10,7 +10,7 @@ import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.core.Workbook;
 import csheets.core.formula.compiler.FormulaCompilationException;
-import csheets.ext.rtc.RtcSharingProperties;
+import csheets.ext.rtc.ui.RtcSharingProperties;
 import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
 

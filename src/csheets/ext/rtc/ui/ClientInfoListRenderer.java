@@ -18,7 +18,7 @@ public class ClientInfoListRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value,
 	    int index, boolean isSelected, boolean cellHasFocus) {
 	ClientInfo info = (ClientInfo) value;
-	setText(info.getName());
+	setText(info.getUserName());
 	final Color color = info.getColor();
 	setIcon(new Icon() {
 	    @Override

@@ -15,11 +15,11 @@
 /**
  @startuml
  title Communication
- 
+
  boundary Client
  boundary Server
  boundary "Other Clients"
- 
+
  activate "Other Clients"
  activate Server
  Client -> Server: connects
@@ -44,17 +44,17 @@
  deactivate Client
  Server -> "Other Clients": notifies user left 
  @enduml
- 
+
  @startuml
  title Server Side
- 
+
  entity UI
  participant RealTimeCollaboration
  participant RtcEventResponder
  participant Server
  participant Client
  boundary "A Client"
- 
+
  UI -> RealTimeCollaboration: createServer()
  RealTimeCollaboration -> Server: instantiate
  activate Server
@@ -92,16 +92,47 @@
  UI <- RtcEventResponder: do something with event
  destroy Server 
  @enduml
- 
+
+ @startuml Searching_for_new_shares_sequence_diagram.png
+ title Searching for new shares
+ participant Server
+ participant "MulticastServer"
+ boundary  Network
+ participant "MulticastClient"
+ participant Client
+ boundary "A Client"
+
+ activate Network
+ activate Server
+ activate "MulticastServer"
+ activate "MulticastClient"
+ Server -> "MulticastServer": start
+ "MulticastServer"	->	Network: "starts propagating the message"
+ "MulticastClient"	<-	Network: "receives the message"
+ "MulticastClient"	->	Client: start
+ activate Client
+ Server	->	Client : "start communicating"
+ Server	<-	Client : "start communicating"
+ ...
+ "A Client"	-> Client : disconnect
+ Server	->	Client : "stop communicating"
+ Server	<-	Client : "stop communicating"
+ destroy  Server
+ destroy "MulticastServer"
+ destroy "MulticastClient"
+ destroy Client
+
+ @enduml
+
  @startuml
  title Client Side
- 
+
  entity UI
  participant RealTimeCollaboration
  participant RtcEventResponder
  participant Client
  boundary Server
- 
+
  activate Server
  UI -> RealTimeCollaboration: createClient()
  RealTimeCollaboration -> Client: instantiate
@@ -124,172 +155,234 @@
  UI <- RtcEventResponder: do something with event
  destroy Client 
  @enduml
- 
-@startuml
-class Client
-class ClientInfo {
-	+ getAddress()
-	+ getColor()
-	+ getName()
-}
-class ClientInterface
-abstract class Communicator {
-	#DataOutputStream out
-	#DataInputStream in
-	+Communicator()
-	+Communicator(Socket socket)
-	#{abstract} close()
-	# getMessage()
-	# getMessageOrFail(MessageTypes type)
-	# sendMessage(RtcMessage message)
-	# setSocket(Socket socket)
-	-{static} bytesToObject(byte[] bytes)
-	-{static} objectToBytes(Object object)
-}
-enum MessageTypes {
-	disconnect
-	info
-	infoList
-	eventCellSelected
-	eventCellChanged
-	getCells
-	workbook
-	getSpreadsheet
-	spreadsheet
-	cells
-}
-class RealTimeCollaboration
-interface RtcCommunicator {
-	+ setListener(RtcListener listener)
-	+ getConnectedUsers()
-	+ isConnected()
-	+ getSharingProperties()
-	+ start()
-}
-class RtcEventsResponder
-interface RtcInterface {
-	+ onConnected(ClientInfo client)
-	+ onCellSelected(ClientInfo source, Address address)
-	+ onCellChanged(ClientInfo source, RemoteCell cell)
-	+ onUserAction(ClientInfo source, Object action)
-	+ onDisconnected(ClientInfo client)
-}
-interface RtcListener {
-	+ onWorkbookReceived(ClientInfo source, Workbook workbook)
-	+ onCellsReceived(ClientInfo source, RemoteCell[] cells)
-	+ onConnectionFailed(Exception e)
-}
-class RtcMessage
-class RtcSharingProperties
-class ServerInterface
 
-class RemoteCell
-class RemoteSpreadsheet
-class RemoteWorkbook
+ @startuml 
+ class Client
+ class ClientInfo {
+ + getAddress()
+ + getColor()
+ + getName()
+ }
+ class ClientInterface
+ abstract class Communicator {
+ #DataOutputStream out
+ #DataInputStream in
+ +Communicator()
+ +Communicator(Socket socket)
+ #{abstract} close()
+ # getMessage()
+ # getMessageOrFail(MessageTypes type)
+ # sendMessage(RtcMessage message)
+ # setSocket(Socket socket)
+ -{static} bytesToObject(byte[] bytes)
+ -{static} objectToBytes(Object object)
+ }
+ enum MessageTypes {
+ disconnect
+ info
+ infoList
+ eventCellSelected
+ eventCellChanged
+ getCells
+ workbook
+ getSpreadsheet
+ spreadsheet
+ cells
+ }
+ class RealTimeCollaboration
+ interface RtcCommunicator {
+ + setListener(RtcListener listener)
+ + getConnectedUsers()
+ + isConnected()
+ + getSharingProperties()
+ + start()
+ }
+ class RtcEventsResponder
+ interface RtcInterface {
+ + onConnected(ClientInfo client)
+ + onCellSelected(ClientInfo source, Address address)
+ + onCellChanged(ClientInfo source, RemoteCell cell)
+ + onUserAction(ClientInfo source, Object action)
+ + onDisconnected(ClientInfo client)
+ }
+ interface RtcListener {
+ + onWorkbookReceived(ClientInfo source, Workbook workbook)
+ + onCellsReceived(ClientInfo source, RemoteCell[] cells)
+ + onConnectionFailed(Exception e)
+ }
+ class MulticastServer{
+ -DatagramSocket socket                                    
+ -DatagramPacket outPacket                                 
+ -Runnable searcher                                       
+ -String serverName                                        
+ -int serverNrClients                                      
+ +MulticastServer(int port, String username, int nrClients)
+ +String setMsg()                                          
+ +void serverNrClient(int nrClient)                        
+ +void startSearching()                                    
+ +void stop()                                              
+ }
+ class MulticastClient {
+ -MulticastSocket socket
+ -DatagramPacket inPacket
+ -byte[] inBuf
+ -int port
+ -Runnable searcher
+ +MulticastClient(OnShareFoundListener onShareFoundListener)
+ +void startSearching()
+ +{static}String[] splitMsg(String msg)
+ +void setPort(int port)
+ +void stop()
+ +void createConnection()
+ }
+ class ConnectionDialog {
+ -OnIPSelectListener listener
+ -JPanel contentPanel
+ -JTextField userNameTextField
+ -JTextField portTextField
+ -JTextField addressTextField
+ -MulticastServerListAdapter testAdapter
+ -String[] serverSelected
+ -int selectedIndex
+ -MulticastClient searcher
+ -JList<MulticastServerListAdapter> serverList
+ -Timer time
+ -String shareName
+ +ConnectionDialog()
+ +void setOnIpSelectedListener(OnIPSelectListener listener)
+ }
 
-RtcInterface		-->	ClientInfo
-RtcInterface		<|--	RtcCommunicator
-RtcInterface		<|--	RtcListener
-RtcListener		<|--	RtcEventsResponder
+ interface OnIPSelectListener {
+ void onIPSelected(String address, String shareName, String userName, int port)
+ }
+ class ConnectAction {
+ -RealTimeCollaboration extension
+ -UIController uiController
+ -DataListener dataListener
+ -ConnectionDialog ipDialog
+ +ConnectAction(RealTimeCollaboration extension, UIController uiController)
+ +void actionPerformed(ActionEvent e)
+ #String getName()
+ +void setListener(DataListener dataListener)
+ }
 
-RtcInterface		<|--	Client
-Communicator		<|--	Client
-Client			-->	ServerInterface
+ class RtcMessage
+ class RtcSharingProperties
+ class ServerInterface
 
-RtcCommunicator		<|--	ClientInterface
-Communicator		<|--	ClientInterface
-ClientInterface		-->	RtcListener
-ClientInterface		-->	RtcSharingProperties
+ class RemoteCell
+ class RemoteSpreadsheet
+ class RemoteWorkbook
 
-Communicator		-->	RtcMessage
+ RtcInterface		-->	ClientInfo
+ RtcInterface		<|--	RtcCommunicator
+ RtcInterface		<|--	RtcListener
+ RtcListener		<|--	RtcEventsResponder
 
-RealTimeCollaboration	-->	RtcCommunicator
-RealTimeCollaboration	-->	RtcEventsResponder
-RealTimeCollaboration	-->	ClientInfo
+ RtcInterface		<|--	Client
+ Communicator		<|--	Client
+ Client			-->	ServerInterface
 
-RtcEventsResponder	-->	RtcCommunicator
-RtcEventsResponder	-->	RtcSharingProperties 
-RtcEventsResponder	-->	RealTimeCollaboration
+ RtcCommunicator		<|--	ClientInterface
+ Communicator		<|--	ClientInterface
+ ClientInterface		-->	RtcListener
+ ClientInterface		-->	RtcSharingProperties
 
-RtcMessage		-->	MessageTypes
+ Communicator		-->	RtcMessage
 
-RtcCommunicator		<|--	ServerInterface
-ServerInterface		-->	RtcListener
-ServerInterface		-->	RtcSharingProperties
-ServerInterface		-->	Client
+ RealTimeCollaboration	-->	RtcCommunicator
+ RealTimeCollaboration	-->	RtcEventsResponder
+ RealTimeCollaboration	-->	ClientInfo
 
-RtcMessage		..>	RemoteCell
-RtcMessage		..>	RemoteSpreadsheet
-RtcMessage		..>	RemoteWorkbook
-@enduml
+ RtcEventsResponder	-->	RtcCommunicator
+ RtcEventsResponder	-->	RtcSharingProperties 
+ RtcEventsResponder	-->	RealTimeCollaboration
+
+ RtcMessage		-->	MessageTypes
+
+ RtcCommunicator	<|--	ServerInterface
+ ServerInterface	-->	RtcListener
+ ServerInterface	-->	RtcSharingProperties
+ ServerInterface	-->	Client
+
+ RtcMessage		..>	RemoteCell
+ RtcMessage		..>	RemoteSpreadsheet
+ RtcMessage		..>	RemoteWorkbook
+
+ MulticastClient	<--	ConnectionDialog
+ MulticastServer	<--	ServerInterface
+ ConnectAction	<-- 	ConnectionDialog
+ ConnectAction	<|--	OnIPSelectListener
+ RealTimeCollaboration	<--	ConnectAction
+ @enduml
 
 
-@startuml
-  participant ExtensionManager as ExtM
-  participant Class
-  participant "aClass:Class" as aClass
-  participant "extension : RealTimeCollaboration" as RTC
-  ExtM -> Class : aClass = forName("csheets.ext.rtc.RealTimeCollaboration");
-  activate Class
-  create aClass
-  Class -> aClass : new
-  deactivate Class
-  ExtM -> aClass : extension = (Extension)newInstance();
-  activate aClass
-  create RTC
-  aClass -> RTC : new
-  deactivate aClass
-  ExtM -> RTC : name = getName();
-  activate RTC
-  deactivate RTC
-  ExtM -> ExtM : extensionMap.put(name, extension)
-@enduml
+ @startuml
+ participant ExtensionManager as ExtM
+ participant Class
+ participant "aClass:Class" as aClass
+ participant "extension : RealTimeCollaboration" as RTC
+ ExtM -> Class : aClass = forName("csheets.ext.rtc.RealTimeCollaboration");
+ activate Class
+ create aClass
+ Class -> aClass : new
+ deactivate Class
+ ExtM -> aClass : extension = (Extension)newInstance();
+ activate aClass
+ create RTC
+ aClass -> RTC : new
+ deactivate aClass
+ ExtM -> RTC : name = getName();
+ activate RTC
+ deactivate RTC
+ ExtM -> ExtM : extensionMap.put(name, extension)
+ @enduml
 
-@startuml
-  participant UIController as UIC
-  participant ExtensionManager as ExtM
-  participant "extension : RealTimeCollaboration" as RTC
-  participant "uiExtension : RtcUI" as RTCUI
-  UIC -> ExtM : extensions=getExtensions();
-  loop for Extension ext : extensions
-  	UIC -> RTC : uiExtension=getUIExtension(this);
-  	activate RTC
-  	create RTCUI
-  	RTC -> RTCUI : new
-  	deactivate RTC
-  	UIC -> UIC : uiExtensions.add(uiExtension);
-  end
-@enduml
+ @startuml
+ participant UIController as UIC
+ participant ExtensionManager as ExtM
+ participant "extension : RealTimeCollaboration" as RTC
+ participant "uiExtension : RtcUI" as RTCUI
+ UIC -> ExtM : extensions=getExtensions();
+ loop for Extension ext : extensions
+ UIC -> RTC : uiExtension=getUIExtension(this);
+ activate RTC
+ create RTCUI
+ RTC -> RTCUI : new
+ deactivate RTC
+ UIC -> UIC : uiExtensions.add(uiExtension);
+ end
+ @enduml
 
-@startuml
-  participant Frame
-  participant UIController as UIC
-  participant "uiExtension : RtcUI" as RTCUI
-  participant "sidebar : RtcSideBar" as RTCSideBar
-  Frame -> UIC : uiExtensions=getExtensions();
-  loop for UIExtension uiExt : uiExtensions
-  	Frame -> RTCUI : extBar=getSideBar();
-  	create RTCSideBar
-  	RTCUI -> RTCSideBar : new
-  	deactivate RTCSideBar
-  	Frame -> Frame : sideBar.insertTab(extBar);
-  end
-@enduml
+ @startuml
+ participant Frame
+ participant UIController as UIC
+ participant "uiExtension : RtcUI" as RTCUI
+ participant "sidebar : RtcSideBar" as RTCSideBar
+ Frame -> UIC : uiExtensions=getExtensions();
+ loop for UIExtension uiExt : uiExtensions
+ Frame -> RTCUI : extBar=getSideBar();
+ create RTCSideBar
+ RTCUI -> RTCSideBar : new
+ deactivate RTCSideBar
+ Frame -> Frame : sideBar.insertTab(extBar);
+ end
+ @enduml
 
-@startuml
-  participant CellRenderer
-  participant UIController as UIC
-  participant "uiExtension : RtcUI" as RTCUI
-  participant "cellDecorator : RtcCellRenderer" as RTCCellRenderer
-  CellRenderer -> UIC : uiExtensions=getExtensions();
-  loop for UIExtension uiExt : uiExtensions
-  	CellRenderer -> RTCUI : decorator=getCellDecorator();
-  	create RTCCellRenderer
-  	RTCUI -> RTCCellRenderer : new
-  	deactivate RTCCellRenderer
-  	CellRenderer -> CellRenderer : decorators.add(decorator);
-  end
-@enduml
+ @startuml
+ participant CellRenderer
+ participant UIController as UIC
+ participant "uiExtension : RtcUI" as RTCUI
+ participant "cellDecorator : RtcCellRenderer" as RTCCellRenderer
+ CellRenderer -> UIC : uiExtensions=getExtensions();
+ loop for UIExtension uiExt : uiExtensions
+ CellRenderer -> RTCUI : decorator=getCellDecorator();
+ create RTCCellRenderer
+ RTCUI -> RTCCellRenderer : new
+ deactivate RTCCellRenderer
+ CellRenderer -> CellRenderer : decorators.add(decorator);
+ end
+ @enduml
  */
 
 package csheets.ext.rtc;

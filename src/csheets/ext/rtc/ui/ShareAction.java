@@ -7,10 +7,15 @@ import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.RealTimeCollaboration;
-import csheets.ext.rtc.RtcSharingProperties;
+
 import csheets.ui.ctrl.FocusOwnerAction;
 import csheets.ui.ctrl.UIController;
 
+/**
+ * 
+ * @author Rita Nogueira;Gil Castro
+ * 
+ */
 public class ShareAction extends FocusOwnerAction {
     private RealTimeCollaboration extension;
     private UIController uiController;
@@ -30,7 +35,7 @@ public class ShareAction extends FocusOwnerAction {
 	    optDialog.setOnChooseExportListener(new OnChooseExportListener() {
 		@Override
 		public void onChoosedExport(boolean export, String name,
-			int port) {
+			String shareName, int port) {
 		    // selected cells if false , whole spreadsheet if true
 		    RtcSharingProperties props = new RtcSharingProperties();
 		    Address cell1;
@@ -52,8 +57,9 @@ public class ShareAction extends FocusOwnerAction {
 		    ClientInfo server = null;
 		    try {
 			props.setSpreadsheet(0);
-			server = extension.createServer(new ClientInfo(name),
-				port, props, uiController);
+			server = extension.createServer(new ClientInfo(
+				shareName, name), port, props, uiController);
+			extension.updateServersList();
 			ip = server.getAddress().getHostAddress() + ':' + port;
 		    } catch (IOException e1) {
 			e1.printStackTrace();

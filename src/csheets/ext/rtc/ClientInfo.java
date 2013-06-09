@@ -8,13 +8,14 @@ import java.net.Socket;
 /**
  * This class holds the identification of a host
  * 
- * @author gil_1110484
+ * @author gil_1110484; Rita Nogueira
  */
 public class ClientInfo implements Serializable {
     private static final long serialVersionUID = 6614659918137265454L;
 
     private InetAddress address;
-    private String name;
+    private String userName;
+    private String shareName;
     private Color color;
 
     /**
@@ -27,15 +28,17 @@ public class ClientInfo implements Serializable {
     }
 
     /**
-     * Instantiates a ClientInfo with the user's (nick)name
+     * Instantiates a ClientInfo with the user's (nick)name and share's name
      * 
-     * @param name
+     * @param shareName
+     * @param userName
      */
-    public ClientInfo(String name) {
-	this.name = name;
+    public ClientInfo(String shareName, String userName) {
+	this.userName = userName;
 	color = Color.getHSBColor((float) Math.random() * 0.8f,
 		(float) (Math.random() * 0.4f + 0.6f),
 		(float) (Math.random() * 0.2f + 0.8f));
+	this.shareName = shareName;
     }
 
     /**
@@ -45,7 +48,7 @@ public class ClientInfo implements Serializable {
      *            remote info
      */
     void addRemoteInfo(ClientInfo info) {
-	name = info.name;
+	userName = info.userName;
     }
 
     /**
@@ -92,8 +95,17 @@ public class ClientInfo implements Serializable {
      * 
      * @return the name specified by the user
      */
-    public String getName() {
-	return name;
+    public String getUserName() {
+	return userName;
+    }
+
+    /**
+     * Gets the (share)name of this user
+     * 
+     * @return the share's name specified by the user
+     */
+    public String getShareName() {
+	return shareName;
     }
 
     public boolean isSameIP(InetAddress address) {

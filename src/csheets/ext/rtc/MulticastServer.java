@@ -6,6 +6,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/**
+ * Multicast server for propagating tpc server's ip address
+ * 
+ * @author Rita Nogueira
+ * 
+ */
 public class MulticastServer {
     private DatagramSocket socket;
     private DatagramPacket outPacket;
@@ -18,6 +24,7 @@ public class MulticastServer {
 	this.serverName = username;
 	this.serverNrClients = nrClients;
 	searcher = new Runnable() {
+
 	    @Override
 	    public void run() {
 		try {
@@ -45,10 +52,24 @@ public class MulticastServer {
 	startSearching();
     }
 
+    /**
+     * Creates the message with the name of the share and the number of persons
+     * connected to it
+     * 
+     * @return message
+     */
     private String setMsg() {
-	return ((serverNrClients+1) + ";" + serverName);
+	return (serverNrClients + ";" + serverName);
     }
 
+    /**
+     * method to stop the thread of the server, modify the value of the variable
+     * nrClients and restart the thread
+     * 
+     * @param nrClient
+     * @throws UnknownHostException
+     * @throws IOException
+     */
     public void serverNrClient(int nrClient) throws UnknownHostException,
 	    IOException {
 	stop();
@@ -56,10 +77,16 @@ public class MulticastServer {
 	startSearching();
     }
 
+    /**
+     * Starts the thread
+     */
     private void startSearching() {
 	new Thread(searcher).start();
     }
 
+    /**
+     * Stops the thread
+     */
     public void stop() {
 	if (socket != null && !socket.isClosed()) {
 	    socket.close();

@@ -1,5 +1,7 @@
 package csheets.ext.rtc;
 
+import csheets.ext.rtc.ui.RtcSharingProperties;
+
 /**
  * This interface is the bridge between clients and server
  * 
@@ -42,4 +44,5 @@ public interface RtcCommunicator extends RtcInterface {
      * Starts this server/client
      */
     public void start();
+    
 }

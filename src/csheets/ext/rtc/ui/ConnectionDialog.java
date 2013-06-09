@@ -10,7 +10,6 @@ import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -30,10 +29,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import csheets.ext.rtc.MulticastClient;
-import csheets.ext.rtc.ServerInformation;
 import csheets.ext.rtc.OnShareFoundListener;
+import csheets.ext.rtc.ServerInformation;
 
-;
+/**
+ * 
+ * @author Rita Nogueira; Filipe Couto
+ *
+ */
 
 public class ConnectionDialog extends JDialog {
     private OnIPSelectListener listener;
@@ -41,12 +44,13 @@ public class ConnectionDialog extends JDialog {
     private JTextField userNameTextField;
     private JTextField portTextField;
     private JTextField addressTextField;
-    private ServerListAdapter testAdapter;
+    private MulticastServerListAdapter testAdapter;
     private String[] serverSelected;
     private int selectedIndex;
     private MulticastClient searcher;
-    private JList serverList;
+    private JList<MulticastServerListAdapter> serverList;
     private Timer time;
+    private String shareName;
 
     public ConnectionDialog() {
 	super((JFrame) null, "Connection Options", true);
@@ -88,8 +92,10 @@ public class ConnectionDialog extends JDialog {
 			.getText();
 		int port = Integer.valueOf(ConnectionDialog.this.portTextField
 			.getText());
-		listener.onIPSelected(ipAddress, userName, port);
+		listener.onIPSelected(ipAddress,shareName, userName, port);
 		ConnectionDialog.this.setVisible(false);
+		searcher.stop();
+		
 	    }
 	});
 	okButton.setActionCommand("Connect");
@@ -107,8 +113,8 @@ public class ConnectionDialog extends JDialog {
 	    }
 	});
 
-	testAdapter = new ServerListAdapter();
-	serverList = new JList(testAdapter);
+	testAdapter = new MulticastServerListAdapter();
+	serverList = new JList<MulticastServerListAdapter>(testAdapter);
 
 	serverList.setBorder(new LineBorder(Color.GRAY, 1, true));
 	serverList.addListSelectionListener(new ListSelectionListener() {
@@ -118,6 +124,7 @@ public class ConnectionDialog extends JDialog {
 		ServerInformation server = testAdapter
 			.getElementAt(selectedIndex);
 		String ip = server.getIp().toString();
+		shareName = server.getShareName();
 		addressTextField.setText(ip);
 	    }
 

@@ -1,10 +1,12 @@
 package csheets.ext.rtc;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import csheets.core.Address;
 import csheets.ext.Extension;
 import csheets.ext.rtc.messages.RemoteCell;
+import csheets.ext.rtc.ui.RtcSharingProperties;
 import csheets.ext.rtc.ui.RtcUI;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
@@ -23,13 +25,13 @@ import csheets.ui.ext.UIExtension;
  * Once disconnected, the user can use that shared spreadsheet or piece of it
  * separately from the source.
  * 
- * @author gil_1110484
+ * @author gil_1110484; Rita Nogueira
  */
 public class RealTimeCollaboration extends Extension {
-    private RtcCommunicator communicator;
+
     private RtcEventsResponder responder;
     private ClientInfo identity;
-
+    private ArrayList<RtcCommunicator> communicators = new ArrayList<RtcCommunicator>();
     private RtcUI rtcUI;
 
     private boolean isOwner;
@@ -38,18 +40,22 @@ public class RealTimeCollaboration extends Extension {
 	super("Real Time Collaboration");
     }
 
-    private RtcEventsResponder getResponder(UIController uiController) {
-	if (responder == null) {
-	    responder = new RtcEventsResponder(communicator, uiController, this);
-	}
-	return responder;
+    /**
+     * Tells the side bar to refresh the list of connected users
+     * 
+     * @param com
+     */
+    public void updateUsersList(RtcCommunicator com) {
+	rtcUI.updateUsersList(com.getConnectedUsers());
     }
 
     /**
-     * Tells the side bar to refresh the list of connected users
+     * Tells the side bar to refresh the list of shares
      */
-    public void updateUsersList() {
-	rtcUI.updateUsersList(communicator.getConnectedUsers());
+    public void updateServersList() {
+	RtcCommunicator[] array = new RtcCommunicator[communicators.size()];
+	communicators.toArray(array);
+	rtcUI.updateServersList(array);
     }
 
     /**
@@ -75,9 +81,10 @@ public class RealTimeCollaboration extends Extension {
 	ServerInterface server = new ServerInterface(client, port, properties,
 		uiController);
 	identity = server.getServerInfo();
-	communicator = server;
-	communicator.setListener(getResponder(uiController));
-	communicator.start();
+	server.setListener(new RtcEventsResponder(server, uiController, this));
+	server.start();
+	communicators.add(server);
+
 	return identity;
     }
 
@@ -100,8 +107,11 @@ public class RealTimeCollaboration extends Extension {
 	    int port, UIController uiController) throws IOException {
 	isOwner = false;
 	identity = client;
-	communicator = new ClientInterface(ipAddress, port, identity);
-	communicator.setListener(getResponder(uiController));
+	ClientInterface communicator = new ClientInterface(ipAddress, port,
+		identity);
+	communicator.setListener(new RtcEventsResponder(communicator,
+		uiController, this));
+	communicators.add(communicator);
 	communicator.start();
 	return identity;
     }
@@ -112,7 +122,11 @@ public class RealTimeCollaboration extends Extension {
      * user)
      */
     public void disconnect() {
-	communicator.onDisconnected(null);
+	for (RtcCommunicator com : communicators) {
+	    com.onDisconnected(null);
+	}
+	communicators.removeAll(communicators);
+	updateServersList();
     }
 
     /**
@@ -148,7 +162,15 @@ public class RealTimeCollaboration extends Extension {
      * @return true if it is connected, false otherwise
      */
     public boolean isConnected() {
-	return communicator == null ? false : communicator.isConnected();
+	if (communicators.isEmpty()) {
+	    return false;
+	}
+	for (RtcCommunicator com : communicators) {
+	    if (!com.isConnected()) {
+		return false;
+	    }
+	}
+	return true;
     }
 
     /**
@@ -183,11 +205,12 @@ public class RealTimeCollaboration extends Extension {
 	    uiController.addEditListener(new EditListener() {
 		@Override
 		public void workbookModified(EditEvent event) {
-		    if (communicator != null) {
+		    for (RtcCommunicator com : communicators) {
 			if (uiController.getActiveSpreadsheet() == uiController
 				.getActiveWorkbook().getSpreadsheet(0)) {
-			    communicator.onCellChanged(null, new RemoteCell(
-				    uiController.getActiveCell()));
+			    com.onCellChanged(
+				    null,
+				    new RemoteCell(uiController.getActiveCell()));
 			}
 		    }
 		}

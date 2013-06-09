@@ -4,6 +4,7 @@ import javax.swing.JComponent;
 
 import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.RealTimeCollaboration;
+import csheets.ext.rtc.RtcCommunicator;
 import csheets.ui.ctrl.UIController;
 import csheets.ui.ext.CellDecorator;
 import csheets.ui.ext.UIExtension;
@@ -12,7 +13,7 @@ import csheets.ui.ext.UIExtension;
  * This class is the UIExtension of RealTimeCollaboration extension. It provides
  * a side bar and a CellDecorator.
  * 
- * @author gil_1110484
+ * @author gil_1110484; Rita Nogueira
  */
 public class RtcUI extends UIExtension {
     private RtcCellDecorator cellDecorator;
@@ -65,6 +66,10 @@ public class RtcUI extends UIExtension {
      */
     public void updateUsersList(final ClientInfo[] clients) {
 	sidebar.updateUsersList(clients);
+    }
+
+    public void updateServersList(final RtcCommunicator[] servers) {
+	sidebar.updateServersList(servers);
     }
 
     /**

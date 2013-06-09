@@ -1,4 +1,4 @@
-package csheets.ext.rtc;
+package csheets.ext.rtc.ui;
 
 import java.io.Serializable;
 
@@ -15,7 +15,7 @@ public class RtcSharingProperties implements Serializable {
     private static final long serialVersionUID = 8740372311265893270L;
 
     private int spreadsheet;
-
+   // private String shareName;
     private boolean wholeSpreadsheet = true;
 
     private Address start;
@@ -36,6 +36,7 @@ public class RtcSharingProperties implements Serializable {
 	props.start = start;
 	props.end = end;
 	props.wholeSpreadsheet = wholeSpreadsheet;
+	//props.shareName = shareName;
 	return props;
     }
 

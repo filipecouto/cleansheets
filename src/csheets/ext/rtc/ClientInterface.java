@@ -13,6 +13,7 @@ import csheets.ext.rtc.messages.RemoteCell;
 import csheets.ext.rtc.messages.RemoteSpreadsheet;
 import csheets.ext.rtc.messages.RemoteWorkbook;
 import csheets.ext.rtc.messages.RtcMessage;
+import csheets.ext.rtc.ui.RtcSharingProperties;
 
 /**
  * This class will be the client-side bridge of the connection (therefore the
@@ -212,5 +213,9 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     @Override
     public boolean isConnected() {
 	return connected;
+    }
+
+    public String toString() {
+	return info.getShareName();
     }
 }

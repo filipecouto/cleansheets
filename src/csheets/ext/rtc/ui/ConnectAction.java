@@ -7,6 +7,11 @@ import csheets.ext.rtc.RealTimeCollaboration;
 import csheets.ui.ctrl.FocusOwnerAction;
 import csheets.ui.ctrl.UIController;
 
+/**
+ * 
+ * @author Rita Nogueira; Gil Castro
+ *
+ */
 public class ConnectAction extends FocusOwnerAction {
 
     private RealTimeCollaboration extension;
@@ -27,14 +32,14 @@ public class ConnectAction extends FocusOwnerAction {
 	    ipDialog = new ConnectionDialog();
 	    ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
 		@Override
-		public void onIPSelected(String address, String username,
+		public void onIPSelected(String address,String shareName, String username,
 			int port) {
 		    ClientInfo client = null;
 		    // String ip = "";
 		    // try {
 		    try {
 			client = extension.createClient(
-				new ClientInfo(username), address, port,
+				new ClientInfo(shareName,username), address, port,
 				uiController);
 		    } catch (Exception e) {
 			extension.onConnectionFailed(e);
