@@ -1,4 +1,6 @@
-package backup;
+package csheets.ext.rtc;
+
+import csheets.ext.rtc.ui.RtcSharingProperties;
 
 /**
  * This interface is the bridge between clients and server

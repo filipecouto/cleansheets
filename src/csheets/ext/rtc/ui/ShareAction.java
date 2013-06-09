@@ -7,7 +7,7 @@ import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.RealTimeCollaboration;
-import csheets.ext.rtc.RtcSharingProperties;
+
 import csheets.ui.ctrl.FocusOwnerAction;
 import csheets.ui.ctrl.UIController;
 
