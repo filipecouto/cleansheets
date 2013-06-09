@@ -4,7 +4,7 @@
 		    <property name="dialect">org.hibernate.dialect.HSQLDialect</property>  
 	        <property name="hibernate.cache.use_query_cache">false</property>  
 	        <property name="hibernate.cache.use_second_level_cache">false</property>  
-	        <property name="hbm2ddl.auto">create</property>  
+	        <property name="hibernate.hbm2ddl.auto">create</property>  
 	        <property name="hibernate.show_sql">true</property>  
 	        <property name="connection.driver_class">org.hsqldb.jdbcDriver</property>  
 	        <property name="connection.url">jdbc:hsqldb:mem:DBNAME</property>  

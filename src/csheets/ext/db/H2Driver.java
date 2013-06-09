@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,7 +102,6 @@ public class H2Driver implements DatabaseInterface {
                 int data=0;
                 boolean check,comma=false;
                 for(String col:columnsNames){
-                    //System.out.println(data + " " + col);
                     check=false;
                     for(String prim:primaryKeysNames){
                         if(col.compareTo(prim)==0){
@@ -140,12 +138,10 @@ public class H2Driver implements DatabaseInterface {
                         sql += ", " + prim + "='" + values[pos] + "' ";
                     }
                 }
-                System.out.println(sql);
                 try{
                     PreparedStatement statement = databaseConnection.prepareStatement(sql);
                     statement.execute();
                     databaseConnection.commit();
-                    System.out.println("DONE!!!");
                     return true;
                 }catch(SQLException sqle){
                     System.out.println(sqle);
@@ -226,7 +222,6 @@ public class H2Driver implements DatabaseInterface {
             i++;
             while(rs.next()){
                 for(j=1;j<=columnsNumber;j++){
-                    //info[i][j-1]=rs.getString(j).substring(1, rs.getString(j).length()-1);
                     info[i][j-1]=rs.getString(j);
                 }
                 i++;

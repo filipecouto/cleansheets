@@ -6,11 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.management.RuntimeErrorException;
 
 /**
  * Class responsible for working with HSQL Databases
@@ -107,7 +104,6 @@ public class HSQLdbDriver implements DatabaseInterface {
                 int data=0;
                 boolean check,comma=false;
                 for(String col:columnsNames){
-                    //System.out.println(data + " " + col);
                     check=false;
                     for(String prim:primaryKeysNames){
                         if(col.compareTo(prim)==0){
@@ -144,12 +140,10 @@ public class HSQLdbDriver implements DatabaseInterface {
                         sql += ", " + prim + "='" + values[pos] + "' ";
                     }
                 }
-                System.out.println(sql);
                 try{
                     PreparedStatement statement = databaseConnection.prepareStatement(sql);
                     statement.execute();
                     databaseConnection.commit();
-                    System.out.println("DONE!!!");
                     return true;
                 }catch(SQLException sqle){
                     System.out.println("Exception: " + sqle);

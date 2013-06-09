@@ -97,4 +97,66 @@ public class UML {
  * 
  * @enduml
  */
+    
+/*
+ *  @startuml
+ *  DatabaseImportDialog-> DatabaseImportController : new()
+ *  DatabaseImportDialog-> DatabaseImportController : setDriver()
+ *  DatabaseImportDialog-> DatabaseImportController : setDatabase()
+ *  DatabaseImportDialog-> DatabaseImportController : setTableName()
+ *  DatabaseImportDialog-> DatabaseImportController : setSpreadsheet()
+ *  DatabaseImportDialog-> DatabaseImportController : setCell()
+ *  DatabaseImportDialog-> DatabaseImportController : setImportToCurrentSheet()
+ *  DatabaseImportDialog-> DatabaseImportController : importDatabase()
+ *  DatabaseImportController -> Driver : openDatabase()
+ *  DatabaseImportController <- Driver : getData()
+ *  DatabaseImportController -> Driver : closeDatabase()
+ *  DatabaseImportController -> DatabaseImportDialog: return
+ *  @enduml
+ * 
+ *  @startuml
+ *  class DatabaseDriverManager {
+ *   +getAvailableDrivers()
+ *  }
+ *  class DatabaseInterface {
+ *   createTable()
+ *   addLine()
+ *   openDatabase()
+ *   closeDatabase()
+ *   getName()
+ *   requiresUsername()
+ *   requiresPassword()
+ *   getTables()
+ *   requiresFile()
+ *   getData()
+ *   dropTable()
+ *  }
+ *  class H2Driver
+ *  class HSQLdbDriver
+ *  class DerbyDriver
+ *  class DatabaseImportController
+ *  class DatabaseExtension {
+ *   +getAvailableDrivers()
+ *   +getUIExtension()
+ *  }
+ *  class DatabaseImportDialog {
+ *   -importDatabase()
+ *  }
+ *  class DatabaseUIExtension
+ *  class DatabaseImportMenuItem
+ *
+ *  DatabaseInterface <|-- H2Driver
+ *  DatabaseInterface <|-- HSQLdbDriver
+ *  DatabaseInterface <|-- DerbyDriver
+ *  DatabaseInterface <-- DatabaseImportController
+ *  DatabaseInterface <-- DatabaseDriverManager
+ *  DatabaseDriverManager <-- DatabaseExtension
+ *  DatabaseExtension <-- DatabaseImportDialog 
+ *  DatabaseImportDialog <-- DatabaseImportController
+ *  DatabaseImportDialog <-- DatabaseImportMenuItem
+ *  DatabaseImportMenuItem <-- DatabaseUIMenu
+ *  DatabaseUIMenu <-- DatabaseUIExtension
+ *  DatabaseUIExtension <-- DatabaseExtension
+ *  @enduml
+ */
 }

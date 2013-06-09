@@ -11,6 +11,7 @@ utility classes.
 
 */
 /**
+ * iteracao 1
  @startuml
  class Frame
  class CleanSheets {
@@ -51,7 +52,54 @@ utility classes.
  XMLValidator  <--CleanSheets
  @enduml
 
+iteracao 2
+@startuml
+ class Frame
+ class CleanSheets {
+ +save()
+ +saveAs()
+ +load(
+ }
+ class Codec {
+ }
+ class OpenAction {
+ }
+ class SaveAction {
+ }
+ class MappedWorkbook {
+ +Workbook makeWorkbook()
+ }
+ class MappedCell {
+ }
+ class MappedSpreadsheet {
+ }
+ class XMLCodec {
+ +read(InputStream)
+ +write(Workbook, OutputStream)
+ +getStylabeCell(Node, Spreadsheet)
+ +getIntBorder(String)
+ +getBoldAndItalic(String, String)
+ +getIntTextAlign(String)
+ +getIntCellAlign(String)
+ +createXMLContent(Document, Workbook) 
+ +setXMLContent(Spreadsheet, int, int,Document, Element)
+ +getBold(Font)
+ +getItalic(Font)
+ +getStringCellAlign(int)
+ +getStringTextAlign(int)
+ }
+ MappedWorkbook <-- MappedSpreadsheet
+ MappedSpreadsheet <-- MappedCell
+ Codec <|-- XMLCodec
+ OpenAction  <-- Frame
+ SaveAction <-- Frame
+ XMLCodec <-- MappedWorkbook
+ CleanSheets <--OpenAction
+ CleanSheets <--SaveAction
+ XMLCodec   <--CleanSheets
+ @enduml
 
+ iteracao 1
  @startuml 
  Interface->"CleanSheets":save()
  CleanSheets->"CleanSheets":saveAs()
@@ -64,6 +112,20 @@ utility classes.
  CleanSheets ->XMLCodec:read(FileInputStream)
  XMLCodec-->CleanSheets : Workbook
  @enduml
+ 
+ iteracao 2
+  @startuml 
+ Interface->"CleanSheets":save()
+ CleanSheets->"CleanSheets":saveAs()
+ CleanSheets ->XMLCodec:write(Workbook, FileOutputStream)
+ @enduml
+
+ @startuml 
+ Interface->"CleanSheets":load()
+ CleanSheets ->XMLCodec:read(FileInputStream)
+ XMLCodec-->CleanSheets : Workbook
+ @enduml
+ 
  **/
 	 
 package csheets.io;
