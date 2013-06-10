@@ -35,8 +35,9 @@ import csheets.ext.style.StyleExtension;
 import csheets.io.XMLCodec;
 import csheets.io.XMLValidator;
 
-public class XMLSaveTests {
+public class XMLDBUnitTest {
     private static Workbook workbook;
+    private static Workbook loadedWorkbook;
     private static Spreadsheet spreadsheet;
 
     private static String[] font = { Font.MONOSPACED, Font.SANS_SERIF,
@@ -64,6 +65,99 @@ public class XMLSaveTests {
 
 	// let's save this workbook, it may contain precious info
 	saveTestWorkbook();
+	loadWorkbook();
+
+    }
+    /**
+     * Method for testing if the two cells are equal
+     * 
+     * @param scWorkbook
+     * @param scXML
+     * @return
+     */
+    private static boolean testOneCell(StylableCell scWorkbook, StylableCell scXML) {
+	if (scWorkbook.getBackgroundColor().getRGB() != scXML
+		.getBackgroundColor().getRGB()) {
+	    return false;
+	}
+
+	if (scWorkbook.getForegroundColor().getRGB() != scXML
+		.getForegroundColor().getRGB()) {
+	    return false;
+	}
+
+	if (scWorkbook.getVerticalAlignment() != scXML.getVerticalAlignment()) {
+	    return false;
+	}
+
+	if (scWorkbook.getHorizontalAlignment() != scXML
+		.getHorizontalAlignment()) {
+	    return false;
+	}
+
+	if (!scWorkbook.getFont().getFamily()
+		.equals(scXML.getFont().getFamily())) {
+	    return false;
+	}
+
+	if (scWorkbook.getFont().getSize() != scXML.getFont().getSize()) {
+	    return false;
+	}
+
+	if (scWorkbook.getFont().isBold() != scXML.getFont().isBold()) {
+	    return false;
+	}
+
+	if (scWorkbook.getFont().isItalic() != scXML.getFont().isItalic()) {
+	    return false;
+	}
+	
+	if(!scWorkbook.getContent().equals(scXML.getContent())) {
+	    return false;
+	}
+
+	return true;
+    }
+    
+    @Test
+    public void compareWorkbook() {
+	// TODO Auto-generated method stub
+	Spreadsheet loadedActual;
+	Spreadsheet actual;
+	if(workbook.getSpreadsheetCount() == loadedWorkbook.getSpreadsheetCount()) {
+	    int max = workbook.getSpreadsheetCount();
+	    for(int i = 0; i < max; i++) {
+		actual = workbook.getSpreadsheet(i);
+		loadedActual = loadedWorkbook.getSpreadsheet(i);
+		if(actual.getColumnCount() == loadedActual.getColumnCount() && actual.getRowCount() == loadedActual.getRowCount()) {
+		    int column = actual.getColumnCount();
+		    int row = actual.getRowCount();
+		    for(int c = 0; c < column; c++) {
+			for(int r = 0; r < row; r++) {
+			   StylableCell c1 = (StylableCell) actual.getCell(c, r).getExtension(StyleExtension.NAME);
+			   StylableCell c2 = (StylableCell) loadedActual.getCell(c, r).getExtension(StyleExtension.NAME);
+			   if(!testOneCell(c1, c2)) {
+			       assertTrue("Not validated", false);
+			   }
+			}
+		    }
+		} else {
+		    assertTrue("Not validated", false);
+		}
+	    }
+	} else {
+	    assertTrue("Not validated", false);
+	}
+	assertTrue("Validated", true);
+    }
+    
+    private static void loadWorkbook() {
+	try {
+	    XMLCodec codec = new XMLCodec();
+	    loadedWorkbook = codec.read(new FileInputStream(outFile));
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
     }
 
     /**
@@ -242,6 +336,7 @@ public class XMLSaveTests {
 	return result;
     }
 
+    /*
     @Test
     public void compareAllRows() {
 	try {
@@ -261,7 +356,7 @@ public class XMLSaveTests {
 	    e.printStackTrace();
 	}
 
-    }
+    }*/
 
     /**
      * Method for testing if the number of cells is correct
@@ -301,7 +396,7 @@ public class XMLSaveTests {
 	return false;
     }
 
-    @Test
+    /*@Test
     public void compareNumberOfRows() {
 	try {
 	    FileOutputStream stream = new FileOutputStream(outFile);
@@ -321,7 +416,7 @@ public class XMLSaveTests {
 	} catch (ParserConfigurationException e) {
 	    e.printStackTrace();
 	}
-    }
+    }*/
 
     /**
      * Method for testing if the content of the file is correct
@@ -472,51 +567,6 @@ public class XMLSaveTests {
 	return 0;
     }
 
-    /**
-     * Method for testing if the two cells are equal
-     * 
-     * @param scWorkbook
-     * @param scXML
-     * @return
-     */
-    private boolean testOneCell(StylableCell scWorkbook, StylableCell scXML) {
-	if (scWorkbook.getBackgroundColor().getRGB() != scXML
-		.getBackgroundColor().getRGB()) {
-	    return false;
-	}
-
-	if (scWorkbook.getForegroundColor().getRGB() != scXML
-		.getForegroundColor().getRGB()) {
-	    return false;
-	}
-
-	if (scWorkbook.getVerticalAlignment() != scXML.getVerticalAlignment()) {
-	    return false;
-	}
-
-	if (scWorkbook.getHorizontalAlignment() != scXML
-		.getHorizontalAlignment()) {
-	    return false;
-	}
-
-	if (!scWorkbook.getFont().getFamily()
-		.equals(scXML.getFont().getFamily())) {
-	    return false;
-	}
-
-	if (scWorkbook.getFont().getSize() != scXML.getFont().getSize()) {
-	    return false;
-	}
-
-	if (scWorkbook.getFont().isBold() != scXML.getFont().isBold()) {
-	    return false;
-	}
-
-	if (scWorkbook.getFont().isItalic() != scXML.getFont().isItalic()) {
-	    return false;
-	}
-
-	return true;
-    }
+   
 
 }
