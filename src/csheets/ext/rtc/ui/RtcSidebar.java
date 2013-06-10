@@ -30,7 +30,7 @@ import csheets.ui.ctrl.UIController;
 /**
  * 
  * @author Rita Nogueira
- *
+ * 
  */
 public class RtcSidebar extends JPanel {
     private static final long serialVersionUID = -5795254724858699202L;
@@ -98,17 +98,15 @@ public class RtcSidebar extends JPanel {
 
 	shareAdapter = new ServerListAdapter();
 	serverList = new JList<RtcCommunicator>(shareAdapter);
-	serverList.setBorder(UIManager.getBorder("CheckBox.border"));
-	serverList.setBackground(SystemColor.menu);
+	serverList.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 	listPanel.add(serverList);
-	
-	
+
 	serverList.addListSelectionListener(new ListSelectionListener() {
 
 	    @Override
 	    public void valueChanged(ListSelectionEvent l) {
-		if(serverList.isEnabled()){
-		    
+		if (serverList.isEnabled()) {
+
 		}
 		clientAdapter.update(shareAdapter.getElementAt(
 			serverList.getSelectedIndex()).getConnectedUsers());
@@ -117,7 +115,7 @@ public class RtcSidebar extends JPanel {
 	GroupLayout gl_contentPanel = new GroupLayout(listPanel);
 	gl_contentPanel.setHorizontalGroup(gl_contentPanel
 		.createParallelGroup(Alignment.LEADING)
-		.addComponent(serverList, GroupLayout.DEFAULT_SIZE, 300,
+		.addComponent(serverList, GroupLayout.DEFAULT_SIZE, 100,
 			Short.MAX_VALUE)
 		.addComponent(list, GroupLayout.DEFAULT_SIZE, 310,
 			Short.MAX_VALUE));
@@ -130,7 +128,7 @@ public class RtcSidebar extends JPanel {
 				Short.MAX_VALUE)
 			.addPreferredGap(ComponentPlacement.UNRELATED)
 			.addComponent(serverList, GroupLayout.PREFERRED_SIZE,
-				170, GroupLayout.PREFERRED_SIZE)));
+				140, GroupLayout.PREFERRED_SIZE)));
 
 	listPanel.setLayout(gl_contentPanel);
 	add(listPanel, BorderLayout.CENTER);

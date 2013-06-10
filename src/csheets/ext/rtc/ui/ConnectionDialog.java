@@ -35,7 +35,7 @@ import csheets.ext.rtc.ServerInformation;
 /**
  * 
  * @author Rita Nogueira; Filipe Couto
- *
+ * 
  */
 
 public class ConnectionDialog extends JDialog {
@@ -92,10 +92,10 @@ public class ConnectionDialog extends JDialog {
 			.getText();
 		int port = Integer.valueOf(ConnectionDialog.this.portTextField
 			.getText());
-		listener.onIPSelected(ipAddress,shareName, userName, port);
+		listener.onIPSelected(ipAddress, shareName, userName, port);
 		ConnectionDialog.this.setVisible(false);
 		searcher.stop();
-		
+
 	    }
 	});
 	okButton.setActionCommand("Connect");
@@ -115,8 +115,6 @@ public class ConnectionDialog extends JDialog {
 
 	testAdapter = new MulticastServerListAdapter();
 	serverList = new JList<MulticastServerListAdapter>(testAdapter);
-
-	serverList.setBorder(new LineBorder(Color.GRAY, 1, true));
 	serverList.addListSelectionListener(new ListSelectionListener() {
 	    @Override
 	    public void valueChanged(ListSelectionEvent e) {
@@ -132,7 +130,7 @@ public class ConnectionDialog extends JDialog {
 	JLabel userNameLabel = new JLabel("User name");
 
 	userNameTextField = new JTextField();
-	userNameTextField.setText("User" + (int)(Math.random() * 1000));
+	userNameTextField.setText("User" + (int) (Math.random() * 1000));
 	userNameTextField.setColumns(10);
 	userNameTextField.addFocusListener(new FocusListener() {
 	    @Override

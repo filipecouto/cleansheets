@@ -1,29 +1,38 @@
 package csheets.core.formula.lang;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.FileOutputStream;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import csheets.core.IllegalValueTypeException;
 import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
-import csheets.io.XMLCodec;
+import csheets.io.CLSCodec;
 
+/**
+ * This class tests multiple expressions using the ExpressionSet and Loop
+ * classes
+ * 
+ * @author Gil Castro (gil_1110484)
+ */
 public class MultipleExpressionsTest {
-
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
 	private Spreadsheet testSheet;
 	private int start;
 	private int end;
 
+	/**
+	 * Before starting any test, we will fill in A1 and B1 with an ExpressionSet
+	 * and a Loop respectively, writing them indirectly (that is, not
+	 * instantiating those classes but letting the ANTLR classes parse a normal
+	 * string)
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void setUp() throws Exception {
 		start = 0;
@@ -38,10 +47,15 @@ public class MultipleExpressionsTest {
 						+ ";\"Multiple expressions test\"}");
 		testSheet.getCell(1, 0).setContent("#{whiledo{b4<b3;b4:=b4+1" + "}}");
 
-		XMLCodec codec = new XMLCodec();
+		// Let's save the file, if we ever need to check what was generated
+		CLSCodec codec = new CLSCodec();
 		codec.write(book, new FileOutputStream("MultipleExpressionsTestFile.xml"));
 	}
 
+	/**
+	 * Checks if the ExpressionSet evaluated the requested Expressions (which
+	 * were Attributions) by checking if the Attributions worked as expected
+	 */
 	@Test
 	public void multipleExpressions() {
 		assertTrue("Cell A2 doesn't contain the expected content",
@@ -52,6 +66,9 @@ public class MultipleExpressionsTest {
 				cellContentEquals(0, 3, "i = "));
 	}
 
+	/**
+	 * Checks if the Loop calculated the expected values
+	 */
 	@Test
 	public void whileCycles() {
 		cellValueEquals(1, 1, start);
@@ -60,7 +77,7 @@ public class MultipleExpressionsTest {
 		cellValueEquals(1, 0, end);
 	}
 
-	public void cellValueEquals(int column, int row, double value) {
+	private void cellValueEquals(int column, int row, double value) {
 		try {
 			final double cellValue = testSheet.getCell(column, row).getValue()
 					.toDouble();
@@ -70,7 +87,7 @@ public class MultipleExpressionsTest {
 		}
 	}
 
-	public boolean cellContentEquals(int column, int row, String content) {
+	private boolean cellContentEquals(int column, int row, String content) {
 		return testSheet.getCell(column, row).getContent().equals(content);
 	}
 }
