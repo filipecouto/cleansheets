@@ -6,7 +6,6 @@ import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.RealTimeCollaboration;
 import csheets.ext.rtc.RtcCommunicator;
 import csheets.ui.ctrl.UIController;
-import csheets.ui.ext.CellDecorator;
 import csheets.ui.ext.UIExtension;
 
 /**
@@ -16,7 +15,7 @@ import csheets.ui.ext.UIExtension;
  * @author gil_1110484; Rita Nogueira
  */
 public class RtcUI extends UIExtension {
-    private RtcCellDecorator cellDecorator;
+    //private RtcCellDecorator cellDecorator;
     private RtcSidebar sidebar;
 
     private ShareAction shareAction;
@@ -27,14 +26,16 @@ public class RtcUI extends UIExtension {
 	super(realTimeCollaboration, uiController);
     }
 
-    @Override
-    public CellDecorator getCellDecorator() {
-	if (cellDecorator == null) {
-	    cellDecorator = new RtcCellDecorator(
-		    (RealTimeCollaboration) getExtension());
-	}
-	return cellDecorator;
-    }
+    // REMOVED because RtcCellDecorator doesn't support multiple shares and
+    // there is no requirement for a CellDecorator 
+//	@Override
+//	public CellDecorator getCellDecorator() {
+//		if (cellDecorator == null) {
+//			cellDecorator = new RtcCellDecorator(
+//			(RealTimeCollaboration) getExtension());
+//		}
+//		return cellDecorator;
+// }
 
     @Override
     public JComponent getSideBar() {
