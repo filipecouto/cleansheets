@@ -6,5 +6,5 @@ package csheets.ext.rtc.messages;
  * @author gil_1110484
  */
 public enum MessageTypes {
-    disconnect, info, infoList, eventCellSelected, eventCellChanged, getCells, workbook, getSpreadsheet, spreadsheet, cells
+    disconnect, info, infoList, eventCellSelected, eventCellChanged, getCells, workbook, getSpreadsheet, spreadsheet, cells, error
 }

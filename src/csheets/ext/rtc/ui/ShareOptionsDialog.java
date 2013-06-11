@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -36,6 +37,7 @@ public class ShareOptionsDialog extends JDialog {
     private JTextField userName;
     private JTextField connectionPort;
     private JTextField shareName;
+    private JPasswordField passwordField;
 
     public ShareOptionsDialog() {
 	super((JFrame) null, "Sharing Options", true);
@@ -87,6 +89,9 @@ public class ShareOptionsDialog extends JDialog {
 		connectionPort.selectAll();
 	    }
 	});
+        JLabel lblPassword = new JLabel("Password");
+	passwordField = new JPasswordField();
+	connectionPort.setColumns(5);
 
 	selectWhole = new JRadioButton();
 	selectWhole.setText("Export whole spreadsheet");
@@ -124,8 +129,10 @@ public class ShareOptionsDialog extends JDialog {
 			    .getText();
 		    String shareName = ShareOptionsDialog.this.shareName
 			    .getText();
+                    String pass = String.valueOf(ShareOptionsDialog.this.passwordField
+			.getPassword());
 		    ShareOptionsDialog.this.listener.onChoosedExport(choice,
-			    userName, shareName, port);
+			    userName, shareName, port, pass);
 		    ShareOptionsDialog.this.setVisible(false);
 		} catch (NumberFormatException e) {
 		    JOptionPane.showMessageDialog(getParent(),
@@ -189,6 +196,22 @@ public class ShareOptionsDialog extends JDialog {
 											GroupLayout.DEFAULT_SIZE,
 											25,
 											Short.MAX_VALUE)))
+                                                .addGroup(
+							gl_panel.createSequentialGroup()
+								.addContainerGap()
+								.addGroup(
+									gl_panel.createParallelGroup(
+										Alignment.LEADING)
+										.addGroup(
+											gl_panel.createSequentialGroup()
+												.addGap(5)
+												.addComponent(
+													lblPassword))
+										.addComponent(
+											passwordField,
+											GroupLayout.DEFAULT_SIZE,
+											25,
+											Short.MAX_VALUE)))
 						.addGroup(
 							Alignment.TRAILING,
 							gl_panel.createSequentialGroup()
@@ -220,8 +243,15 @@ public class ShareOptionsDialog extends JDialog {
 			.addComponent(connectionPort, GroupLayout.PREFERRED_SIZE,
 				GroupLayout.DEFAULT_SIZE,
 				GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+			.addComponent(lblPassword)
+			.addPreferredGap(ComponentPlacement.RELATED)
+			.addComponent(passwordField, GroupLayout.PREFERRED_SIZE,
+				GroupLayout.DEFAULT_SIZE,
+				GroupLayout.PREFERRED_SIZE)
 			.addContainerGap(GroupLayout.DEFAULT_SIZE,
-				Short.MAX_VALUE)));
+				Short.MAX_VALUE)
+                ));
 
 	infoPanel.setLayout(gl_panel);
 	panel.add(buttonAccept);

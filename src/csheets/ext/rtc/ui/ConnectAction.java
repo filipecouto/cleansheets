@@ -33,13 +33,14 @@ public class ConnectAction extends FocusOwnerAction {
 	    ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
 		@Override
 		public void onIPSelected(String address,String shareName, String username,
-			int port) {
+			int port, String password) {
 		    ClientInfo client = null;
 		    // String ip = "";
 		    // try {
 		    try {
+                        System.out.println("ConnectAction");
 			client = extension.createClient(
-				new ClientInfo(shareName,username), address, port,
+				new ClientInfo(shareName,username,password), address, port,
 				uiController);
 		    } catch (Exception e) {
 			extension.onConnectionFailed(e);

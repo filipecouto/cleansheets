@@ -66,6 +66,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 			    properties = (RtcSharingProperties) response[1];
 			    listener.onUserAction(info, null);
 			} else {
+                            close();
 			    return;
 			}
 
@@ -82,6 +83,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 				// TODO what if the workbook is empty?
 			    }
 			} else {
+                            close();
 			    return;
 			}
 

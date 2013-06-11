@@ -7,5 +7,5 @@ package csheets.ext.rtc.ui;
  */
 public interface OnIPSelectListener {
     public void onIPSelected(String address, String shareName, String userName,
-	    int port);
+	    int port, String password);
 }

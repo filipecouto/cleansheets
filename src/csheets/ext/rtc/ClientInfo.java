@@ -17,6 +17,7 @@ public class ClientInfo implements Serializable {
     private String userName;
     private String shareName;
     private Color color;
+    private String password;
 
     /**
      * Instantiates a ClientInfo with an address
@@ -33,12 +34,13 @@ public class ClientInfo implements Serializable {
      * @param shareName
      * @param userName
      */
-    public ClientInfo(String shareName, String userName) {
+    public ClientInfo(String shareName, String userName, String password) {
 	this.userName = userName;
 	color = Color.getHSBColor((float) Math.random() * 0.8f,
 		(float) (Math.random() * 0.4f + 0.6f),
 		(float) (Math.random() * 0.2f + 0.8f));
 	this.shareName = shareName;
+        this.password = password;
     }
 
     /**
@@ -110,5 +112,13 @@ public class ClientInfo implements Serializable {
 
     public boolean isSameIP(InetAddress address) {
 	return this.address.equals(address);
+    }
+    
+    /*
+     * 
+     * @return true if password matches, false if not
+     */
+    public boolean passwordMatches(ClientInfo other){
+        return password.equals(other.password);
     }
 }
