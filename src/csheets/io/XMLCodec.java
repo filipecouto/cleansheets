@@ -25,7 +25,6 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import csheets.core.Workbook;
@@ -49,13 +48,12 @@ public class XMLCodec implements Codec, VersionControllerCodec {
 	}
 
 	private Session getSession() {
-		SessionFactory sessionFactory = Hibernate.getSessionFactory();
 		try {
 			Class.forName("org.hsqldb.jdbcDriver");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return sessionFactory.openSession();
+		return Hibernate.getSession();
 	}
 
 	@Override
@@ -155,11 +153,14 @@ public class XMLCodec implements Codec, VersionControllerCodec {
 		}
 	}
 
+	private MappedWorkbook getVersion(int versionId) {
+		Session session = getSession();
+		return (MappedWorkbook) session.get(MappedWorkbook.class, versionId);
+	}
+
 	@Override
 	public Workbook loadVersion(Object versionId, Workbook target) {
-		Session session = getSession();
-		final MappedWorkbook mappedWorkbook = (MappedWorkbook) session.get(
-				MappedWorkbook.class, (Integer) versionId);
+		final MappedWorkbook mappedWorkbook = getVersion((Integer) versionId);
 		final Workbook workbook = target == null ? mappedWorkbook.makeWorkbook()
 				: mappedWorkbook.makeWorkbook(target);
 		workbook.setVersionController(this);
@@ -171,8 +172,7 @@ public class XMLCodec implements Codec, VersionControllerCodec {
 		Session session = getSession();
 
 		// add this new version to the database
-		Transaction transaction = null;
-		transaction = session.beginTransaction();
+		Transaction transaction = session.beginTransaction();
 		session.persist(new MappedWorkbook(book));
 		transaction.commit();
 	}
@@ -197,5 +197,13 @@ public class XMLCodec implements Codec, VersionControllerCodec {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public void removeVersion(Object versionId) {
+		Session session = getSession();
+		Transaction transaction = session.beginTransaction();
+		session.delete(getVersion((Integer) versionId));
+		transaction.commit();
 	}
 }

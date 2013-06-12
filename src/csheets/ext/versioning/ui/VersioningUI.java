@@ -1,13 +1,21 @@
 package csheets.ext.versioning.ui;
 
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -102,6 +110,31 @@ public class VersioningUI extends UIExtension implements SpreadsheetAppListener 
 						uiController.setActiveWorkbook(adapter.getVersionAt(
 								selectedIndex).loadVersion(currentBook));
 						justOpenedVersion = selectedIndex != 0;
+					}
+				}
+			});
+			versionsList.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					if (SwingUtilities.isRightMouseButton(e)) {
+						final int index = versionsList.locationToIndex(e.getPoint());
+
+						JPopupMenu menu = new JPopupMenu();
+						menu.add("Remove version").addActionListener(
+								new ActionListener() {
+									@Override
+									public void actionPerformed(ActionEvent e) {
+										adapter.getVersionAt(index).removeVersion();
+										loadVersions(currentBook);
+										uiController.setWorkbookModified(currentBook);
+										justOpenedVersion = false;
+									}
+								});
+
+						Rectangle cellBounds = versionsList.getCellBounds(index,
+								index);
+						menu.show(versionsList, 0,
+								(int) (cellBounds.y + cellBounds.getHeight()));
 					}
 				}
 			});

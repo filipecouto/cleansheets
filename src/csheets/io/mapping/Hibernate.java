@@ -1,6 +1,6 @@
 package csheets.io.mapping;
 
-import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 import org.hibernate.cfg.AnnotationConfiguration;
 
 /**
@@ -11,18 +11,18 @@ import org.hibernate.cfg.AnnotationConfiguration;
 
 @SuppressWarnings("deprecation")
 public class Hibernate {
-	private static final SessionFactory sessionFactory;
+	private static final Session session;
 
 	static {
 		try {
-			sessionFactory = new AnnotationConfiguration().configure(
-					"hibernate.cfg.xml").buildSessionFactory();
+			session = new AnnotationConfiguration().configure("hibernate.cfg.xml")
+					.buildSessionFactory().openSession();
 		} catch (Throwable e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
 
-	public static SessionFactory getSessionFactory() {
-		return sessionFactory;
+	public static Session getSession() {
+		return session;
 	}
 }

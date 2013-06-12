@@ -35,4 +35,8 @@ public class VersionInfo {
 	public Workbook loadVersion(Workbook target) {
 		return codec.loadVersion(id, target);
 	}
+	
+	public void removeVersion() {
+		codec.removeVersion(id);
+	}
 }
