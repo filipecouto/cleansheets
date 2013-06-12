@@ -15,8 +15,8 @@ import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
 
 /**
- * This class holds all the data needed to store a Workbook in the database and
- * also builds a new one from its contained data.
+ * This class holds all the data needed to store a Workbook in the database and also builds a new one from its contained
+ * data.
  * 
  * As requested, this class also holds the date of its creation/modification.
  * 
@@ -25,7 +25,7 @@ import csheets.core.Workbook;
 @Entity(name = "Workbook")
 public class MappedWorkbook {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
 	private Date version;
@@ -43,8 +43,8 @@ public class MappedWorkbook {
 	/**
 	 * Constructor that stores all the needed data.
 	 * 
-	 * This constructor should be used when the user wishes to save his/her
-	 * workbook and then pass this instance to the persistence target.
+	 * This constructor should be used when the user wishes to save his/her workbook and then pass this instance to the
+	 * persistence target.
 	 * 
 	 * @param workbook
 	 *           the Workbook to store
@@ -65,13 +65,33 @@ public class MappedWorkbook {
 	 * @return a Workbook, rebuilt from this stored data
 	 */
 	public Workbook makeWorkbook() {
-		final int len = spreadsheets.size();
-		Workbook book = new Workbook(len);
+		Workbook book = new Workbook(spreadsheets.size());
 
-		for (int i = 0; i < len; i++) {
-			spreadsheets.get(i).makeSpreadsheet(book.getSpreadsheet(i));
-		}
+		rebuildWorkbook(book);
 
 		return book;
+	}
+
+	public Workbook makeWorkbook(Workbook target) {
+		while (target.getSpreadsheetCount() != 0) {
+			target.removeSpreadsheet(target.getSpreadsheet(0));
+		}
+
+		final int len = spreadsheets.size();
+		for (int i = 0; i < len; i++) {
+			target.addSpreadsheet();
+		}
+		
+		rebuildWorkbook(target);
+
+		return target;
+	}
+
+	private void rebuildWorkbook(Workbook target) {
+		final int len = spreadsheets.size();
+
+		for (int i = 0; i < len; i++) {
+			spreadsheets.get(i).makeSpreadsheet(target.getSpreadsheet(i));
+		}
 	}
 }
