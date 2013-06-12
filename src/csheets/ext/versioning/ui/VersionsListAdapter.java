@@ -28,7 +28,7 @@ public class VersionsListAdapter implements ListModel<String> {
 	public String getElementAt(int index) {
 		return items.get(index);
 	}
-	
+
 	public VersionInfo getVersionAt(int index) {
 		return versions.get(index);
 	}
@@ -50,7 +50,10 @@ public class VersionsListAdapter implements ListModel<String> {
 			versions = versionController.getVersions();
 			if (versions != null) {
 				for (VersionInfo version : versions) {
-					items.add(dateFormat.format(version.getDate()) + " - " + version.getSpreadsheetCount() + " sheet(s)");
+					items.add((version.getName() == null ? dateFormat.format(version
+							.getDate()) : version.getName())
+							+ " - "
+							+ version.getSpreadsheetCount() + " sheet(s)");
 				}
 			}
 		}

@@ -15,8 +15,8 @@ import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
 
 /**
- * This class holds all the data needed to store a Workbook in the database and also builds a new one from its contained
- * data.
+ * This class holds all the data needed to store a Workbook in the database and
+ * also builds a new one from its contained data.
  * 
  * As requested, this class also holds the date of its creation/modification.
  * 
@@ -43,8 +43,8 @@ public class MappedWorkbook {
 	/**
 	 * Constructor that stores all the needed data.
 	 * 
-	 * This constructor should be used when the user wishes to save his/her workbook and then pass this instance to the
-	 * persistence target.
+	 * This constructor should be used when the user wishes to save his/her
+	 * workbook and then pass this instance to the persistence target.
 	 * 
 	 * @param workbook
 	 *           the Workbook to store
@@ -79,9 +79,9 @@ public class MappedWorkbook {
 
 		final int len = spreadsheets.size();
 		for (int i = 0; i < len; i++) {
-			target.addSpreadsheet();
+			target.addSpreadsheet(spreadsheets.get(i).getTitle());
 		}
-		
+
 		rebuildWorkbook(target);
 
 		return target;
