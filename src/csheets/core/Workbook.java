@@ -52,10 +52,12 @@ public class Workbook implements Iterable<Spreadsheet>, Serializable {
 	/**
 	 * Creates a new empty workbook.
 	 */
-	public Workbook() {}
+	public Workbook() {
+	}
 
 	/**
-	 * Creates a new workbook, which initially contains the given number of blank spreadsheets.
+	 * Creates a new workbook, which initially contains the given number of blank
+	 * spreadsheets.
 	 * 
 	 * @param sheets
 	 *           the number of sheets to create initially
@@ -66,14 +68,16 @@ public class Workbook implements Iterable<Spreadsheet>, Serializable {
 	}
 
 	/**
-	 * Creates a new workbook, using the given content matrix to create spreadsheets initially.
+	 * Creates a new workbook, using the given content matrix to create
+	 * spreadsheets initially.
 	 * 
 	 * @param contents
 	 *           the content matrices to use when creating spreadsheets
 	 */
 	public Workbook(String[][]... contents) {
 		for (String[][] content : contents)
-			spreadsheets.add(new SpreadsheetImpl(this, getNextSpreadsheetTitle(), content));
+			spreadsheets.add(new SpreadsheetImpl(this, getNextSpreadsheetTitle(),
+					content));
 	}
 
 	public VersionControllerCodec getVersionController() {
@@ -88,19 +92,37 @@ public class Workbook implements Iterable<Spreadsheet>, Serializable {
 	 * Adds a blank spreadsheet to the end of the workbook.
 	 */
 	public void addSpreadsheet() {
-		Spreadsheet spreadsheet = new SpreadsheetImpl(this, getNextSpreadsheetTitle());
+		Spreadsheet spreadsheet = new SpreadsheetImpl(this,
+				getNextSpreadsheetTitle());
 		spreadsheets.add(spreadsheet);
 		fireSpreadsheetInserted(spreadsheet, spreadsheets.size() - 1);
 	}
 
 	/**
-	 * Adds a new spreadsheet to the workbook, in which cells are initialized with data from the given content matrix.
+	 * Adds a blank spreadsheet to the end of the workbook. This method was
+	 * created in version 1.5 as a workaround for a bug in the current GUI (GUI
+	 * won't update when the title of a spreadsheet changes).
+	 * 
+	 * @param title
+	 *           the title of the spreadsheet to add
+	 * @since 1.5
+	 */
+	public void addSpreadsheet(String title) {
+		Spreadsheet spreadsheet = new SpreadsheetImpl(this, title);
+		spreadsheets.add(spreadsheet);
+		fireSpreadsheetInserted(spreadsheet, spreadsheets.size() - 1);
+	}
+
+	/**
+	 * Adds a new spreadsheet to the workbook, in which cells are initialized
+	 * with data from the given content matrix.
 	 * 
 	 * @param content
 	 *           the contents of the cells in the spreadsheet
 	 */
 	public void addSpreadsheet(String[][] content) {
-		Spreadsheet spreadsheet = new SpreadsheetImpl(this, getNextSpreadsheetTitle(), content);
+		Spreadsheet spreadsheet = new SpreadsheetImpl(this,
+				getNextSpreadsheetTitle(), content);
 		spreadsheets.add(spreadsheet);
 		fireSpreadsheetInserted(spreadsheet, spreadsheets.size() - 1);
 	}
@@ -130,9 +152,11 @@ public class Workbook implements Iterable<Spreadsheet>, Serializable {
 	 *           the index of the spreadsheet in the workbook
 	 * @return the spreadsheet at the given index
 	 * @throws IndexOutOfBoundsException
-	 *            if the index is out of range (index < 0 || index >= |spreadsheets|)
+	 *            if the index is out of range (index < 0 || index >=
+	 *            |spreadsheets|)
 	 */
-	public Spreadsheet getSpreadsheet(int index) throws IndexOutOfBoundsException {
+	public Spreadsheet getSpreadsheet(int index)
+			throws IndexOutOfBoundsException {
 		return spreadsheets.get(index);
 	}
 
@@ -237,7 +261,8 @@ public class Workbook implements Iterable<Spreadsheet>, Serializable {
 	 * @throws ClassNotFoundException
 	 *            If the class of a serialized object cannot be found.
 	 */
-	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+	private void readObject(ObjectInputStream stream) throws IOException,
+			ClassNotFoundException {
 		stream.defaultReadObject();
 		listeners = new ArrayList<WorkbookListener>();
 	}
