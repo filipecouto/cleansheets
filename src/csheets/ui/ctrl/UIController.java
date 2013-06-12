@@ -268,6 +268,15 @@ public class UIController implements SpreadsheetAppListener {
 /*
  * EVENT FIRING & LISTENING
  */
+	
+	/**
+	 * Adds a SpreadsheetAppListener to this app instance
+	 * @param listener
+	 * @since 1.5
+	 */
+	public void addWorkbookListener(SpreadsheetAppListener listener) {
+		app.addSpreadsheetAppListener(listener);
+	}
 
 	public void workbookCreated(SpreadsheetAppEvent event) {
 		Workbook workbook = event.getWorkbook();
