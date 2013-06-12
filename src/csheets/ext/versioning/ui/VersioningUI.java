@@ -73,6 +73,7 @@ public class VersioningUI extends UIExtension implements SpreadsheetAppListener 
 								.saveVersion(null, event.getWorkbook());
 						loadVersions(event.getWorkbook());
 					}
+					versionsList.clearSelection();
 					justOpenedVersion = false;
 				}
 			}
@@ -94,10 +95,14 @@ public class VersioningUI extends UIExtension implements SpreadsheetAppListener 
 				@Override
 				public void valueChanged(ListSelectionEvent event) {
 					if (!event.getValueIsAdjusting()) {
+						final int selectedIndex = versionsList.getSelectedIndex();
+						if (selectedIndex == -1) {
+							return;
+						}
 						if (!shownInfo) {
 							JOptionPane
 									.showMessageDialog(
-											sideBar,
+											null,
 											"You're about to load another version of this file.\n"
 													+ "If you want to revert to this version, please save the file.\n"
 													+ "You can select the current version if you want to come back to it.",
@@ -106,7 +111,6 @@ public class VersioningUI extends UIExtension implements SpreadsheetAppListener 
 							shownInfo = true;
 						}
 						justOpenedVersion = false;
-						final int selectedIndex = versionsList.getSelectedIndex();
 						uiController.setActiveWorkbook(adapter.getVersionAt(
 								selectedIndex).loadVersion(currentBook));
 						justOpenedVersion = selectedIndex != 0;
@@ -124,10 +128,18 @@ public class VersioningUI extends UIExtension implements SpreadsheetAppListener 
 								new ActionListener() {
 									@Override
 									public void actionPerformed(ActionEvent e) {
-										adapter.getVersionAt(index).removeVersion();
-										loadVersions(currentBook);
-										uiController.setWorkbookModified(currentBook);
-										justOpenedVersion = false;
+										int option = JOptionPane
+												.showConfirmDialog(
+														null,
+														"Are you sure you want to remove this version?",
+														"Remove Version",
+														JOptionPane.YES_NO_OPTION);
+										if (option == 0) {
+											adapter.getVersionAt(index).removeVersion();
+											loadVersions(currentBook);
+											uiController.setWorkbookModified(currentBook);
+											justOpenedVersion = false;
+										}
 									}
 								});
 
