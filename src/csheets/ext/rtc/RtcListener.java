@@ -40,4 +40,10 @@ public interface RtcListener extends RtcInterface {
      *            the exception throw during connection
      */
     public void onConnectionFailed(Exception e);
+    
+    /**
+     * 
+     * @param error 
+     */
+    public void onError(Object error);
 }

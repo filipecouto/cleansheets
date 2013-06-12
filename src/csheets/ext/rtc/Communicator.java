@@ -79,11 +79,15 @@ public abstract class Communicator {
 	final RtcMessage message = getMessage();
 	if (message.getMessageType() == type) {
 	    return message;
-	} else {
+	}
+        else if(message.getMessageType() == MessageTypes.error){
+            onError(message.getArgument());
+        }
+        else {
 	    // something is wrong, we better disconnect
 	    close();
-	    return null;
 	}
+        return null;
     }
 
     /**
@@ -150,4 +154,10 @@ public abstract class Communicator {
 	}
 	return bytes.toByteArray();
     }
+    
+    /**
+     * 
+     * @param error 
+     */
+    protected abstract void onError(Object error);
 }

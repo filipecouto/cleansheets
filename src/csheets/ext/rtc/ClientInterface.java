@@ -139,7 +139,15 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 			}
 		    } catch (IOException e) {
 			// server disconnected
-			close();
+			try{
+                            RtcMessage message = getMessageOrFail(MessageTypes.error);
+                            if(message!=null){
+                                onError(message.getArgument());
+                            }
+                            close();
+                        }catch(Exception ex){
+                            System.out.println(ex);
+                        }
 		    } catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			close();
@@ -217,7 +225,21 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 	return connected;
     }
 
+    @Override
     public String toString() {
 	return info.getShareName();
+    }
+
+    @Override
+    public void setActivated(boolean isActivated) {}
+
+    @Override
+    public boolean isActivated() {
+        return true;
+    }
+
+    @Override
+    protected void onError(Object error) {
+        listener.onError(error);
     }
 }

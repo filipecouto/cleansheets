@@ -45,4 +45,16 @@ public interface RtcCommunicator extends RtcInterface {
      */
     public void start();
     
+    /**
+     * Sets the share Activated value
+     * @param isActivated 
+     */
+    public void setActivated(boolean isActivated);
+    
+    /**
+     * Tells if the share is activated
+     * @return 
+     */
+    public boolean isActivated();
+    
 }

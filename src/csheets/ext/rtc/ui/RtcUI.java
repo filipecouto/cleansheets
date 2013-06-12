@@ -7,6 +7,7 @@ import csheets.ext.rtc.RealTimeCollaboration;
 import csheets.ext.rtc.RtcCommunicator;
 import csheets.ui.ctrl.UIController;
 import csheets.ui.ext.UIExtension;
+import javax.swing.JOptionPane;
 
 /**
  * This class is the UIExtension of RealTimeCollaboration extension. It provides
@@ -97,5 +98,17 @@ public class RtcUI extends UIExtension {
      */
     public void onConnectionFailed(Exception e) {
 	sidebar.onConnectionFailed(e);
+    }
+    
+    /**
+     * 
+     */
+    public void onError(Object error){
+        if(error.equals("password")){
+            JOptionPane.showMessageDialog(sidebar, "Wrong Password!", "Password", JOptionPane.ERROR_MESSAGE);
+        }
+        else if(error.equals("refused")){
+            JOptionPane.showMessageDialog(sidebar, "Connection refused! Maybe the owner deactivated the share.", "Connection Problem", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

@@ -2,7 +2,6 @@ package csheets.ext.rtc.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -18,7 +17,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -26,6 +24,11 @@ import csheets.ext.rtc.ClientInfo;
 import csheets.ext.rtc.RealTimeCollaboration;
 import csheets.ext.rtc.RtcCommunicator;
 import csheets.ui.ctrl.UIController;
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 /**
  * 
@@ -101,6 +104,52 @@ public class RtcSidebar extends JPanel {
 	serverList.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 	listPanel.add(serverList);
 
+        serverList.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if(SwingUtilities.isRightMouseButton(e)){
+                    serverList.setSelectedIndex(serverList.locationToIndex(e.getPoint())); //Manual Select
+                    JPopupMenu menu = new JPopupMenu(); // Popup Menu
+                    //Disconnect
+                    JMenuItem disconnectItem = new JMenuItem("Disconnect");
+                    disconnectItem.addActionListener(new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            shareAdapter.disconnect(serverList.getSelectedIndex());
+                        }
+                    });
+                    menu.add(disconnectItem);
+                    
+                    //Items that only the share owner can see
+                    if(shareAdapter.isOwner(serverList.getSelectedIndex())){
+                        //Deactivate|Activate
+                        JMenuItem deactivateItem = new JMenuItem(shareAdapter.isActivated(serverList.getSelectedIndex())? "Deactivate" : "Activate");
+                        deactivateItem.addActionListener(new ActionListener() {
+
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                shareAdapter.setActivated(serverList.getSelectedIndex(), !shareAdapter.isActivated(serverList.getSelectedIndex()));
+                            }
+                        });
+                        menu.add(deactivateItem);
+                    
+                        //Read-Only|Writable
+                        JMenuItem isWritableItem = new JMenuItem(shareAdapter.isWritable(serverList.getSelectedIndex())? "Read-Only" : "Writable");
+                        isWritableItem.addActionListener(new ActionListener() {
+
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                shareAdapter.setWritable(serverList.getSelectedIndex(), !shareAdapter.isWritable(serverList.getSelectedIndex()));
+                            }
+                        });
+                        menu.add(isWritableItem);
+                    }
+                    
+                    Rectangle cellBounds = serverList.getCellBounds(serverList.getSelectedIndex(), serverList.getSelectedIndex());
+                    menu.show(serverList, 0, (int)(cellBounds.y+cellBounds.getHeight()));
+                }
+            }
+        });
 	serverList.addListSelectionListener(new ListSelectionListener() {
 
 	    @Override

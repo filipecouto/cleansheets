@@ -79,6 +79,7 @@ public class RealTimeCollaboration extends Extension {
 	    RtcSharingProperties properties, UIController uiController)
 	    throws IOException {
 	isOwner = true;
+        properties.setOwner(true);
 	ServerInterface server = new ServerInterface(client, port, properties,
 		uiController);
 	identity = server.getServerInfo();
@@ -233,5 +234,12 @@ public class RealTimeCollaboration extends Extension {
 	    rtcUI = new RtcUI(this, uiController);
 	}
 	return rtcUI;
+    }
+    
+    /**
+     * 
+     */
+    public void onError(Object error){
+        rtcUI.onError(error);
     }
 }

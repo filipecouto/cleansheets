@@ -20,6 +20,8 @@ public class RtcSharingProperties implements Serializable {
 
     private Address start;
     private Address end;
+    private boolean isOwner=false;
+    private boolean isWritable=true;
 
     public RtcSharingProperties() {
 	spreadsheet = 0;
@@ -73,6 +75,14 @@ public class RtcSharingProperties implements Serializable {
     public void setSpreadsheet(int spreadsheet) {
 	this.spreadsheet = spreadsheet;
     }
+    
+    /**
+     * 
+     * @param isOwner 
+     */
+    public void setOwner(boolean isOwner){
+        this.isOwner=isOwner;
+    }
 
     /**
      * Gets the index of the shared spreadsheet
@@ -81,6 +91,14 @@ public class RtcSharingProperties implements Serializable {
      */
     public int getSpreadsheet() {
 	return spreadsheet;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public boolean isOwner(){
+        return isOwner;
     }
 
     /**
@@ -108,5 +126,33 @@ public class RtcSharingProperties implements Serializable {
      */
     public boolean isValid(RemoteCell cell) {
 	return cell.isValid(this);
+    }
+    
+    /**
+     * Sets the share Writable value
+     * @param isWritable 
+     */
+    public void setWritable(boolean isWritable){
+        this.isWritable = isWritable;
+    }
+    
+    /**
+     * Tells if a share is writable or read-only
+     * @return 
+     */
+    public boolean isWritable(){
+        return isWritable;
+    }
+    
+    /**
+     * true if the share is writable, false if it's read-only
+     * @param address
+     * @return 
+     */
+    public boolean canEdit(Address address){
+        if(isWritable){
+            return isInsideRange(address);
+        }
+        return false;
     }
 }
