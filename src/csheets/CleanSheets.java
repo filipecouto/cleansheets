@@ -50,8 +50,6 @@ import csheets.ext.ExtensionManager;
 import csheets.io.Codec;
 import csheets.io.CodecFactory;
 import csheets.io.NamedProperties;
-import csheets.io.XMLCodec;
-import csheets.io.XMLValidator;
 
 /**
  * CleanSheets - the main class of the application. The class manages workbooks,

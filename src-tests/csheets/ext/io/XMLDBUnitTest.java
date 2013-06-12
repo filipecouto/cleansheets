@@ -33,7 +33,6 @@ import csheets.core.formula.compiler.FormulaCompilationException;
 import csheets.ext.style.StylableCell;
 import csheets.ext.style.StyleExtension;
 import csheets.io.XMLCodec;
-import csheets.io.XMLValidator;
 
 public class XMLDBUnitTest {
     private static Workbook workbook;
