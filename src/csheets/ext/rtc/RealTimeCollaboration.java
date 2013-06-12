@@ -53,6 +53,7 @@ public class RealTimeCollaboration extends Extension {
      * Tells the side bar to refresh the list of shares
      */
     public void updateServersList() {
+        System.out.println("RealTimeCollaboration updateServersList size="+communicators.size());
 	RtcCommunicator[] array = new RtcCommunicator[communicators.size()];
 	communicators.toArray(array);
 	rtcUI.updateServersList(array);
@@ -134,6 +135,7 @@ public class RealTimeCollaboration extends Extension {
      * reason
      */
     public void onDisconnected() {
+        //TODO refactoring this method
 	rtcUI.onDisconnected();
     }
 

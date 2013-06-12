@@ -38,6 +38,7 @@ public class RtcEventsResponder implements RtcListener {
 
     @Override
     public void onConnected(ClientInfo client) {
+        System.out.println("RTCEventsResponder onConnected");
 	properties = getCommunicator().getSharingProperties();
 	extension.onConnected();
 	if (extension.isOwner()) {
@@ -107,6 +108,7 @@ public class RtcEventsResponder implements RtcListener {
 
     @Override
     public void onUserAction(ClientInfo source, Object action) {
+        System.out.println("RTCEventsResponder onUserAction");
 	extension.updateUsersList(getCommunicator());
 	extension.updateServersList();
     }

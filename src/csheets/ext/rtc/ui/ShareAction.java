@@ -35,7 +35,7 @@ public class ShareAction extends FocusOwnerAction {
 	    optDialog.setOnChooseExportListener(new OnChooseExportListener() {
 		@Override
 		public void onChoosedExport(boolean export, String name,
-			String shareName, int port) {
+			String shareName, int port, String password) {
 		    // selected cells if false , whole spreadsheet if true
 		    RtcSharingProperties props = new RtcSharingProperties();
 		    Address cell1;
@@ -58,7 +58,7 @@ public class ShareAction extends FocusOwnerAction {
 		    try {
 			props.setSpreadsheet(0);
 			server = extension.createServer(new ClientInfo(
-				shareName, name), port, props, uiController);
+				shareName, name, password), port, props, uiController);
 			extension.updateServersList();
 			ip = server.getAddress().getHostAddress() + ':' + port;
 		    } catch (IOException e1) {

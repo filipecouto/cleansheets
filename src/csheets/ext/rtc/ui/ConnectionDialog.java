@@ -1,7 +1,6 @@
 package csheets.ext.rtc.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,7 +21,6 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -31,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import csheets.ext.rtc.MulticastClient;
 import csheets.ext.rtc.OnShareFoundListener;
 import csheets.ext.rtc.ServerInformation;
+import javax.swing.JPasswordField;
 
 /**
  * 
@@ -44,6 +43,7 @@ public class ConnectionDialog extends JDialog {
     private JTextField userNameTextField;
     private JTextField portTextField;
     private JTextField addressTextField;
+    private JPasswordField passwordTextField;
     private MulticastServerListAdapter testAdapter;
     private String[] serverSelected;
     private int selectedIndex;
@@ -92,7 +92,15 @@ public class ConnectionDialog extends JDialog {
 			.getText();
 		int port = Integer.valueOf(ConnectionDialog.this.portTextField
 			.getText());
-		listener.onIPSelected(ipAddress, shareName, userName, port);
+                String pass=null;
+                try{
+                    pass = String.valueOf(ConnectionDialog.this.passwordTextField
+			.getPassword());
+                }catch(NullPointerException e){
+                    System.out.println("ConnectionDialog " + e);
+                }
+                System.out.println("Password<!>"+pass+"<!>");
+		listener.onIPSelected(ipAddress, shareName, userName, port, pass);
 		ConnectionDialog.this.setVisible(false);
 		searcher.stop();
 
@@ -176,6 +184,11 @@ public class ConnectionDialog extends JDialog {
 		time.restart();
 	    }
 	});
+        
+        JLabel passwordLabel = new JLabel("Password");
+
+	passwordTextField = new JPasswordField();
+	passwordTextField.setColumns(10);
 
 	GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 	gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(
@@ -189,6 +202,7 @@ public class ConnectionDialog extends JDialog {
 					.addComponent(addressLabel)
 					.addComponent(userNameLabel)
 					.addComponent(portLabel)
+                                        .addComponent(passwordLabel)
 					.addComponent(userNameTextField,
 						GroupLayout.DEFAULT_SIZE, 113,
 						Short.MAX_VALUE)
@@ -196,6 +210,9 @@ public class ConnectionDialog extends JDialog {
 						GroupLayout.DEFAULT_SIZE, 113,
 						Short.MAX_VALUE)
 					.addComponent(portTextField,
+						GroupLayout.DEFAULT_SIZE, 113,
+						Short.MAX_VALUE)
+                                        .addComponent(passwordTextField,
 						GroupLayout.DEFAULT_SIZE, 113,
 						Short.MAX_VALUE))
 			.addPreferredGap(ComponentPlacement.RELATED, 18,
@@ -224,6 +241,13 @@ public class ConnectionDialog extends JDialog {
 				.addComponent(portLabel)
 				.addPreferredGap(ComponentPlacement.RELATED)
 				.addComponent(portTextField,
+					GroupLayout.PREFERRED_SIZE,
+					GroupLayout.DEFAULT_SIZE,
+					GroupLayout.PREFERRED_SIZE).addGap(10)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+                                .addComponent(passwordLabel)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(passwordTextField,
 					GroupLayout.PREFERRED_SIZE,
 					GroupLayout.DEFAULT_SIZE,
 					GroupLayout.PREFERRED_SIZE).addGap(77))
