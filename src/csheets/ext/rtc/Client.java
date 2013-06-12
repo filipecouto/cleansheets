@@ -55,7 +55,7 @@ public class Client extends Communicator implements RtcInterface {
                     sendMessage(new RtcMessage(server.getServerInfo()
                             .getAddress(), MessageTypes.infoList,
                             new Serializable[]{server.getConnectedUsers(),
-                        server.getSharingProperties()}));
+                        server.getSharingProperties().getPropertiesForClients()}));
 
                     // send our workbook
                     sendMessage(new RtcMessage(server.getServerInfo()
@@ -154,5 +154,10 @@ public class Client extends Communicator implements RtcInterface {
         sendMessage(new RtcMessage(info.getAddress(), MessageTypes.disconnect,
                 null));
         close();
+    }
+
+    @Override
+    protected void onError(Object error) {
+        server.onError(error);
     }
 }
