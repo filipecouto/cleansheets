@@ -40,7 +40,6 @@ import csheets.io.versioning.VersionInfo;
  * @author Filipe Silva & Rita Nogueira & Filipe Couto & Gil Castro
  *         (gil_1110484)
  */
-@SuppressWarnings("deprecation")
 public class XMLCodec implements Codec, VersionControllerCodec {
 
 	/**
@@ -102,7 +101,7 @@ public class XMLCodec implements Codec, VersionControllerCodec {
 					DatabaseConfig.FEATURE_QUALIFIED_TABLE_NAMES, false);
 			connection.getConfig().setProperty(
 					DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, false);
-			
+
 			loadStreamIntoDatabase(stream, connection);
 
 			preparedStatement = jdbcConnection
@@ -160,7 +159,7 @@ public class XMLCodec implements Codec, VersionControllerCodec {
 	public Workbook loadVersion(Object versionId, Workbook target) {
 		Session session = getSession();
 		final MappedWorkbook mappedWorkbook = (MappedWorkbook) session.get(
-				MappedWorkbook.class, (int) versionId);
+				MappedWorkbook.class, (Integer) versionId);
 		final Workbook workbook = target == null ? mappedWorkbook.makeWorkbook()
 				: mappedWorkbook.makeWorkbook(target);
 		workbook.setVersionController(this);
@@ -191,7 +190,7 @@ public class XMLCodec implements Codec, VersionControllerCodec {
 			for (Object item : queryResult) {
 				Object[] version = (Object[]) item;
 				result.add(new VersionInfo(version[0], null,
-						(Timestamp) version[1], (int) (long) version[2], this));
+						(Timestamp) version[1], (int) (long) (Long) version[2], this));
 			}
 			return result;
 		} catch (Exception e) {
