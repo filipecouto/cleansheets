@@ -29,6 +29,8 @@ import javax.swing.SwingUtilities;
 
 import csheets.CleanSheets;
 import csheets.core.Address;
+import csheets.core.Spreadsheet;
+import csheets.core.Workbook;
 import csheets.io.mapping.MappedWorkbook;
 
 /**
@@ -81,11 +83,26 @@ public class UndoAction extends ActionHistoryAction {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					final Address address = focusOwner.getSelectedCell()
-							.getAddress();
-					undo(controller.getActiveWorkbook());
-					focusOwner.changeSelection(address.getRow(),
-							address.getColumn(), false, false);
+					final Workbook activeBook = controller.getActiveWorkbook();
+					final Spreadsheet activeSheet = controller
+							.getActiveSpreadsheet();
+					final Address address = controller.getActiveCell().getAddress();
+
+					final int len = activeBook.getSpreadsheetCount();
+					int selectedSheet = 0;
+					for (int i = 0; i < len; i++) {
+						if (activeBook.getSpreadsheet(i) == activeSheet) {
+							selectedSheet = i;
+							break;
+						}
+					}
+
+					undo(activeBook);
+
+					controller.setActiveSpreadsheet(activeBook
+							.getSpreadsheet(selectedSheet));
+					controller.setActiveCell(controller.getActiveSpreadsheet()
+							.getCell(address));
 				}
 			});
 		}

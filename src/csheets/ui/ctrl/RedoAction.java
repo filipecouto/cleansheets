@@ -27,6 +27,9 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
 import csheets.CleanSheets;
+import csheets.core.Address;
+import csheets.core.Spreadsheet;
+import csheets.core.Workbook;
 
 /**
  * An redo operation.
@@ -66,7 +69,25 @@ public class RedoAction extends ActionHistoryAction {
 	public void actionPerformed(ActionEvent event) {
 		if (focusOwner == null)
 			return;
+		final Workbook activeBook = controller.getActiveWorkbook();
+		final Spreadsheet activeSheet = controller.getActiveSpreadsheet();
+		final Address address = controller.getActiveCell().getAddress();
+
+		final int len = activeBook.getSpreadsheetCount();
+		int selectedSheet = 0;
+		for (int i = 0; i < len; i++) {
+			if (activeBook.getSpreadsheet(i) == activeSheet) {
+				selectedSheet = i;
+				break;
+			}
+		}
+
 		redo(controller.getActiveWorkbook());
+
+		final Spreadsheet sheetToActivate = activeBook.getSpreadsheet(selectedSheet);
+		controller.setActiveSpreadsheet(sheetToActivate);
+		controller.setActiveCell(sheetToActivate.getCell(
+				address));
 	}
 
 	@Override
