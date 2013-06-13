@@ -25,38 +25,79 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import csheets.CleanSheets;
+import csheets.core.Address;
+import csheets.io.mapping.MappedWorkbook;
 
 /**
  * An undo operation.
+ * 
  * @author Einar Pehrson
  */
 @SuppressWarnings("serial")
-public class UndoAction extends FocusOwnerAction {
+public class UndoAction extends ActionHistoryAction {
+	private UIController controller;
 
 	/**
 	 * Creates a new undo action.
 	 */
-	public UndoAction() {}
+	public UndoAction(UIController controller) {
+		this.controller = controller;
+		controller.addEditListener(new EditListener() {
+			@Override
+			public void workbookModified(final EditEvent event) {
+				if (isChangingStacks()) {
+					return;
+				}
+				addState(event.getWorkbook());
+			}
+		});
+	}
 
 	protected String getName() {
 		return "Undo";
 	}
 
 	protected void defineProperties() {
-		setEnabled(false);
 		putValue(MNEMONIC_KEY, KeyEvent.VK_U);
-		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-		putValue(SMALL_ICON, new ImageIcon(CleanSheets.class.getResource("res/img/undo.gif")));
+		putValue(ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON,
+				new ImageIcon(CleanSheets.class.getResource("res/img/undo.gif")));
 	}
 
 	/**
 	 * Inserts a column before the active cell in the focus owner table.
-	 * @param event the event that was fired
+	 * 
+	 * @param event
+	 *           the event that was fired
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if (focusOwner == null)
 			return;
+		if (hasActionsToUndo()) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					final Address address = focusOwner.getSelectedCell()
+							.getAddress();
+					undo(controller.getActiveWorkbook());
+					focusOwner.changeSelection(address.getRow(),
+							address.getColumn(), false, false);
+				}
+			});
+		}
+	}
+
+	@Override
+	protected void onHistoryChanged() {
+		setEnabled(hasActionsToUndo());
+	}
+
+	@Override
+	protected boolean requiresModification() {
+		return true;
 	}
 }
