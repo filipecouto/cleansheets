@@ -31,7 +31,6 @@ import csheets.CleanSheets;
 import csheets.core.Address;
 import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
-import csheets.io.mapping.MappedWorkbook;
 
 /**
  * An undo operation.
