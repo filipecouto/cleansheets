@@ -23,6 +23,7 @@ import csheets.SpreadsheetAppEvent;
 import csheets.SpreadsheetAppListener;
 import csheets.core.Workbook;
 import csheets.ext.Extension;
+import csheets.ext.versioning.VersioningController;
 import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
 import csheets.ui.ctrl.SelectionEvent;
@@ -69,8 +70,8 @@ public class VersioningUI extends UIExtension implements SpreadsheetAppListener 
 									"Would you like to set this version as the current one?\nYou still can come back to the current version after replacing it.\n\nIf you choose not to replace it, it will still be replaced if you save this file.",
 									"Replace version", JOptionPane.YES_NO_OPTION);
 					if (option == 0) {
-						event.getWorkbook().getVersionController()
-								.saveVersion(null, event.getWorkbook());
+						VersioningController.addVersion(event.getWorkbook(), null,
+								event.getWorkbook());
 						loadVersions(event.getWorkbook());
 					}
 					versionsList.clearSelection();
@@ -111,8 +112,9 @@ public class VersioningUI extends UIExtension implements SpreadsheetAppListener 
 							shownInfo = true;
 						}
 						justOpenedVersion = false;
-						uiController.setActiveWorkbook(adapter.getVersionAt(
-								selectedIndex).loadVersion(currentBook));
+						uiController.setActiveWorkbook(VersioningController
+								.getVersion(currentBook,
+										adapter.getVersionAt(selectedIndex)));
 						justOpenedVersion = selectedIndex != 0;
 					}
 				}
@@ -135,7 +137,8 @@ public class VersioningUI extends UIExtension implements SpreadsheetAppListener 
 														"Remove Version",
 														JOptionPane.YES_NO_OPTION);
 										if (option == 0) {
-											adapter.getVersionAt(index).removeVersion();
+											VersioningController.removeVersion(adapter
+													.getVersionAt(index));
 											loadVersions(currentBook);
 											uiController.setWorkbookModified(currentBook);
 											justOpenedVersion = false;
