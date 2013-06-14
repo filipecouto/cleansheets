@@ -22,10 +22,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
 import csheets.io.versioning.VersionControllerCodec;
 
 /**
@@ -47,6 +43,10 @@ public class Workbook implements Iterable<Spreadsheet>, Serializable {
 	/** The number of spreadsheets that have been created in the workbook */
 	private int createdSpreadsheets;
 
+	/**
+	 * A VersionControllerCodec in charge of retrieving and setting different
+	 * versions for the Workbook
+	 */
 	private VersionControllerCodec versionController;
 
 	/**
@@ -80,10 +80,25 @@ public class Workbook implements Iterable<Spreadsheet>, Serializable {
 					content));
 	}
 
+	/**
+	 * Gets a version controller, if available
+	 * 
+	 * @return a VersionControllerCodec or null
+	 * @since 1.5
+	 */
 	public VersionControllerCodec getVersionController() {
 		return versionController;
 	}
 
+	/**
+	 * Sets a VersionControllerCodec in order to allow the app to load and set
+	 * different versions of this Workbook. This is usually useful when a Codec
+	 * is loading the Workbook.
+	 * 
+	 * @param versionController
+	 *           the VersionControllerCodec to set
+	 * @since 1.5
+	 */
 	public void setVersionController(VersionControllerCodec versionController) {
 		this.versionController = versionController;
 	}
