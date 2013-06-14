@@ -1,4 +1,4 @@
-# Unary operators
+	# Unary operators
 Negator
 Percent
 
@@ -30,6 +30,9 @@ False
 And
 Or
 Not
+
+#New Functions
+Eval
 
 # Mathematic functions
 Count

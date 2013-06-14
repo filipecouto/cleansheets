@@ -47,7 +47,7 @@ expression
 	;
 	
 whilecycle
-	: WHILE^ expressions
+	: (WHILEDO^ | DOWHILE^) expressions
 	;
 
 attribution
@@ -127,7 +127,8 @@ options {
 }
 
 /* Keywords */
-WHILE	: "whiledo";
+WHILEDO	: "whiledo";
+DOWHILE : "dowhile";
 
 /* Function calls, named ranges and cell references */
 protected LETTER: ('a'..'z') ;

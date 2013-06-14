@@ -79,12 +79,20 @@ public class ExcelExpressionNewCompiler implements ExpressionCompiler {
 		 * + ") of tree '" + node.toStringTree() + "' with " +
 		 * node.getNumberOfChildren() + " children.");
 		 */
-		if (type == FormulaParserTokenTypes.WHILE) {
+		if (type == FormulaParserTokenTypes.WHILEDO || type == FormulaParserTokenTypes.DOWHILE) {
 			AST exps = node.getFirstChild().getFirstChild();
-			Expression stopCriteria = convert(cell, exps);
 			List<Expression> args = new ArrayList<Expression>();
-			while ((exps = exps.getNextSibling()) != null)
+			do {
 				args.add(convert(cell, exps));
+			} while((exps = exps.getNextSibling()) != null);
+			Expression stopCriteria;
+			if(type == FormulaParserTokenTypes.WHILEDO) {
+			    stopCriteria = args.get(0);
+			    args.remove(0);
+			} else {
+			    stopCriteria = args.get(args.size() - 1);
+			    args.remove(args.size() - 1);
+			}
 			Expression[] argArray = args.toArray(new Expression[args.size()]);
 			return new Loop(stopCriteria, argArray);
 		} else if (type == FormulaParserTokenTypes.LBRAC) {

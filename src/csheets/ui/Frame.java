@@ -37,6 +37,7 @@ import javax.swing.JToolBar;
 
 import csheets.CleanSheets;
 import csheets.core.Workbook;
+import csheets.core.formula.lang.Eval;
 import csheets.ui.ctrl.AboutAction;
 import csheets.ui.ctrl.ActionManager;
 import csheets.ui.ctrl.AddSpreadsheetAction;
@@ -95,6 +96,9 @@ public class Frame extends JFrame implements SelectionListener {
 		// Stores members and creates controllers
 		this.app = app;
 		UIController uiController = new UIController(app);
+		
+		// Load function 
+		Eval.setUIController(uiController);
 
 		// Creates action manager
 		FileChooser chooser = null;
