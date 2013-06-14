@@ -25,38 +25,95 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import csheets.CleanSheets;
+import csheets.core.Address;
+import csheets.core.Spreadsheet;
+import csheets.core.Workbook;
 
 /**
  * An undo operation.
+ * 
  * @author Einar Pehrson
  */
 @SuppressWarnings("serial")
-public class UndoAction extends FocusOwnerAction {
+public class UndoAction extends ActionHistoryAction {
+	private UIController controller;
 
 	/**
 	 * Creates a new undo action.
 	 */
-	public UndoAction() {}
+	public UndoAction(UIController controller) {
+		this.controller = controller;
+		controller.addEditListener(new EditListener() {
+			@Override
+			public void workbookModified(final EditEvent event) {
+				if (isChangingStacks()) {
+					return;
+				}
+				addState(event.getWorkbook());
+			}
+		});
+	}
 
 	protected String getName() {
 		return "Undo";
 	}
 
 	protected void defineProperties() {
-		setEnabled(false);
 		putValue(MNEMONIC_KEY, KeyEvent.VK_U);
-		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-		putValue(SMALL_ICON, new ImageIcon(CleanSheets.class.getResource("res/img/undo.gif")));
+		putValue(ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON,
+				new ImageIcon(CleanSheets.class.getResource("res/img/undo.gif")));
 	}
 
 	/**
 	 * Inserts a column before the active cell in the focus owner table.
-	 * @param event the event that was fired
+	 * 
+	 * @param event
+	 *           the event that was fired
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if (focusOwner == null)
 			return;
+		if (hasActionsToUndo()) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					final Workbook activeBook = controller.getActiveWorkbook();
+					final Spreadsheet activeSheet = controller
+							.getActiveSpreadsheet();
+					final Address address = controller.getActiveCell().getAddress();
+
+					final int len = activeBook.getSpreadsheetCount();
+					int selectedSheet = 0;
+					for (int i = 0; i < len; i++) {
+						if (activeBook.getSpreadsheet(i) == activeSheet) {
+							selectedSheet = i;
+							break;
+						}
+					}
+
+					undo(activeBook);
+
+					controller.setActiveSpreadsheet(activeBook
+							.getSpreadsheet(selectedSheet));
+					controller.setActiveCell(controller.getActiveSpreadsheet()
+							.getCell(address));
+				}
+			});
+		}
+	}
+
+	@Override
+	protected void onHistoryChanged() {
+		setEnabled(hasActionsToUndo());
+	}
+
+	@Override
+	protected boolean requiresModification() {
+		return true;
 	}
 }

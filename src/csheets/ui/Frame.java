@@ -118,8 +118,8 @@ public class Frame extends JFrame implements SelectionListener {
 		actionManager.registerAction("print", new PrintAction());
 
 		// Registers edit actions
-		actionManager.registerAction("undo", new UndoAction());
-		actionManager.registerAction("redo", new RedoAction());
+		actionManager.registerAction("undo", new UndoAction(uiController));
+		actionManager.registerAction("redo", new RedoAction(uiController));
 		actionManager.registerAction("cut", new CutAction());
 		actionManager.registerAction("copy", new CopyAction());
 		actionManager.registerAction("paste", new PasteAction());

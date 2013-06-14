@@ -383,6 +383,51 @@
  CellRenderer -> CellRenderer : decorators.add(decorator);
  end
  @enduml
+
+@startuml
+title Password Authentication
+== Share ==
+Actor Owner
+Owner -> CleanSheetsInterface: Click Share Button
+CleanSheetsInterface -> ShareOptionsDialog : instantiate
+ShareOptionsDialog -> ShareOptionsDialog : setVisible(true)
+Owner -> ShareOptionsDialog : Choose Export Mode
+Owner -> ShareOptionsDialog : Enter Share Name
+Owner -> ShareOptionsDialog : Enter User Name
+Owner -> ShareOptionsDialog : Enter Port
+Owner -> ShareOptionsDialog : Enter Password
+Owner -> ShareOptionsDialog : Click Share Button
+ShareOptionsDialog -> ShareOptionsDialog : setVisible(false)
+ShareOptionsDialog -> ShareAction : onChoosedExport(ExportMode,UserName,ShareName,Port,Pass)
+== Connect ==
+Actor User
+User -> CleanSheetsInterface: Click Connect Button
+CleanSheetsInterface -> ConnectionDialog : instantiate
+ConnectionDialog -> ConnectionDialog : setVisible(true)
+User -> ConnectionDialog : Enter User Name
+User -> ConnectionDialog : Choose Share to Connect
+ConnectionDialog -> ConnectionDialog : Sets the IP
+ConnectionDialog -> ConnectionDialog : Sets the Port
+User -> ConnectionDialog : Enter Password
+User -> ConnectionDialog : Click Connect Button
+ConnectionDialog -> ConnectionDialog : setVisible(false)
+ConnectionDialog  -> ConnectAction : onIPSelected(IPAddress, ShareName, UserName, Port, Pass)
+ConnectAction -> RealTimeCollaboration : createClient()
+RealTimeCollaboration -> ServerInterface : new()
+RealTimeCollaboration -> ServerInterface : start()
+ServerInterface -> ServerInterface : onClientConnected()
+ServerInterface -> Client : new()
+ServerInterface -> Client : run()
+Client <-- ClientInfo : passwordMatches()
+alt successful match
+
+    Client -> CleanSheetsInterface : <font color=green>Authentication Accepted
+
+else password doesn't match
+
+    Client -> CleanSheetsInterface  : <font color=red>Authentication Failed
+end
+@enduml
  */
 
 package csheets.ext.rtc;

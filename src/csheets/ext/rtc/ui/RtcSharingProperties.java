@@ -149,9 +149,9 @@ public class RtcSharingProperties implements Serializable {
      * @param address
      * @return 
      */
-    public boolean canEdit(Address address){
+    public boolean canEdit(RemoteCell cell){
         if(isWritable){
-            return isInsideRange(address);
+            return isValid(cell);
         }
         return false;
     }

@@ -27,36 +27,71 @@ import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
 import csheets.CleanSheets;
+import csheets.core.Address;
+import csheets.core.Spreadsheet;
+import csheets.core.Workbook;
 
 /**
  * An redo operation.
+ * 
  * @author Einar Pehrson
  */
 @SuppressWarnings("serial")
-public class RedoAction extends FocusOwnerAction {
+public class RedoAction extends ActionHistoryAction {
+	private UIController controller;
 
 	/**
 	 * Creates a new redo action.
 	 */
-	public RedoAction() {}
+	public RedoAction(UIController controller) {
+		this.controller = controller;
+		setEnabled(false);
+	}
 
 	protected String getName() {
 		return "Redo";
 	}
 
 	protected void defineProperties() {
-		setEnabled(false);
 		putValue(MNEMONIC_KEY, KeyEvent.VK_R);
-		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
-		putValue(SMALL_ICON, new ImageIcon(CleanSheets.class.getResource("res/img/redo.gif")));
+		putValue(ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON,
+				new ImageIcon(CleanSheets.class.getResource("res/img/redo.gif")));
 	}
 
 	/**
 	 * Inserts a column before the active cell in the focus owner table.
-	 * @param event the event that was fired
+	 * 
+	 * @param event
+	 *           the event that was fired
 	 */
 	public void actionPerformed(ActionEvent event) {
 		if (focusOwner == null)
 			return;
+		final Workbook activeBook = controller.getActiveWorkbook();
+		final Spreadsheet activeSheet = controller.getActiveSpreadsheet();
+		final Address address = controller.getActiveCell().getAddress();
+
+		final int len = activeBook.getSpreadsheetCount();
+		int selectedSheet = 0;
+		for (int i = 0; i < len; i++) {
+			if (activeBook.getSpreadsheet(i) == activeSheet) {
+				selectedSheet = i;
+				break;
+			}
+		}
+
+		redo(controller.getActiveWorkbook());
+
+		final Spreadsheet sheetToActivate = activeBook.getSpreadsheet(selectedSheet);
+		controller.setActiveSpreadsheet(sheetToActivate);
+		controller.setActiveCell(sheetToActivate.getCell(
+				address));
+	}
+
+	@Override
+	protected void onHistoryChanged() {
+		setEnabled(hasActionsToRedo());
 	}
 }

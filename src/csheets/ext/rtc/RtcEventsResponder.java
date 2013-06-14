@@ -67,7 +67,7 @@ public class RtcEventsResponder implements RtcListener {
 
     @Override
     public void onCellChanged(ClientInfo source, final RemoteCell cell) {
-	if (properties != null && !properties.isValid(cell)) {
+	if (properties != null && !properties.canEdit(cell)) {
 	    return;
 	}
 	SwingUtilities.invokeLater(new Runnable() {
