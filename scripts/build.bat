@@ -12,3 +12,6 @@ dir /B /S /O:N ..\src\**.java > c.lst
 echo javac
 javac -cp ..\src\*;..\lib\* -d ..\tmp-build @c.lst %1 %2 %3
 del c.lst
+
+copy ..\src\hibernate.cfg.xml ..\dist\
+copy ..\dist\hibernate.cfg.xml ..\tmp-build-tests\
