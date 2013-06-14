@@ -7,8 +7,11 @@ import csheets.core.Workbook;
 import csheets.io.mapping.MappedWorkbook;
 
 /**
- * This abstract action can be used to manipulate editions in the workbook. This class contains two stacks, one holds
- * actions to undo, the other holds actions to redo.
+ * This abstract action can be used to manipulate editions in the workbook. This
+ * class contains two stacks, one holds actions to undo, the other holds actions
+ * to redo. <i>This class uses static members in order to manage the action
+ * history. It could store the history on each Workbook but it wasn't
+ * implemented in order to avoid modifying the core system too much.</i>
  * 
  * @author Gil Castro (gil_1110484)
  */
@@ -16,9 +19,9 @@ import csheets.io.mapping.MappedWorkbook;
 public abstract class ActionHistoryAction extends FocusOwnerAction {
 	private static ActionStack UNDO_STACK;
 	private static ActionStack REDO_STACK;
+	private static MappedWorkbook CURRENT_STATE;
 
 	private static boolean changing = false;
-	private static int direction = 0;
 
 	private static ArrayList<ActionHistoryAction> instances = new ArrayList<ActionHistoryAction>();
 
@@ -41,7 +44,8 @@ public abstract class ActionHistoryAction extends FocusOwnerAction {
 	}
 
 	/**
-	 * Checks whether there is any change in progress at the moment in order to avoid possible infinite loops.
+	 * Checks whether there is any change in progress at the moment in order to
+	 * avoid possible infinite loops.
 	 * 
 	 * @return true if there is any loop risk, false otherwise
 	 */
@@ -56,8 +60,13 @@ public abstract class ActionHistoryAction extends FocusOwnerAction {
 	 *           the new state to save on the top of the undo stack
 	 */
 	protected void addState(Workbook state) {
-		if (isChangingStacks()) { return; }
-		getUndoStack().push(new MappedWorkbook(state));
+		if (isChangingStacks()) {
+			return;
+		}
+		if (CURRENT_STATE != null) {
+			getUndoStack().push(CURRENT_STATE);
+		}
+		CURRENT_STATE = new MappedWorkbook(state);
 		getRedoStack().clear();
 		notifyStacksChanged();
 	}
@@ -69,11 +78,7 @@ public abstract class ActionHistoryAction extends FocusOwnerAction {
 	 *           the Workbook to load the state into
 	 */
 	protected void undo(Workbook book) {
-		moveState(direction == -1, book, getUndoStack(), getRedoStack());
-		if(direction != -1) {
-			direction = -1;
-			moveState(true, book, getUndoStack(), getRedoStack());
-		}
+		moveState(book, getUndoStack(), getRedoStack());
 	}
 
 	/**
@@ -83,19 +88,15 @@ public abstract class ActionHistoryAction extends FocusOwnerAction {
 	 *           the Workbook to load the state into
 	 */
 	protected void redo(Workbook book) {
-		moveState(direction == 1, book, getRedoStack(), getUndoStack());
-		if(direction != 1) {
-			direction = 1;
-			moveState(true, book, getRedoStack(), getUndoStack());
-		}
+		moveState(book, getRedoStack(), getUndoStack());
 	}
 
-	private void moveState(boolean make, Workbook book, ActionStack from, ActionStack to) {
+	private void moveState(Workbook book, ActionStack from, ActionStack to) {
 		changing = true;
-		final MappedWorkbook state = to.moveFrom(from);
-		if (make) {
-			state.makeWorkbook(book);
-		}
+		to.push(CURRENT_STATE);
+		final MappedWorkbook state = from.pop();
+		state.makeWorkbook(book);
+		CURRENT_STATE = state;
 		notifyStacksChanged();
 		changing = false;
 	}
@@ -116,6 +117,19 @@ public abstract class ActionHistoryAction extends FocusOwnerAction {
 	 */
 	protected boolean hasActionsToRedo() {
 		return !getRedoStack().isEmpty();
+	}
+
+	protected void start(Workbook book) {
+		if (book != null) {
+			getUndoStack().clear();
+			addState(book);
+		}
+	}
+
+	protected static void clearHistory() {
+		getUndoStack().clear();
+		getRedoStack().clear();
+		notifyStacksChanged();
 	}
 
 	/**

@@ -28,6 +28,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import csheets.CleanSheets;
+import csheets.SpreadsheetAppEvent;
+import csheets.SpreadsheetAppListener;
 import csheets.core.Address;
 import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
@@ -46,12 +48,30 @@ public class UndoAction extends ActionHistoryAction {
 	 */
 	public UndoAction(UIController controller) {
 		this.controller = controller;
+		start(controller.getActiveWorkbook());
+		controller.addWorkbookListener(new SpreadsheetAppListener() {
+			@Override
+			public void workbookUnloaded(SpreadsheetAppEvent event) {
+				clearHistory();
+			}
+			
+			@Override
+			public void workbookSaved(SpreadsheetAppEvent event) {
+			}
+			
+			@Override
+			public void workbookLoaded(SpreadsheetAppEvent event) {
+				start(event.getWorkbook());
+			}
+			
+			@Override
+			public void workbookCreated(SpreadsheetAppEvent event) {
+				start(event.getWorkbook());
+			}
+		});
 		controller.addEditListener(new EditListener() {
 			@Override
 			public void workbookModified(final EditEvent event) {
-				if (isChangingStacks()) {
-					return;
-				}
 				addState(event.getWorkbook());
 			}
 		});
