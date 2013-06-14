@@ -11,14 +11,14 @@ public class DatabaseUIMenu extends JMenu {
     private JMenuItem itemExport;
     private JMenuItem itemImport;
 
-    public DatabaseUIMenu(DatabaseExtension extension) {
+    public DatabaseUIMenu(DatabaseExtension extension,  OnDatabaseInteractionListener interactionListener) {
 	super("Database");
 
 	// this.extension = extension;
 
-	itemExport = new JMenuItem(new DatabaseExportMenuItem(extension));
+	itemExport = new JMenuItem(new DatabaseExportMenuItem(extension, interactionListener));
 	add(itemExport);
-        itemImport = new JMenuItem(new DatabaseImportMenuItem(extension));
+        itemImport = new JMenuItem(new DatabaseImportMenuItem(extension, interactionListener));
 	add(itemImport);
     }
 }

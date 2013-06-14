@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Class responsible for working with H2 databases
  * 
@@ -20,7 +21,7 @@ public class H2Driver implements DatabaseInterface {
     private List<String> columnsNames = new ArrayList<String>();
     private List<String> primaryKeysNames;
     @Override
-    public void openDatabase(String database) {
+    public Connection openDatabase(String database) {
 	try {
 	    Class.forName("org.h2.Driver");
 	    if (database.endsWith("h2.db"))
@@ -32,6 +33,7 @@ public class H2Driver implements DatabaseInterface {
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}
+	return databaseConnection;
     }
 
     @Override
@@ -242,4 +244,23 @@ public class H2Driver implements DatabaseInterface {
             System.out.println(e);
         }
     }
+
+    @Override
+    public void update(String table, String column, String value, int row) {
+	// TODO Auto-generated method stub
+	
+    }
+
+    @Override
+    public void delete(String table, String column, String value, int row) {
+	// TODO Auto-generated method stub
+	
+    }
+
+    @Override
+    public String[][] prepareTable(String table) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
 }

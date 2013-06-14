@@ -8,9 +8,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -25,17 +22,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.text.BadLocationException;
+import javax.swing.SwingUtilities;
 
+import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
 import csheets.core.formula.compiler.FormulaCompilationException;
+import csheets.ext.db.DatabaseExtension;
 import csheets.ext.db.DatabaseImportController;
 import csheets.ext.db.DatabaseInterface;
-import csheets.ext.db.DatabaseExtension;
 import csheets.ui.sheet.SpreadsheetTable;
-import javax.swing.SwingUtilities;
 
 /*
  * 
@@ -60,8 +57,9 @@ public class DatabaseImportDialog extends JDialog {
     private DatabaseExtension extension;
 
     private SpreadsheetTable table;
-    
+
     private boolean importToCurrentSheet;
+    private OnDatabaseInteractionListener listener;
 
     public DatabaseImportDialog(DatabaseExtension extension,
 	    SpreadsheetTable table) {
@@ -138,55 +136,105 @@ public class DatabaseImportDialog extends JDialog {
 		    String dbUrl = url.getText();
 		    importController.setDatabase(dbUrl);
 		    // ----
-                    // table name
+		    // table name
 		    importController.setTableName(tables.getSelectedItem()
 			    .toString());
-                    // spreadsheet
+		    // spreadsheet
 		    importController.setSpreadsheet(table.getSpreadsheet());
-                    // cell
+		    // cell
 		    importController.setCell(table.getSelectedCell());
-                    // importToCurrentSheet decides if it's to import into the current sheet or into a new one
-                    importController.setImportToCurrentSheet(importToCurrentSheet);
+		    // importToCurrentSheet decides if it's to import into the
+		    // current sheet or into a new one
+		    importController
+			    .setImportToCurrentSheet(importToCurrentSheet);
 		}
 		try {
-		    final String [][] info = importController.importDatabase();
-                    SwingUtilities.invokeLater(new Runnable() {
+		    final String[][] info = importController.importDatabase();
 
-                        @Override
-                        public void run() {
-                            //Read matrix and put data into spreadsheet
-                            int i=0,j=0;
-                            int cellCol,cellRow;
-                            Cell cell = table.getSelectedCell();
-                            Spreadsheet sheet = table.getSpreadsheet();
-                            // Import into a new sheet
-                            if(!importToCurrentSheet){
-                                Workbook workbook = sheet.getWorkbook();
-                                workbook.addSpreadsheet(info);
-                                workbook.getSpreadsheet(workbook.getSpreadsheetCount()-1).setTitle(tables.getSelectedItem()
-			    .toString()); // Doesn't set the title graphically
-                                System.out.println(workbook.getSpreadsheet(workbook.getSpreadsheetCount()-1).getTitle());
-                                //TODO get focus on the new sheet
-                            }
-                            // Import into the current sheet starting at the selected cell
-                            else{ //TODO verify if its going to overlap cells
-                                cellCol=cell.getAddress().getColumn();
-                                cellRow=cell.getAddress().getRow();
-                                try{
-                                    for(i=0;i<info.length;i++){
-                                        for(j=0;j<info[0].length;j++){
-                                            sheet.getCell(cellCol+j, cellRow+i).setContent(info[i][j].toString());
-                                        }
-                                    }
-                                }catch(FormulaCompilationException e){
-                                    System.out.println(e);
-                                }
-                            }
-                        }
-                    });
+		    SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+			    // Read matrix and put data into spreadsheet
+			    int i = 0, j = 0;
+			    int cellCol, cellRow;
+			    Cell cell = table.getSelectedCell();
+
+			    Spreadsheet sheet = table.getSpreadsheet();
+			    // Import into a new sheet
+			    if (!importToCurrentSheet) {
+				Workbook workbook = sheet.getWorkbook();
+				listener.onDatabaseInteraction(importController
+					.getDriver(), importController
+					.getDatabase(), cell.getAddress(),
+					new Address(cell.getAddress()
+						.getColumn()
+						+ info[0].length
+						- 1, cell.getAddress().getRow()
+						+ info.length - 1),
+					importController.getTableName(),
+					(workbook.getSpreadsheetCount() - 1));
+
+				workbook.addSpreadsheet(info);
+				workbook.getSpreadsheet(
+					workbook.getSpreadsheetCount() - 1)
+					.setTitle(
+						tables.getSelectedItem()
+							.toString()); // Doesn't
+								      // set the
+								      // title
+								      // graphically
+
+				// TODO get focus on the new sheet// Import into
+				// the current sheet starting at the
+				// selected cell
+			    } else { // TODO verify if its going to overlap
+				     // cells
+
+				cellCol = cell.getAddress().getColumn();
+				cellRow = cell.getAddress().getRow();
+				listener.onDatabaseInteraction(importController
+					.getDriver(), importController
+					.getDatabase(), new Address(cell
+					.getAddress().getColumn(), cell
+					.getAddress().getRow()), new Address(
+					cell.getAddress().getColumn()
+						+ info[0].length + cellCol - 1,
+					cell.getAddress().getRow()
+						+ info.length + cellRow - 1),
+					importController.getTableName(),
+					spreadsheetNumber(sheet));
+				try {
+				    for (i = 0; i < info.length; i++) {
+					for (j = 0; j < info[0].length; j++) {
+					    sheet.getCell(cellCol + j,
+						    cellRow + i).setContent(
+						    info[i][j].toString());
+					}
+				    }
+
+				} catch (FormulaCompilationException e) {
+				    System.out.println(e);
+				}
+
+			    }
+
+			}
+
+			private int spreadsheetNumber(Spreadsheet sheet) {
+			    Workbook tmp = sheet.getWorkbook();
+			    for (int i = 0; i < tmp.getSpreadsheetCount(); i++) {
+				if (tmp.getSpreadsheet(i).equals(sheet)) {
+				    return i;
+				}
+			    }
+			    return -1;
+			}
+
+		    });
 		} catch (Exception e) {
 		    System.out.println(e);
-                    e.printStackTrace();
+		    e.printStackTrace();
 		}
 		enableButtons(true);
 		setVisible(false);
@@ -308,26 +356,26 @@ public class DatabaseImportDialog extends JDialog {
 	importPanel.setLayout(new BoxLayout(importPanel, BoxLayout.Y_AXIS));
 
 	newSheet = new JRadioButton("Create a new sheet");
-        newSheet.addActionListener(new ActionListener() {
+	newSheet.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                importToCurrentSheet=false;
-                newSheet.setSelected(!importToCurrentSheet);
-                currentSheet.setSelected(importToCurrentSheet);
-            }
-        });
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		importToCurrentSheet = false;
+		newSheet.setSelected(!importToCurrentSheet);
+		currentSheet.setSelected(importToCurrentSheet);
+	    }
+	});
 	importPanel.add(newSheet);
 	currentSheet = new JRadioButton("To current sheet");
-        currentSheet.addActionListener(new ActionListener() {
+	currentSheet.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                importToCurrentSheet=true;
-                newSheet.setSelected(!importToCurrentSheet);
-                currentSheet.setSelected(importToCurrentSheet);
-            }
-        });
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		importToCurrentSheet = true;
+		newSheet.setSelected(!importToCurrentSheet);
+		currentSheet.setSelected(importToCurrentSheet);
+	    }
+	});
 	importPanel.add(currentSheet);
 
 	username = new JTextField();
@@ -413,8 +461,12 @@ public class DatabaseImportDialog extends JDialog {
 
     public void prepareDialog(SpreadsheetTable table) {
 	this.table = table;
-        importToCurrentSheet=false;
+	importToCurrentSheet = false;
 	newSheet.setSelected(!importToCurrentSheet);
-        currentSheet.setSelected(importToCurrentSheet);
+	currentSheet.setSelected(importToCurrentSheet);
+    }
+
+    public void setListener(OnDatabaseInteractionListener interactionListener) {
+	this.listener = interactionListener;
     }
 }

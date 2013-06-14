@@ -1,5 +1,6 @@
 package csheets.ext.db;
 
+import java.sql.Connection;
 import java.util.List;
 
 import csheets.core.Cell;
@@ -18,16 +19,17 @@ public class DatabaseImportController {
     private String database; // database name
     private Spreadsheet table;
     private Cell cell;
+    private Connection connection;
     private boolean importToCurrentSheet;
 
     public DatabaseImportController() {
 
     }
-    
+
     public void setCell(Cell cell) {
 	this.cell = cell;
     }
-    
+
     public void setSpreadsheet(Spreadsheet table) {
 	this.table = table;
     }
@@ -43,9 +45,9 @@ public class DatabaseImportController {
     public void setDatabase(String database) {
 	this.database = database;
     }
-    
-    public void setImportToCurrentSheet(boolean importToCurrentSheet){
-        this.importToCurrentSheet=importToCurrentSheet;
+
+    public void setImportToCurrentSheet(boolean importToCurrentSheet) {
+	this.importToCurrentSheet = importToCurrentSheet;
     }
 
     public DatabaseInterface getDriver() {
@@ -56,17 +58,25 @@ public class DatabaseImportController {
 	return tableName;
     }
 
+    public Connection getConnection() {
+	return connection;
+    }
+
+    public void setConnection(Connection connection) {
+	this.connection = connection;
+    }
+
     public String getDatabase() {
 	return database;
     }
-    
-    public String [][] importDatabase() {
-        driver.openDatabase(database);
-        String [][] info = driver.getData(tableName);
-        driver.closeDatabase();
-        return info;
+
+    public String[][] importDatabase() {
+	connection = driver.openDatabase(database);
+	String[][] info = driver.getData(tableName);
+	driver.closeDatabase();
+	return info;
     }
-    
+
     public List<String> getTables() {
 	driver.openDatabase(database);
 	List<String> tables = driver.getTables();

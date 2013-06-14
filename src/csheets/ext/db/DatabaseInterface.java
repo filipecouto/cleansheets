@@ -1,5 +1,6 @@
 package csheets.ext.db;
 
+import java.sql.Connection;
 import java.util.List;
 
 /**
@@ -21,7 +22,8 @@ public interface DatabaseInterface {
      *            an array of strings setting the table columns names
      * @return true if successful , false if not
      */
-    public boolean createTable(String name, String[] column, List<String> primaryKeys);
+    public boolean createTable(String name, String[] column,
+	    List<String> primaryKeys);
 
     /**
      * Invoked by the application to insert a line in a table in the determined
@@ -41,8 +43,9 @@ public interface DatabaseInterface {
      * 
      * @param database
      *            database URL
+     * @return TODO
      */
-    public void openDatabase(String database);
+    public Connection openDatabase(String database);
 
     /**
      * Closes the database connection
@@ -72,32 +75,44 @@ public interface DatabaseInterface {
      * @return true if it requires password false if it does not
      */
     public boolean requiresPassword();
-    
+
     /**
      * Invoked by the Import Controller to find the tables
+     * 
      * @return List<String> name of tables
      */
-    
+
     public List<String> getTables();
-    
+
     /**
      * Specifies if the required database requires a directory or a file
      * 
      */
-     
+
     public boolean requiresFile();
-    
-    
+
     /**
      * Invoked by the controller to get the table content
+     * 
      * @return String[][] table content
      */
-    
+
     public String[][] getData(String table);
-    
+
     /*
      * 
      * 
      */
     public void dropTable(String table);
+
+    public void update(String table, String column, String value, int row);
+
+    public void delete(String table, String column, String value, int row);
+
+    public String[][] prepareTable(String table);
+
+//    public boolean addLineID(String table, String[] values);
+//
+//    public boolean createTableWithID(String name, String[] column,
+//	    List<String> primaryKeys);
 }
