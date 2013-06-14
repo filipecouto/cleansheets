@@ -1,5 +1,6 @@
 package csheets.ext.db;
 
+import java.sql.Connection;
 import java.util.List;
 
 /**
@@ -16,6 +17,7 @@ public class DatabaseExportBuilder {
     private String[][] values; // values for the table
     private boolean createTable;
     private List<String> primaryKeys;
+    private Connection connection;
     private boolean dropTable;
 
     public DatabaseExportBuilder(DatabaseInterface driver) {
@@ -92,7 +94,7 @@ public class DatabaseExportBuilder {
     public void export() {
 	// TODO maybe check if everything is ready to export, throw a
 	// RuntimeException if not
-	driver.openDatabase(database);
+	connection = driver.openDatabase(database);
         if(dropTable){
             driver.dropTable(tableName);
         }
@@ -104,5 +106,13 @@ public class DatabaseExportBuilder {
 	for (String[] line : values)
 	    driver.addLine(tableName, line);
 	driver.closeDatabase();
+    }
+
+    public Connection getConnection() {
+	return connection;
+    }
+
+    public void setConnection(Connection connection) {
+	this.connection = connection;
     }
 }

@@ -12,8 +12,11 @@ public class DatabaseExportMenuItem extends FocusOwnerAction {
 
     private DatabaseExportDialog dialog;
 
-    public DatabaseExportMenuItem(DatabaseExtension extension) {
+    private OnDatabaseInteractionListener interactionListener ;
+
+    public DatabaseExportMenuItem(DatabaseExtension extension, OnDatabaseInteractionListener interactionListener) {
 	this.extension = extension;
+	this.interactionListener =interactionListener;
     }
 
     @Override
@@ -22,6 +25,7 @@ public class DatabaseExportMenuItem extends FocusOwnerAction {
 	//make sure if grid is not empty
 	if (dialog == null) {
 	    dialog = new DatabaseExportDialog(extension);
+	    dialog.setListener(interactionListener);	
 	}
 	dialog.prepareDialog(focusOwner);
 	dialog.setVisible(true);

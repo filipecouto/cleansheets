@@ -1,8 +1,9 @@
 package csheets.ext.db;
 
-
 import csheets.core.Cell;
 import csheets.core.Spreadsheet;
+
+import java.sql.Connection;
 import java.util.List;
 
 public class DatabaseExportController {
@@ -15,6 +16,7 @@ public class DatabaseExportController {
     private boolean justSelection;
     private List<String> primaryKeys;
     private boolean dropTable;
+    private Connection connection;
 
     public DatabaseExportController() {
 
@@ -52,33 +54,33 @@ public class DatabaseExportController {
 	}
 	setValues(values);
     }
-    
+
     public void setCells(Spreadsheet sheet) {
 	final int rowCount = sheet.getRowCount() - 1;
-	if(rowCount < 1) {
+	if (rowCount < 1) {
 	    return;
 	}
 	final int columnCount = sheet.getColumnCount() + 1;
-	String [] columns = new String[columnCount];
-	String [][] values = new String[rowCount][columnCount];
-	for(int i=0;i < columnCount; i++) {
+	String[] columns = new String[columnCount];
+	String[][] values = new String[rowCount][columnCount];
+	for (int i = 0; i < columnCount; i++) {
 	    final String columnName = sheet.getCell(i, 0).getValue().toString();
 	    columns[i] = columnName.length() == 0 ? "Column" + (i + 1)
 		    : columnName;
 	}
 	setColumns(columns);
-	for(int y = 0; y < rowCount; y++) {
-	    for(int x = 0; x < columnCount; x++) {
-		values[y][x] = sheet.getCell(x, y+1).getValue().toString();
+	for (int y = 0; y < rowCount; y++) {
+	    for (int x = 0; x < columnCount; x++) {
+		values[y][x] = sheet.getCell(x, y + 1).getValue().toString();
 	    }
 	}
 	setValues(values);
     }
-    
+
     public void setValues(String[][] values) {
 	this.values = values;
     }
-    
+
     public void setColumns(String[] columns) {
 	this.columns = columns;
     }
@@ -90,13 +92,13 @@ public class DatabaseExportController {
     public void setJustSelection(boolean justSelection) {
 	this.justSelection = justSelection;
     }
-    
-    public void setPrimaryKeys(List<String> primaryKeys){
-        this.primaryKeys=primaryKeys;
+
+    public void setPrimaryKeys(List<String> primaryKeys) {
+	this.primaryKeys = primaryKeys;
     }
-    
-    public void setDropTable(boolean dropTable){
-        this.dropTable=dropTable;
+
+    public void setDropTable(boolean dropTable) {
+	this.dropTable = dropTable;
     }
 
     public DatabaseInterface getDriver() {
@@ -110,7 +112,7 @@ public class DatabaseExportController {
     public String getDatabase() {
 	return database;
     }
-    
+
     public String[] getColumns() {
 	return columns;
     }
@@ -134,8 +136,18 @@ public class DatabaseExportController {
 	exportBuilder.setTableName(tableName);
 	exportBuilder.setColumns(columns);
 	exportBuilder.setValues(values);
-        exportBuilder.setPrimaryKeys(primaryKeys);
-        exportBuilder.setDropTable(dropTable);
+	exportBuilder.setPrimaryKeys(primaryKeys);
+	exportBuilder.setDropTable(dropTable);
 	exportBuilder.export();
+	this.connection = exportBuilder.getConnection();
+
+    }
+
+    public Connection getConnection() {
+	return connection;
+    }
+
+    public void setConnection(Connection connection) {
+	this.connection = connection;
     }
 }
