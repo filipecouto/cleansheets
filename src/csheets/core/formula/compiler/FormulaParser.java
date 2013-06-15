@@ -1,4 +1,4 @@
-// $ANTLR 2.7.5 (20050128): "FormulaCompiler.g" -> "FormulaParser.java"$
+// $ANTLR 2.7.5 (20050128): "../src/csheets/core/formula/compiler/FormulaCompiler.g" -> "FormulaParser.java"$
 package csheets.core.formula.compiler;
 import antlr.TokenBuffer;
 import antlr.TokenStreamException;
