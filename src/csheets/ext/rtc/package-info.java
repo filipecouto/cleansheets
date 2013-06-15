@@ -428,6 +428,47 @@ else password doesn't match
     Client -> CleanSheetsInterface  : <font color=red>Authentication Failed
 end
 @enduml
+
+@startuml
+title Sidebar - Share Options Menu
+Actor Owner
+Owner -> CleanSheetsInterface : Creates a Share
+...
+Owner -> RtcSidebar : Right-Click on a Share
+RtcSidebar -> RtcSidebar : Displays Options Menu
+group Options Menu
+   Actor User
+   alt Choose Disconnect
+
+   else Choose Deactivate
+      RtcSidebar -> ServerListAdapter : setActivated(ShareIndex,false)
+      ServerListAdapter -> ServerInterface : setActivated(false)
+      User -> CleanSheetsInterface : Click Connect Button
+      ...
+      CleanSheetsInterface -> ConnectionDialog : Instantiate
+      ...
+      User -> ConnectionDialog : Trys to connect to a share
+      ...
+      ServerInterface -> ServerInterface : onClientConnected()
+      ServerInterface -> User : sendMessage(Connection Refused)
+   else Choose Read-Only
+      RtcSidebar -> ServerListAdapter : setWritable(ShareIndex,false)
+      ServerListAdapter -> ServerInterface : getSharingProperties()
+      ServerListAdapter -> RtcSharingProperties : setWritable(false)
+      ...
+      User -> CleanSheetsInterface : Connects to a Share
+      ...
+      ServerInterface -> Client : run()
+      alt case eventCellChanged
+         Client -> ServerInterface : onCellChanged()
+         ServerInterface -> RtcEventsResponder : onCellChanged()
+         RtcEventsResponder -> RtcSharingProperties : canEdit()
+         RtcSharingProperties -> RtcEventsResponder : return false
+         note over RtcEventsResponder : The cell is not changed on the server side!
+      end
+   end
+end
+@enduml
  */
 
 package csheets.ext.rtc;
