@@ -113,9 +113,6 @@ public class DatabaseUIExtension extends UIExtension implements
 	Cell[][] cells = new Cell[finalCell.getColumn()
 		- initialCell.getColumn()][finalCell.getRow()
 		- initialCell.getRow()];
-	String tmp[][] = new String[finalCell.getColumn()
-		- initialCell.getColumn()][finalCell.getRow()
-		- initialCell.getRow()];
 
 	for (int i = initialCell.getColumn(); i < finalCell.getColumn(); i++) {
 	    for (int j = initialCell.getRow(); j < finalCell.getRow(); j++) {
@@ -123,13 +120,16 @@ public class DatabaseUIExtension extends UIExtension implements
 
 	    }
 	}
-	String[][] data = databaseInterface.getData(tableName);
-	for (int i = 0; i < cells.length; i++) {
+	String[][] data = databaseInterface.prepareTable(tableName);
+	databaseInterface.closeDatabase();
+
+	for (int i = 1; i < cells.length; i++) {
 	    for (int j = 0; j < cells[0].length; j++) {
+		System.out.println(data[i][data[0].length - 1]);
 		((DatabaseCellExtension) cells[i][j].getExtension("DB"))
 			.setId(Integer.parseInt(data[i][data[0].length - 1]));
 	    }
 	}
-	databaseInterface.closeDatabase();
+
     }
 }
