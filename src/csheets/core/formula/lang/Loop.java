@@ -46,6 +46,7 @@ public class Loop implements Expression {
 
 	private Expression stopCriteria;
 	private Expression[] expressions;
+	private boolean testCriteriaFirst;
 
 	/**
 	 * Constructor. Loop will evaluate the given <code>expressions</code> while
@@ -57,16 +58,18 @@ public class Loop implements Expression {
 	 * @param expressions
 	 *           the expressions to evaluate while the loop runs
 	 */
-	public Loop(Expression stopCriteria, Expression... expressions) {
+	public Loop(Expression stopCriteria, boolean testCriteriaFirst, Expression... expressions) {
 		this.stopCriteria = stopCriteria;
 		this.expressions = expressions;
+		this.testCriteriaFirst = testCriteriaFirst;
 	}
 
 	@Override
 	public Value evaluate() throws IllegalValueTypeException {
 		long iterations = 0;
 		Value last = null;
-		while (stopCriteria.evaluate().toBoolean()) {
+		if(testCriteriaFirst) {
+		    while (stopCriteria.evaluate().toBoolean()) {
 			for (Expression e : expressions) {
 				last = e.evaluate();
 			}
@@ -75,6 +78,18 @@ public class Loop implements Expression {
 				// maybe the user did something wrong, let's leave the cycle
 				return null;
 			}
+		    }
+		} else {
+		    do {
+			for (Expression e : expressions) {
+				last = e.evaluate();
+			}
+			iterations++;
+			if (iterations == MAX_ITERATIONS) {
+				// maybe the user did something wrong, let's leave the cycle
+				return null;
+			}
+		    }while (stopCriteria.evaluate().toBoolean());
 		}
 		return last;
 	}

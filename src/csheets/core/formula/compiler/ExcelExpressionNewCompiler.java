@@ -86,15 +86,18 @@ public class ExcelExpressionNewCompiler implements ExpressionCompiler {
 				args.add(convert(cell, exps));
 			} while((exps = exps.getNextSibling()) != null);
 			Expression stopCriteria;
+			boolean stop;
 			if(type == FormulaParserTokenTypes.WHILEDO) {
 			    stopCriteria = args.get(0);
+			    stop = true;
 			    args.remove(0);
 			} else {
 			    stopCriteria = args.get(args.size() - 1);
+			    stop = false;
 			    args.remove(args.size() - 1);
 			}
 			Expression[] argArray = args.toArray(new Expression[args.size()]);
-			return new Loop(stopCriteria, argArray);
+			return new Loop(stopCriteria, stop, argArray);
 		} else if (type == FormulaParserTokenTypes.LBRAC) {
 			ExpressionSet exps = new ExpressionSet();
 			AST exp = node.getFirstChild();
