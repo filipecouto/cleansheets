@@ -29,6 +29,7 @@ import csheets.core.Cell;
 import csheets.core.Spreadsheet;
 import csheets.core.Workbook;
 import csheets.core.formula.compiler.FormulaCompilationException;
+import csheets.ext.db.CheckUpdatesOnDatabase;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ext.db.DatabaseImportController;
 import csheets.ext.db.DatabaseInterface;
@@ -164,7 +165,6 @@ public class DatabaseImportDialog extends JDialog {
 			    // Import into a new sheet
 			    if (!importToCurrentSheet) {
 				Workbook workbook = sheet.getWorkbook();
-				
 
 				workbook.addSpreadsheet(info);
 				workbook.getSpreadsheet(
@@ -179,11 +179,11 @@ public class DatabaseImportDialog extends JDialog {
 				// TODO get focus on the new sheet// Import into
 				// the current sheet starting at the
 				// selected cell
-				listener.onDatabaseInteraction(
-					importController.getDriver(),
-					importController.getDatabase(),
-					cell.getAddress(),
-					new Address(info[0].length-1, info.length-1),
+				listener.onDatabaseInteraction(importController
+					.getDriver(), importController
+					.getDatabase(), cell.getAddress(),
+					new Address(info[0].length - 1,
+						info.length - 1),
 					importController.getTableName(),
 					(workbook.getSpreadsheetCount() - 1));
 			    } else { // TODO verify if its going to overlap
@@ -221,6 +221,7 @@ public class DatabaseImportDialog extends JDialog {
 				}
 
 			    }
+			    
 
 			}
 
@@ -244,6 +245,7 @@ public class DatabaseImportDialog extends JDialog {
 	    }
 	});
 	importThread.start();
+
     }
 
     private JPanel createOptionsPanel() {

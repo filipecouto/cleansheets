@@ -7,6 +7,7 @@ import org.dbunit.database.DatabaseConnection;
 import csheets.core.Address;
 import csheets.ext.db.ui.OnDatabaseInteractionListener;
 import csheets.ext.rtc.OnShareFoundListener;
+import csheets.ui.ctrl.UIController;
 
 /**
  * @author Rita Nogueira
@@ -103,5 +104,4 @@ public class DatabaseSharedArea {
     public void setSpreadsheetNumber(int spreadsheetNumber) {
 	this.spreadsheetNumber = spreadsheetNumber;
     }
-
 }

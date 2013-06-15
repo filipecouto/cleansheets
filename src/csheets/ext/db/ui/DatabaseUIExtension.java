@@ -7,6 +7,7 @@ import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.core.Spreadsheet;
 import csheets.core.SpreadsheetImpl;
+import csheets.ext.db.CheckUpdatesOnDatabase;
 import csheets.ext.db.DatabaseCellExtension;
 import csheets.ext.db.DatabaseExtension;
 import csheets.ext.db.DatabaseInterface;
@@ -45,23 +46,6 @@ public class DatabaseUIExtension extends UIExtension implements
 			}
 		    }
 		}
-	    }
-
-	    private boolean isAllRowEmty(Cell c) {
-		Spreadsheet sheet = uiController.getActiveSpreadsheet();
-		int beginColumn = sharedArea.getInitialCell().getColumn();
-		int endColumn = sharedArea.getFinalCell().getColumn();
-		int row = c.getAddress().getRow();
-		System.out.println("aqui");
-		for (int i = beginColumn; i < endColumn; i++) {
-		    System.out.println("i = " + i + "cell"
-			    + sheet.getCell(i, row).getContent());
-		    if (sheet.getCell(i, row).getContent().isEmpty()) {
-			System.out.println("true");
-			return true;
-		    }
-		}
-		return false;
 	    }
 
 	    private String[] getColumnsName() {
@@ -161,5 +145,7 @@ public class DatabaseUIExtension extends UIExtension implements
 	    String tableName, int spreadsheetNumber) {
 	sharedArea = new DatabaseSharedArea(initialCell, finalCell, tableName,
 		database, databaseName, spreadsheetNumber);
+	CheckUpdatesOnDatabase updatesOnDatabase = new CheckUpdatesOnDatabase(
+		uiController, sharedArea);
     }
 }
