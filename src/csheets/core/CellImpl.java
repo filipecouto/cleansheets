@@ -273,8 +273,9 @@ public class CellImpl implements Cell {
 	 * Notifies all registered listeners that the content of the cell changed.
 	 */
 	private void fireContentChanged() {
-		for (CellListener listener : listeners)
-			listener.contentChanged(this);
+		for (int i = 0; i < listeners.size(); i++) {
+			listeners.get(i).contentChanged(this);
+		}
 		for (CellExtension extension : extensions.values())
 			extension.contentChanged(this);
 	}
