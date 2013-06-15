@@ -5,6 +5,40 @@ import java.util.ArrayList;
 import csheets.core.ActionStack;
 import csheets.core.Workbook;
 import csheets.io.mapping.MappedWorkbook;
+/**
+@startuml
+abstract class ActionHistoryAction {
+	#{static}ActionStack getUndoStack()
+	#{static}ActionStack getRedoStack()
+	#{static}boolean isChangingStacks()
+	#void addState(state)
+	#void undo(book)
+	#void redo(book)
+	-void moveState(book, from, to)
+	#boolean hasActionsToUndo()
+	#boolean hasActionsToRedo()
+	#void start(book)
+	#{static}void clearHistory()
+	-{static}void notifyStacksChanged()
+	#{abstract}void onHistoryChanged()
+}
+class ActionStack {
+	+boolean isEmpty()
+	+void push(change)
+	+MappedWorkbook pop()
+	+MappedWorkbook moveFrom(other)
+	+void clear()
+	+int getLimit()
+	+void setLimit(int limit)
+	+void removeLimit()
+}
+abstract class FocusOwnerAction
+FocusOwnerAction		<|--		ActionHistoryAction
+ActionStack				<--		ActionHistoryAction
+ActionHistoryAction	<|--		UndoAction
+ActionHistoryAction	<|--		RedoAction
+@enduml
+ */
 
 /**
  * This abstract action can be used to manipulate editions in the workbook. This

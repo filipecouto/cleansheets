@@ -3,9 +3,9 @@
 class Workbook
 interface VersionControllerCodec {
 	List<VersionInfo> getVersions()
-	Workbook loadVersion(Object versionId, Workbook target)
-	void saveVersion(VersionInfo version, Workbook book)
-	void removeVersion(Object versionId)
+	Workbook loadVersion(versionId, target)
+	void saveVersion(version, book)
+	void removeVersion(versionId)
 }
 class VersionInfo {
 	+VersionInfo(id, name, date, spreadsheetCount, codec)
