@@ -105,14 +105,6 @@ public interface DatabaseInterface {
      */
     public void dropTable(String table);
 
-    public void update(String table, String column, String value, int row);
-
-    public void delete(String table, String column, String value, int row);
-
-    public String[][] prepareTable(String table);
-
-//    public boolean addLineID(String table, String[] values);
-//
-//    public boolean createTableWithID(String name, String[] column,
-//	    List<String> primaryKeys);
+    public void update(String table, String columns[], String values[],
+	    int positionInArray);
 }

@@ -35,27 +35,59 @@ public class DatabaseUIExtension extends UIExtension implements
 		    connection = databaseInterface.openDatabase(sharedArea
 			    .getDatabaseName());
 		    if (sharedArea.isInSharedArea(c.getAddress())) {
-			Cell initialCell = c.getSpreadsheet().getCell(
-				c.getAddress().getColumn(), 0);
-			if (c.getContent().isEmpty()) {
-			    databaseInterface.delete(sharedArea.getTableName(),
-				    initialCell.getContent(), c.getContent(), c
-					    .getAddress().getRow());
-			} else {
-			    int id = ((DatabaseCellExtension) c
-				    .getExtension("DB")).getId();
+			if (!isAllRowEmty(c)) {
 			    databaseInterface.update(sharedArea.getTableName(),
-				    initialCell.getContent(), c.getContent(),
-				    id);
+				    getColumnsName(), getColumnsContent(c), c
+					    .getAddress().getColumn());
+			} else {
+			    insertNewCell(c);
 			}
 		    } else {
 
 			if (sharedArea.isNextToSharedArea(c.getAddress())) {
 			    insertNewCell(c);
-
 			}
 		    }
 		}
+	    }
+
+	    private boolean isAllRowEmty(Cell c) {
+		Spreadsheet sheet = uiController.getActiveSpreadsheet();
+		int beginColumn = sharedArea.getInitialCell().getColumn();
+		int endColumn = sharedArea.getFinalCell().getColumn();
+		int row = c.getAddress().getRow();
+
+		for (int i = beginColumn; i < endColumn; i++) {
+		    if (sheet.getCell(i, row).getContent().isEmpty()) {
+			return true;
+		    }
+		}
+		return false;
+	    }
+
+	    private String[] getColumnsName() {
+		Spreadsheet sheet = uiController.getActiveSpreadsheet();
+		int beginColumn = sharedArea.getInitialCell().getColumn();
+		int endColumn = sharedArea.getFinalCell().getColumn();
+		String[] cellsNames = new String[endColumn - beginColumn];
+
+		for (int i = beginColumn; i < endColumn; i++) {
+		    cellsNames[i] = sheet.getCell(i, 0).getContent();
+		}
+		return cellsNames;
+	    }
+
+	    private String[] getColumnsContent(Cell c) {
+		Spreadsheet sheet = uiController.getActiveSpreadsheet();
+		int beginColumn = sharedArea.getInitialCell().getColumn();
+		int endColumn = sharedArea.getFinalCell().getColumn();
+		int row = c.getAddress().getRow();
+
+		String[] cellsNames = new String[endColumn - beginColumn];
+		for (int i = beginColumn; i < endColumn; i++) {
+		    cellsNames[i] = sheet.getCell(i, row).getContent();
+		}
+		return cellsNames;
 	    }
 
 	    private void insertNewCell(Cell c) {
@@ -106,30 +138,5 @@ public class DatabaseUIExtension extends UIExtension implements
 	    String tableName, int spreadsheetNumber) {
 	sharedArea = new DatabaseSharedArea(initialCell, finalCell, tableName,
 		database, databaseName, spreadsheetNumber);
-	databaseInterface = database;
-	connection = databaseInterface.openDatabase(databaseName);
-	Spreadsheet sheet = uiController.getActiveWorkbook().getSpreadsheet(
-		spreadsheetNumber);
-	Cell[][] cells = new Cell[finalCell.getColumn()
-		- initialCell.getColumn()][finalCell.getRow()
-		- initialCell.getRow()];
-
-	for (int i = initialCell.getColumn(); i < finalCell.getColumn(); i++) {
-	    for (int j = initialCell.getRow(); j < finalCell.getRow(); j++) {
-		cells[i][j] = sheet.getCell(i, j);
-
-	    }
-	}
-	String[][] data = databaseInterface.prepareTable(tableName);
-	databaseInterface.closeDatabase();
-
-	for (int i = 1; i < cells.length; i++) {
-	    for (int j = 0; j < cells[0].length; j++) {
-		System.out.println(data[i][data[0].length - 1]);
-		((DatabaseCellExtension) cells[i][j].getExtension("DB"))
-			.setId(Integer.parseInt(data[i][data[0].length - 1]));
-	    }
-	}
-
     }
 }

@@ -49,6 +49,9 @@ public class DatabaseSharedArea {
     }
 
     public boolean isInSharedArea(Address address) {
+	System.out.println("incial: "+initialCell.getColumn()+","+initialCell.getRow());
+	System.out.println("final: "+finalCell.getColumn()+","+finalCell.getRow());
+	System.out.println("celula: "+address.getColumn()+","+address.getRow());
 	return initialCell.getColumn() <= address.getColumn()
 		&& initialCell.getRow() <= address.getRow()
 		&& finalCell.getColumn() >= address.getColumn()

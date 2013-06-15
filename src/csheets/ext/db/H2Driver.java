@@ -246,21 +246,31 @@ public class H2Driver implements DatabaseInterface {
     }
 
     @Override
-    public void update(String table, String column, String value, int row) {
-	// TODO Auto-generated method stub
-	
+    public void update(String table, String columns[], String values[],
+	    int positionInArray) {
+	PreparedStatement prepareStatement;
+	String sql = "UPDATE " + table + " SET " + columns[positionInArray]
+		+ "= '" + values[positionInArray] + "'  WHERE ";
+	for (int i = 0; i < positionInArray; i++) {
+	    sql += columns[i] + "= '" + values[i] + "'";
+	    if ((i + 1) != (positionInArray)) {
+		sql += "AND ";
+	    }
+	}
+	if (positionInArray < (columns.length - 1)) {
+	    sql += "AND ";
+	    for (int i = positionInArray + 1; i < columns.length; i++) {
+		sql += columns[i] + "= '" + values[i] + "'";
+		if ((i + 1) != columns.length) {
+		    sql += "AND ";
+		}
+	    }
+	}
+	try {
+	    prepareStatement = databaseConnection.prepareStatement(sql);
+	    prepareStatement.executeUpdate();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
     }
-
-    @Override
-    public void delete(String table, String column, String value, int row) {
-	// TODO Auto-generated method stub
-	
-    }
-
-    @Override
-    public String[][] prepareTable(String table) {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
 }

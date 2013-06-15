@@ -19,7 +19,6 @@ public class DerbyDriver implements DatabaseInterface {
     private Connection databaseConnection;
     private List<String> columnsNames = new ArrayList<String>();
     private List<String> primaryKeysNames;
-    private String tableName;
 
     @Override
     public boolean createTable(String name, String[] columns,
@@ -163,12 +162,6 @@ public class DerbyDriver implements DatabaseInterface {
     @Override
     public void closeDatabase() {
 	try {
-	    if (tableName != null) {
-		PreparedStatement prepareStatement = databaseConnection
-			.prepareStatement("ALTER TABLE " + tableName
-				+ " DROP CleanSheetsAPPID");
-		prepareStatement.execute();
-	    }
 	    databaseConnection.close();
 	} catch (SQLException e) {
 	    e.printStackTrace();
@@ -258,67 +251,32 @@ public class DerbyDriver implements DatabaseInterface {
     }
 
     @Override
-    public void update(String table, String column, String value, int id) {
+    public void update(String table, String columns[], String values[],
+	    int positionInArray) {
 	PreparedStatement prepareStatement;
+	String sql = "UPDATE " + table + " SET " + columns[positionInArray]
+		+ "= '" + values[positionInArray] + "'  WHERE ";
+	for (int i = 0; i < positionInArray; i++) {
+	    sql += columns[i] + "= '" + values[i] + "'";
+	    if ((i + 1) != (positionInArray)) {
+		sql += "AND ";
+	    }
+	}
+	if (positionInArray < (columns.length - 1)) {
+	    sql += "AND ";
+	    for (int i = positionInArray + 1; i < columns.length; i++) {
+		sql += columns[i] + "= '" + values[i] + "'";
+		if ((i + 1) != columns.length) {
+		    sql += "AND ";
+		}
+	    }
+	}
+	System.out.println(sql);
 	try {
-	    prepareStatement = databaseConnection.prepareStatement("UPDATE "
-		    + table + " SET " + column
-		    + "= ?  WHERE CleanSheetsAPPID = ?");
-	    prepareStatement.setString(1, value);
-	    prepareStatement.setInt(2, id);
+	    prepareStatement = databaseConnection.prepareStatement(sql);
 	    prepareStatement.executeUpdate();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}
     }
-
-    @Override
-    public void delete(String table, String column, String value, int row) {
-	PreparedStatement prepareStatement;
-	try {
-	    prepareStatement = databaseConnection
-		    .prepareStatement("DELETE FROM " + table
-			    + "WHERE CleanSheetsAPPID = ?");
-	    prepareStatement.setString(1, column);
-	    prepareStatement.setString(2, value);
-	    prepareStatement.executeUpdate();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-
-    }
-
-    @Override
-    public String[][] prepareTable(String table) {
-	this.tableName = table;
-	PreparedStatement prepareStatement;
-	try {
-	    prepareStatement = databaseConnection
-		    .prepareStatement("ALTER TABLE " + table
-			    + " ADD CleanSheetsAPPID BIGINT");
-	    prepareStatement.execute();
-
-	    prepareStatement.clearBatch();
-	    prepareStatement = databaseConnection.prepareStatement("UPDATE "
-		    + table + " set  CleanSheetsAPPID = ROW_NUMBER() OVER()");
-	    prepareStatement.executeUpdate();
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
-
-	return getData(table);
-    }
-    //
-    // @Override
-    // public boolean addLineID(String table, String[] values) {
-    // // TODO Auto-generated method stub
-    // return false;
-    // }
-    //
-    // @Override
-    // public boolean createTableWithID(String name, String[] column,
-    // List<String> primaryKeys) {
-    // // TODO Auto-generated method stub
-    // return false;
-    // }
 }
