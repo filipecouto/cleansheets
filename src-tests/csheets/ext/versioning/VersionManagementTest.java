@@ -1,10 +1,12 @@
 package csheets.ext.versioning;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
+import java.io.File;
 import java.io.FileOutputStream;
 
-import org.junit.Before;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -27,7 +29,10 @@ import csheets.io.versioning.VersionInfo;
  * </ul>
  * <ul>
  * Reverting to a specific version (will revert to the first version, cell B1
- * should contain "1"
+ * should contain "1")
+ * </ul>
+ * <ul>
+ * Deleting a specific version from the file (will delete the third version)
  * </ul>
  * </li>
  * <p>
@@ -38,22 +43,24 @@ import csheets.io.versioning.VersionInfo;
  * @author Gil Castro (gil_1110484)
  */
 public class VersionManagementTest {
-	Workbook book;
+	private static Workbook book;
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
+	public static void setUp() throws Exception {
 		// create workbook
 		book = new Workbook(1);
 		final Spreadsheet sheet = book.getSpreadsheet(0);
+
+		File existing = new File("versiontest.xml");
+		if (existing.exists()) {
+			existing.delete();
+		}
 
 		// make first version
 		sheet.getCell(0, 0).setContent("This is version:");
 		sheet.getCell(1, 0).setContent("1");
 		XMLCodec codec = new XMLCodec();
+		codec.clearDatabase();
 
 		// version 1
 		codec.write(book, new FileOutputStream("versiontest.xml"));
@@ -77,8 +84,7 @@ public class VersionManagementTest {
 	@Test
 	public void testSecondVersion() {
 		// get the second version
-		VersionInfo versionInfo = book.getVersionController().getVersions()
-				.get(1);
+		VersionInfo versionInfo = getVersion(1);
 		// build this version in a new Workbook instance
 		Workbook secondVersion = versionInfo.loadVersion(new Workbook(1));
 
@@ -89,18 +95,49 @@ public class VersionManagementTest {
 	@Test
 	public void revertToInitialVersion() {
 		// get the first version
-		VersionInfo versionInfo = book.getVersionController().getVersions()
-				.get(0);
+		VersionInfo versionInfo = getVersion(2);
 		// build this version in a new Workbook instance and add it to the file
 		VersioningController.addVersion(book, null,
 				VersioningController.getVersion(new Workbook(), versionInfo));
 
 		// get the last version (which is supposed to be like the first one)
-		versionInfo = book.getVersionController().getVersions().get(3);
+		versionInfo = getVersion(0);
 		// build this version in a new Workbook instance
 		Workbook lastVersion = versionInfo.loadVersion(new Workbook(1));
 
 		assertEquals("Reverted version doesn't seem to be what was expected.",
 				"1", lastVersion.getSpreadsheet(0).getCell(1, 0).getContent());
+	}
+
+	@Test
+	public void removeThirdVersion() {
+		// get the third version
+		VersionInfo versionInfo = getVersion(1);
+		// build this version just to check if it is what we expect
+		Workbook thirdVersion = versionInfo.loadVersion(new Workbook(1));
+
+		assertEquals("Third version isn't even what it should.", "3",
+				thirdVersion.getSpreadsheet(0).getCell(1, 0).getContent());
+
+		// remove this version
+		VersioningController.removeVersion(versionInfo);
+
+		// get the new third version (previously fourth)
+		versionInfo = getVersion(1);
+		// build this new version to check if it isn't what we don't expect
+		thirdVersion = versionInfo.loadVersion(new Workbook(1));
+
+		assertNotSame("Third version seems to still be here.", "3", thirdVersion
+				.getSpreadsheet(0).getCell(1, 0).getContent());
+	}
+
+	private VersionInfo getVersion(int index) {
+		return book.getVersionController().getVersions().get(index);
+	}
+
+	@AfterClass
+	public static void saveFile() throws Exception {
+		((XMLCodec) book.getVersionController()).write(book,
+				new FileOutputStream("versiontest.xml"));
 	}
 }

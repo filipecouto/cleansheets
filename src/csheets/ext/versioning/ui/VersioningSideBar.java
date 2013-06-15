@@ -7,7 +7,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -29,13 +28,12 @@ import csheets.ui.ctrl.SelectionEvent;
 import csheets.ui.ctrl.SelectionListener;
 import csheets.ui.ctrl.UIController;
 
-public class VersioningSideBar extends JComponent implements
+public class VersioningSideBar extends JPanel implements
 		SpreadsheetAppListener {
 	private static final long serialVersionUID = 7065800787321449295L;
 
 	private UIController controller;
 
-	private JPanel sideBar;
 	private JScrollPane pane;
 	private JList<String> versionsList;
 	private JLabel info;
@@ -79,9 +77,8 @@ public class VersioningSideBar extends JComponent implements
 				}
 			}
 		});
-		sideBar = new JPanel();
-		sideBar.setName("Version Control");
-		sideBar.setLayout(new BoxLayout(sideBar, BoxLayout.Y_AXIS));
+		setName("Version Control");
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		adapter = new VersionsListAdapter();
 
@@ -151,8 +148,8 @@ public class VersioningSideBar extends JComponent implements
 		info = new JLabel(
 				"<html><center>This format doesn't support version control, please save this file in a format that supports it (XML for instance) in order to control its versions.</center></html>");
 
-		sideBar.add(info);
-		sideBar.add(pane);
+		add(info);
+		add(pane);
 
 		loadVersions(null);
 	}

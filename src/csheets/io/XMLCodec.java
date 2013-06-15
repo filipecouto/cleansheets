@@ -123,6 +123,16 @@ public class XMLCodec implements Codec, VersionControllerCodec {
 		return null;
 	}
 
+	public void clearDatabase() {
+		Session session = getSession();
+
+		Transaction transaction = session.beginTransaction();
+		session.createQuery("DELETE FROM Cell").executeUpdate();
+		session.createQuery("DELETE FROM Spreadsheet").executeUpdate();
+		session.createQuery("DELETE FROM Workbook").executeUpdate();
+		transaction.commit();
+	}
+
 	private void loadStreamIntoDatabase(InputStream stream,
 			IDatabaseConnection connection) throws DataSetException,
 			DatabaseUnitException, SQLException {
