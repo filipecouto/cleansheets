@@ -50,8 +50,7 @@ public class DerbyDriver implements DatabaseInterface {
 		}
 
 	    }
-	    // Statement +=
-	    // ",CleanSheetsAPPID INTEGER not null primary key GENERATED ALWAYS AS IDENTITY(START WITH 1, INCREMENT BY 1)";
+	   
 	    if (!primaryKeys.isEmpty()) {
 		Statement += ", PRIMARY KEY (";
 		for (String key : primaryKeys) {
@@ -108,8 +107,10 @@ public class DerbyDriver implements DatabaseInterface {
 			} else {
 			    sql += ", " + col + "='" + values[data] + "' ";
 			}
+
 		    }
 		    data++;
+
 		}
 		sql += " Where ";
 		int pos = 0;
@@ -271,12 +272,40 @@ public class DerbyDriver implements DatabaseInterface {
 		}
 	    }
 	}
-	System.out.println(sql);
 	try {
 	    prepareStatement = databaseConnection.prepareStatement(sql);
 	    prepareStatement.executeUpdate();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}
+    }
+
+    @Override
+    public void insert(String table, String column, String value) {
+	PreparedStatement prepareStatement;
+	try {
+	    prepareStatement = databaseConnection
+		    .prepareStatement("INSERT INTO " + table + " (" + column
+			    + ") Values('" + value + "')");
+	    prepareStatement.executeUpdate();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+    }
+    
+    @Override
+    public void insertColumn(String table, int position, String value, String columnName) {
+	PreparedStatement prepareStatement;
+	String Statement = "ALTER TABLE " + table + " ADD ";
+	    Statement += DatabaseExportHelper.PrepareColumnName(columnName, position)
+			+ " varchar(255)";
+	
+	try {
+	    prepareStatement = databaseConnection.prepareStatement(Statement);
+	    prepareStatement.execute();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+
     }
 }

@@ -35,16 +35,12 @@ public class DatabaseUIExtension extends UIExtension implements
 		    connection = databaseInterface.openDatabase(sharedArea
 			    .getDatabaseName());
 		    if (sharedArea.isInSharedArea(c.getAddress())) {
-			if (!isAllRowEmty(c)) {
-			    databaseInterface.update(sharedArea.getTableName(),
-				    getColumnsName(), getColumnsContent(c), c
-					    .getAddress().getColumn());
-			} else {
-			    insertNewCell(c);
-			}
+			databaseInterface.update(sharedArea.getTableName(),
+				getColumnsName(), getColumnsContent(c), c
+					.getAddress().getColumn());
 		    } else {
-
 			if (sharedArea.isNextToSharedArea(c.getAddress())) {
+			    System.out.println("next");
 			    insertNewCell(c);
 			}
 		    }
@@ -56,9 +52,12 @@ public class DatabaseUIExtension extends UIExtension implements
 		int beginColumn = sharedArea.getInitialCell().getColumn();
 		int endColumn = sharedArea.getFinalCell().getColumn();
 		int row = c.getAddress().getRow();
-
+		System.out.println("aqui");
 		for (int i = beginColumn; i < endColumn; i++) {
+		    System.out.println("i = " + i + "cell"
+			    + sheet.getCell(i, row).getContent());
 		    if (sheet.getCell(i, row).getContent().isEmpty()) {
+			System.out.println("true");
 			return true;
 		    }
 		}
@@ -75,6 +74,12 @@ public class DatabaseUIExtension extends UIExtension implements
 		    cellsNames[i] = sheet.getCell(i, 0).getContent();
 		}
 		return cellsNames;
+	    }
+
+	    private String getColumnsName(Cell c) {
+		Spreadsheet sheet = uiController.getActiveSpreadsheet();
+		int column = c.getAddress().getColumn();
+		return sheet.getCell(column, 0).getContent();
 	    }
 
 	    private String[] getColumnsContent(Cell c) {
@@ -95,34 +100,52 @@ public class DatabaseUIExtension extends UIExtension implements
 			.getTableName());
 		int i = info.length;
 		int j = info[0].length;
-		System.out.println("i: " + i + ", j: " + j);
-		String tmp[];
-
+		String tmp[] = new String[j + 1];
+		Address addr;
 		switch (sharedArea.whereIsCell(c.getAddress())) {
 		case 1:
-		    tmp = new String[i];
-		    fillArray(0, c.getAddress().getColumn(), tmp);
-		    tmp[c.getAddress().getRow()] = c.getContent();
-		    fillArray((c.getAddress().getColumn() + 1), i, tmp);
-		    databaseInterface.addLine(sharedArea.getTableName(), tmp);
+		    System.out.println(c.getAddress().getRow());
+		    if ((c.getAddress().getRow() != 0)) {
+			databaseInterface.insertColumn(sharedArea
+				.getTableName(), (sharedArea.getFinalCell()
+				.getColumn() + 1), c.getContent(), "Column"
+				+ c.getAddress().getColumn());
+			tmp = copyDatabaseRow(info, c.getAddress().getRow());
+			databaseInterface.update(sharedArea.getTableName(),
+				getColumnsContent(c), tmp, (sharedArea
+					.getFinalCell().getColumn() + 1));
+		    } else {
+			databaseInterface.insertColumn(sharedArea
+				.getTableName(), (sharedArea.getFinalCell()
+				.getColumn() + 1), c.getContent(), c
+				.getContent());
+		    }
+		    addr = new Address(
+			    sharedArea.getFinalCell().getColumn() + 1,
+			    sharedArea.getFinalCell().getRow());
+		    sharedArea.setFinalCell(addr);
 		    break;
 		case 2:
-		    tmp = new String[j];
-		    fillArray(0, c.getAddress().getColumn(), tmp);
-		    tmp[c.getAddress().getColumn()] = c.getContent();
-		    fillArray((c.getAddress().getColumn() + 1), j, tmp);
-		    databaseInterface.addLine(sharedArea.getTableName(), tmp);
+		    databaseInterface.insert(sharedArea.getTableName(),
+			    getColumnsName(c), c.getContent());
+		    addr = new Address(sharedArea.getFinalCell().getColumn(),
+			    sharedArea.getFinalCell().getRow() + 1);
+		    sharedArea.setFinalCell(addr);
 		    break;
 		default:
+		    System.out.println("Default");
 		    break;
 		}
 
 	    }
 
-	    private void fillArray(int i, int end, String[] array) {
-		for (; i < end; i++) {
-		    array[i] = "";
+	    private String[] copyDatabaseRow(String[][] info, int row) {
+		String tmp[] = new String[info[0].length + 1];
+		for (int i = 0; i < info.length; i++) {
+		    System.out.println(info[i][row]);
+		    tmp[i] = info[i][row];
 		}
+		return tmp;
 	    }
 	});
     }

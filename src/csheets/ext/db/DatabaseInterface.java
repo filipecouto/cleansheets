@@ -107,4 +107,8 @@ public interface DatabaseInterface {
 
     public void update(String table, String columns[], String values[],
 	    int positionInArray);
+
+    public void insert(String table, String column, String value);
+
+    public void insertColumn(String table, int position, String value, String columnName);
 }

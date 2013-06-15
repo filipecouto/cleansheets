@@ -49,9 +49,6 @@ public class DatabaseSharedArea {
     }
 
     public boolean isInSharedArea(Address address) {
-	System.out.println("incial: "+initialCell.getColumn()+","+initialCell.getRow());
-	System.out.println("final: "+finalCell.getColumn()+","+finalCell.getRow());
-	System.out.println("celula: "+address.getColumn()+","+address.getRow());
 	return initialCell.getColumn() <= address.getColumn()
 		&& initialCell.getRow() <= address.getRow()
 		&& finalCell.getColumn() >= address.getColumn()
@@ -60,10 +57,6 @@ public class DatabaseSharedArea {
     }
 
     public boolean isNextToSharedArea(Address address) {
-	System.out.println("Coluna: " + address.getColumn() + " Linha: "
-		+ address.getRow());
-	System.out.println("Coluna: " + (finalCell.getColumn() + 1)
-		+ " Linha: " + (finalCell.getRow() + 1));
 	return (finalCell.getColumn() + 1) == address.getColumn()
 		|| (finalCell.getRow() + 1) == address.getRow();
     }

@@ -164,16 +164,7 @@ public class DatabaseImportDialog extends JDialog {
 			    // Import into a new sheet
 			    if (!importToCurrentSheet) {
 				Workbook workbook = sheet.getWorkbook();
-				listener.onDatabaseInteraction(importController
-					.getDriver(), importController
-					.getDatabase(), cell.getAddress(),
-					new Address(cell.getAddress()
-						.getColumn()
-						+ info[0].length
-						- 1, cell.getAddress().getRow()
-						+ info.length - 1),
-					importController.getTableName(),
-					(workbook.getSpreadsheetCount() - 1));
+				
 
 				workbook.addSpreadsheet(info);
 				workbook.getSpreadsheet(
@@ -188,22 +179,19 @@ public class DatabaseImportDialog extends JDialog {
 				// TODO get focus on the new sheet// Import into
 				// the current sheet starting at the
 				// selected cell
+				listener.onDatabaseInteraction(
+					importController.getDriver(),
+					importController.getDatabase(),
+					cell.getAddress(),
+					new Address(info[0].length-1, info.length-1),
+					importController.getTableName(),
+					(workbook.getSpreadsheetCount() - 1));
 			    } else { // TODO verify if its going to overlap
 				     // cells
 
 				cellCol = cell.getAddress().getColumn();
 				cellRow = cell.getAddress().getRow();
-				listener.onDatabaseInteraction(importController
-					.getDriver(), importController
-					.getDatabase(), new Address(cell
-					.getAddress().getColumn(), cell
-					.getAddress().getRow()), new Address(
-					cell.getAddress().getColumn()
-						+ info[0].length + cellCol - 1,
-					cell.getAddress().getRow()
-						+ info.length + cellRow - 1),
-					importController.getTableName(),
-					spreadsheetNumber(sheet));
+
 				try {
 				    for (i = 0; i < info.length; i++) {
 					for (j = 0; j < info[0].length; j++) {
@@ -212,7 +200,22 @@ public class DatabaseImportDialog extends JDialog {
 						    info[i][j].toString());
 					}
 				    }
-
+				    listener.onDatabaseInteraction(
+					    importController.getDriver(),
+					    importController.getDatabase(),
+					    new Address(cell.getAddress()
+						    .getColumn(), cell
+						    .getAddress().getRow()),
+					    new Address(cell.getAddress()
+						    .getColumn()
+						    + info[0].length
+						    + cellCol
+						    - 1, cell.getAddress()
+						    .getRow()
+						    + info.length
+						    + cellRow - 1),
+					    importController.getTableName(),
+					    spreadsheetNumber(sheet));
 				} catch (FormulaCompilationException e) {
 				    System.out.println(e);
 				}

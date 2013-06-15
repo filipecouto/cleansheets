@@ -280,4 +280,34 @@ public class HSQLdbDriver implements DatabaseInterface {
 	    e.printStackTrace();
 	}
     }
+
+    @Override
+    public void insert(String table, String column, String value) {
+	PreparedStatement prepareStatement;
+	try {
+	    prepareStatement = databaseConnection
+		    .prepareStatement("INSERT INTO " + table + " (" + column
+			    + ") Values('" + value + "')");
+	    prepareStatement.executeUpdate();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    @Override
+    public void insertColumn(String table, int position, String value,
+	    String columnName) {
+	PreparedStatement prepareStatement;
+	String Statement = "ALTER TABLE " + table + " ADD ";
+	Statement += DatabaseExportHelper.PrepareColumnName(columnName,
+		position) + " varchar(255)";
+
+	try {
+	    prepareStatement = databaseConnection.prepareStatement(Statement);
+	    prepareStatement.execute();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
+
+    }
 }
