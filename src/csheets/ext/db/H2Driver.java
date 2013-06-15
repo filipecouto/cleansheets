@@ -279,13 +279,30 @@ public class H2Driver implements DatabaseInterface {
     }
 
     @Override
-    public void insert(String table, String column, String value) {
-	PreparedStatement prepareStatement;
+    public void insert(String table, String column, String value, String [] columnNames) {
+	PreparedStatement preparedStatement;
 	try {
-	    prepareStatement = databaseConnection
-		    .prepareStatement("INSERT INTO " + table + " (" + column
-			    + ") Values('" + value + "')");
-	    prepareStatement.executeUpdate();
+	    int position = 0;
+	    String sql = "INSERT INTO " + table + " values(";
+	    for(int i = 0; i < columnNames.length; i++) {
+		if(columnNames[i].equals(column)) {
+		    position = i;
+		} 
+		sql +="?";
+		if((i+1) != columnNames.length) {
+		    sql += ", ";
+		}
+	    }
+	    sql += ")";
+	    preparedStatement = databaseConnection.prepareStatement(sql);
+	    for (int i = 1; i <= columnNames.length; i++) {
+		if((position+1) == i) {
+		    preparedStatement.setString(i, value);
+		} else {
+		    preparedStatement.setString(i, " ");
+		}
+	    }
+	    preparedStatement.execute();
 	} catch (SQLException e) {
 	    e.printStackTrace();
 	}

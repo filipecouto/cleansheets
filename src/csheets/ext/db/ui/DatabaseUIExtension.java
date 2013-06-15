@@ -3,6 +3,8 @@ package csheets.ext.db.ui;
 import java.sql.Connection;
 import javax.swing.JMenu;
 
+import csheets.SpreadsheetAppEvent;
+import csheets.SpreadsheetAppListener;
 import csheets.core.Address;
 import csheets.core.Cell;
 import csheets.core.Spreadsheet;
@@ -26,6 +28,28 @@ public class DatabaseUIExtension extends UIExtension implements
     public DatabaseUIExtension(DatabaseExtension extension,
 	    final UIController uiController) {
 	super(extension, uiController);
+	uiController.addWorkbookListener(new SpreadsheetAppListener() {
+	    
+	    @Override
+	    public void workbookUnloaded(SpreadsheetAppEvent event) {
+		sharedArea = null;
+	    }
+	    
+	    @Override
+	    public void workbookSaved(SpreadsheetAppEvent event) {
+		
+	    }
+	    
+	    @Override
+	    public void workbookLoaded(SpreadsheetAppEvent event) {
+		
+	    }
+	    
+	    @Override
+	    public void workbookCreated(SpreadsheetAppEvent event) {
+		
+	    }
+	});
 	uiController.addEditListener(new EditListener() {
 
 	    @Override
@@ -52,10 +76,12 @@ public class DatabaseUIExtension extends UIExtension implements
 		Spreadsheet sheet = uiController.getActiveSpreadsheet();
 		int beginColumn = sharedArea.getInitialCell().getColumn();
 		int endColumn = sharedArea.getFinalCell().getColumn();
-		String[] cellsNames = new String[endColumn - beginColumn];
+		String[] cellsNames = new String[endColumn - beginColumn + 1];
 
-		for (int i = beginColumn; i < endColumn; i++) {
+		for (int i = beginColumn; i <= endColumn; i++) {
+		    
 		    cellsNames[i] = sheet.getCell(i, 0).getContent();
+		    System.out.println("Hi , I'm creating this cell: " + cellsNames[i]);
 		}
 		return cellsNames;
 	    }
@@ -111,7 +137,7 @@ public class DatabaseUIExtension extends UIExtension implements
 		    break;
 		case 2:
 		    databaseInterface.insert(sharedArea.getTableName(),
-			    getColumnsName(c), c.getContent());
+			    getColumnsName(c), c.getContent(), getColumnsName());
 		    addr = new Address(sharedArea.getFinalCell().getColumn(),
 			    sharedArea.getFinalCell().getRow() + 1);
 		    sharedArea.setFinalCell(addr);
