@@ -215,7 +215,7 @@ public class ApplicationLayerTests {
     
     public void testTableCreation() {
 	try {
-	    Class.forName("org.hsqldb.jdbcDriver");
+	    Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 	    Connection conn = DriverManager.getConnection("jdbc:derby:"
 		    + DATABASE_NAME);
 	    ResultSet rs = conn.getMetaData().getTables(null, "PUBLIC", "%",
