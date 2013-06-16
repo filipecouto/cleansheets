@@ -61,7 +61,7 @@ public class MulticastServer {
 				message += com.getClientInfo().getShareName()
 						.replace(";", "_<_SEMI_>_")
 						+ ";"
-						+ com.getConnectedUsers().length
+						+ com.getConnectedUsersCount()
 						+ ";"
 						+ com.getPort()
 						+ ";";

@@ -267,8 +267,7 @@ public class ConnectionDialog extends JDialog {
 	@Override
 	public void setVisible(boolean b) {
 		if (b) {
-			portTextField.setText("");
-			addressTextField.setText("");
+			passwordTextField.setText("");
 			testAdapter.clear();
 			serverList.clearSelection();
 			searcher.start();

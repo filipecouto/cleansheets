@@ -41,22 +41,23 @@ public class RealTimeCollaboration extends Extension {
 		super("Real Time Collaboration");
 	}
 
-	/**
-	 * Tells the side bar to refresh the list of connected users
-	 * 
-	 * @param com
-	 */
-	public void updateUsersList(RtcCommunicator com) {
-		rtcUI.updateUsersList(com.getConnectedUsers());
-	}
+	// /**
+	// * Tells the side bar to refresh the list of connected users
+	// *
+	// * @param com
+	// */
+	// public void updateUsersList(RtcCommunicator com) {
+	// rtcUI.updateUsersList(com.getConnectedUsers());
+	// }
 
 	/**
 	 * Tells the side bar to refresh the list of shares
 	 */
 	public void updateServersList() {
-		RtcCommunicator[] array = new RtcCommunicator[communicators.size()];
-		communicators.toArray(array);
-		rtcUI.updateServersList(array);
+		rtcUI.updateServersList(communicators);
+		if (communicators.size() == 0) {
+			rtcUI.onDisconnected();
+		}
 	}
 
 	/**
@@ -127,19 +128,24 @@ public class RealTimeCollaboration extends Extension {
 	 * user)
 	 */
 	public void disconnect() {
-		for (RtcCommunicator com : communicators) {
-			com.onDisconnected(null);
+		for (int i = 0; i < communicators.size(); i++) {
+			communicators.get(i).onDisconnected(null);
 		}
-		communicators.removeAll(communicators);
 		updateServersList();
 	}
 
 	/**
 	 * Called when the connection is stopped, by user request or any other reason
 	 */
-	public void onDisconnected() {
-		// TODO refactoring this method
-		rtcUI.onDisconnected();
+	public void onDisconnected(ClientInfo info) {
+		final int len = communicators.size();
+		for (int i = 0; i < len; i++) {
+			if (communicators.get(i).getClientInfo() == info) {
+				communicators.remove(i);
+				break;
+			}
+		}
+		updateServersList();
 	}
 
 	/**

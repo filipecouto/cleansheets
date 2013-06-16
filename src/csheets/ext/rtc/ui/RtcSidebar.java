@@ -28,6 +28,8 @@ import csheets.ui.ctrl.UIController;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
@@ -162,14 +164,9 @@ public class RtcSidebar extends JPanel {
 			}
 		});
 		serverList.addListSelectionListener(new ListSelectionListener() {
-
 			@Override
 			public void valueChanged(ListSelectionEvent l) {
-				if (serverList.isEnabled()) {
-
-				}
-				clientAdapter.update(shareAdapter.getElementAt(
-						serverList.getSelectedIndex()).getConnectedUsers());
+				updateUsersList();
 			}
 		});
 		GroupLayout gl_contentPanel = new GroupLayout(listPanel);
@@ -196,18 +193,33 @@ public class RtcSidebar extends JPanel {
 		add(buttonPanel, BorderLayout.SOUTH);
 	}
 
-	public void updateUsersList(final ClientInfo[] clients) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				clientAdapter.update(clients);
-			}
-		});
+	// public void updateUsersList(final ClientInfo[] clients) {
+	// SwingUtilities.invokeLater(new Runnable() {
+	// public void run() {
+	// clientAdapter.update(clients);
+	// }
+	// });
+	// }
+
+	private void updateUsersList() {
+		final int selectedConnection = serverList.getSelectedIndex();
+		if (selectedConnection >= 0
+				&& selectedConnection < shareAdapter.getSize()) {
+			clientAdapter.update(shareAdapter.getElementAt(selectedConnection)
+					.getConnectedUsers());
+		} else if (shareAdapter.getSize() > 0) {
+			serverList.setSelectedIndex(shareAdapter.getSize() - 1);
+		} else if(serverList.getSelectedIndex() == -1) {
+			clientAdapter.update(null);
+		}
 	}
 
-	public void updateServersList(final RtcCommunicator[] servers) {
+	public void updateServersList(ArrayList<RtcCommunicator> communicators) {
+		shareAdapter.setCommunicatorsList(communicators);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				shareAdapter.update(servers);
+				shareAdapter.update();
+				updateUsersList();
 			}
 		});
 	}
