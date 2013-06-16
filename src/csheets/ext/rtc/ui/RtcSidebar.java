@@ -207,10 +207,11 @@ public class RtcSidebar extends JPanel {
 				&& selectedConnection < shareAdapter.getSize()) {
 			clientAdapter.update(shareAdapter.getElementAt(selectedConnection)
 					.getConnectedUsers());
-		} else if (shareAdapter.getSize() > 0) {
-			serverList.setSelectedIndex(shareAdapter.getSize() - 1);
-		} else if(serverList.getSelectedIndex() == -1) {
+		} else {
 			clientAdapter.update(null);
+			if (shareAdapter.getSize() > 0) {
+				serverList.setSelectedIndex(shareAdapter.getSize() - 1);
+			}
 		}
 	}
 

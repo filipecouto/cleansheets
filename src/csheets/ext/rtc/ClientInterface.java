@@ -141,7 +141,7 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
 							}
 							close();
 						} catch (Exception ex) {
-							System.out.println(ex);
+							close();
 						}
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
