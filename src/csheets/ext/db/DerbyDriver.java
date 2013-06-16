@@ -50,7 +50,7 @@ public class DerbyDriver implements DatabaseInterface {
 		}
 
 	    }
-	   
+
 	    if (!primaryKeys.isEmpty()) {
 		Statement += ", PRIMARY KEY (";
 		for (String key : primaryKeys) {
@@ -257,12 +257,22 @@ public class DerbyDriver implements DatabaseInterface {
 	PreparedStatement prepareStatement;
 	String sql = "UPDATE " + table + " SET " + columns[positionInArray]
 		+ "= '" + values[positionInArray] + "'  WHERE ";
-	for(int i = 0; i < columns.length; i++) {
-	    if(i != positionInArray) {
-		    sql += columns[i] + "='" + values[i] + "'";
-		    if((i+1) != columns.length && columns.length > positionInArray) {
-			sql += " AND ";
-		    }
+	List<String> columnsList = new ArrayList<String>();
+	List<String> valuesList = new ArrayList<String>();
+	for (int i = 0; i < columns.length; i++) {
+
+	    if (i != positionInArray) {
+		columnsList.add(columns[i]);
+		valuesList.add(values[i]);
+	    }
+	}
+	int columnsListSize = columnsList.size();
+	for (int i = 0; i < columnsListSize; i++) {
+
+	    sql += columnsList.get(i) + "='" + valuesList.get(i) + "'";
+	    if ((i + 1) != columnsListSize) {
+		sql += " AND ";
+
 	    }
 	}
 	try {
@@ -275,24 +285,25 @@ public class DerbyDriver implements DatabaseInterface {
     }
 
     @Override
-    public void insert(String table, String column, String value, String [] columnNames) {
+    public void insert(String table, String column, String value,
+	    String[] columnNames) {
 	PreparedStatement preparedStatement;
 	try {
 	    int position = 0;
 	    String sql = "INSERT INTO " + table + " values(";
-	    for(int i = 0; i < columnNames.length; i++) {
-		if(columnNames[i].equals(column)) {
+	    for (int i = 0; i < columnNames.length; i++) {
+		if (columnNames[i].equals(column)) {
 		    position = i;
-		} 
-		sql +="?";
-		if((i+1) != columnNames.length) {
+		}
+		sql += "?";
+		if ((i + 1) != columnNames.length) {
 		    sql += ", ";
 		}
 	    }
 	    sql += ")";
 	    preparedStatement = databaseConnection.prepareStatement(sql);
 	    for (int i = 1; i <= columnNames.length; i++) {
-		if((position+1) == i) {
+		if ((position + 1) == i) {
 		    preparedStatement.setString(i, value);
 		} else {
 		    preparedStatement.setString(i, " ");
@@ -303,14 +314,15 @@ public class DerbyDriver implements DatabaseInterface {
 	    e.printStackTrace();
 	}
     }
-    
+
     @Override
-    public void insertColumn(String table, int position, String value, String columnName) {
+    public void insertColumn(String table, int position, String value,
+	    String columnName) {
 	PreparedStatement prepareStatement;
 	String Statement = "ALTER TABLE " + table + " ADD ";
-	    Statement += DatabaseExportHelper.PrepareColumnName(columnName, position)
-			+ " varchar(255)";
-	
+	Statement += DatabaseExportHelper.PrepareColumnName(columnName,
+		position) + " varchar(255)";
+
 	try {
 	    prepareStatement = databaseConnection.prepareStatement(Statement);
 	    prepareStatement.execute();
