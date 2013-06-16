@@ -47,43 +47,24 @@ public class CheckUpdatesOnDatabase {
 
 	    private void setCellsContent(String[][] data) {
 
-		Spreadsheet sheet = controller.getActiveSpreadsheet();
+		Spreadsheet sheet = controller.getActiveWorkbook().getSpreadsheet(sharedArea.getSpreadsheetNumber());
 		int beginColumn = sharedArea.getInitialCell().getColumn();
 		int beginRow = sharedArea.getInitialCell().getRow();
 		int endColumn = sharedArea.getFinalCell().getColumn();
 		int endRow = sharedArea.getFinalCell().getRow();
-		if ((endColumn - beginColumn) < data.length) {
-		    if ((endRow - beginRow) < data[0].length) {
-			int sumColumn = endColumn - data.length;
-			sumColumn += beginColumn;
-			int sumRow = endRow - data[0].length;
-			sumRow += beginRow;
-			sharedArea.setFinalCell(new Address(sumColumn, sumRow));
-		    } else {
-			int sumColumn = endColumn - data.length;
-			sumColumn += beginColumn;
-			int sumRow = sharedArea.getFinalCell().getRow();
-			sharedArea.setFinalCell(new Address(sumColumn, sumRow));
-		    }
-		} else {
-		    int sumColumn = sharedArea.getFinalCell().getColumn();
-		    int sumRow = sharedArea.getFinalCell().getRow();
-		    sharedArea.setFinalCell(new Address(sumColumn, sumRow));
-		}
-		beginColumn = sharedArea.getInitialCell().getColumn();
-		beginRow = sharedArea.getInitialCell().getRow();
-		endColumn = sharedArea.getFinalCell().getColumn();
-		endRow = sharedArea.getFinalCell().getRow();
+
+	    	int verticalDimension = endRow - beginRow;
+	    	int verticalDimensionOffSet = data.length - verticalDimension-1;
+	    	endRow += verticalDimensionOffSet;
+
 		try {
 		    for (int i = beginColumn; i < endColumn; i++) {
 			for (int j = beginRow; j < endRow; j++) {
-
-			    sheet.getCell(j, i).setContent(
-				    data[i][j].toString());
+			    sheet.getCell(i, j).setContent(
+				    data[j][i].toString());
 
 			}
 		    }
-
 		    DatabaseUIExtension.setSharedArea(sharedArea);
 		} catch (FormulaCompilationException e) {
 		    e.printStackTrace();
