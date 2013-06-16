@@ -24,30 +24,31 @@ public class DatabaseUIExtension extends UIExtension implements
     private DatabaseSharedArea sharedArea;
     private DatabaseInterface databaseInterface;
     private Connection connection;
+    private CheckUpdatesOnDatabase updatesOnDatabase;
 
     public DatabaseUIExtension(DatabaseExtension extension,
 	    final UIController uiController) {
 	super(extension, uiController);
 	uiController.addWorkbookListener(new SpreadsheetAppListener() {
-	    
+
 	    @Override
 	    public void workbookUnloaded(SpreadsheetAppEvent event) {
 		sharedArea = null;
 	    }
-	    
+
 	    @Override
 	    public void workbookSaved(SpreadsheetAppEvent event) {
-		
+
 	    }
-	    
+
 	    @Override
 	    public void workbookLoaded(SpreadsheetAppEvent event) {
-		
+
 	    }
-	    
+
 	    @Override
 	    public void workbookCreated(SpreadsheetAppEvent event) {
-		
+
 	    }
 	});
 	uiController.addEditListener(new EditListener() {
@@ -79,9 +80,10 @@ public class DatabaseUIExtension extends UIExtension implements
 		String[] cellsNames = new String[endColumn - beginColumn + 1];
 
 		for (int i = beginColumn; i <= endColumn; i++) {
-		    
+
 		    cellsNames[i] = sheet.getCell(i, 0).getContent();
-		    System.out.println("Hi , I'm creating this cell: " + cellsNames[i]);
+		    System.out.println("Hi , I'm creating this cell: "
+			    + cellsNames[i]);
 		}
 		return cellsNames;
 	    }
@@ -134,6 +136,7 @@ public class DatabaseUIExtension extends UIExtension implements
 			    sharedArea.getFinalCell().getColumn() + 1,
 			    sharedArea.getFinalCell().getRow());
 		    sharedArea.setFinalCell(addr);
+		    updatesOnDatabase.setSharedArea(sharedArea);
 		    break;
 		case 2:
 		    databaseInterface.insert(sharedArea.getTableName(),
@@ -159,7 +162,6 @@ public class DatabaseUIExtension extends UIExtension implements
 	    }
 	});
     }
-
     @Override
     public JMenu getMenu() {
 	return new DatabaseUIMenu((DatabaseExtension) extension, this);
@@ -171,7 +173,10 @@ public class DatabaseUIExtension extends UIExtension implements
 	    String tableName, int spreadsheetNumber) {
 	sharedArea = new DatabaseSharedArea(initialCell, finalCell, tableName,
 		database, databaseName, spreadsheetNumber);
-	CheckUpdatesOnDatabase updatesOnDatabase = new CheckUpdatesOnDatabase(
-		uiController, sharedArea);
+	//updatesOnDatabase = new CheckUpdatesOnDatabase(uiController, sharedArea);
+    }
+    public static void setSharedArea(DatabaseSharedArea sharedArea) {
+	// TODO Auto-generated method stub
+	
     }
 }

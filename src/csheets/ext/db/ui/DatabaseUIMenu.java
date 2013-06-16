@@ -20,5 +20,6 @@ public class DatabaseUIMenu extends JMenu {
 	add(itemExport);
         itemImport = new JMenuItem(new DatabaseImportMenuItem(extension, interactionListener));
 	add(itemImport);
+	
     }
 }
