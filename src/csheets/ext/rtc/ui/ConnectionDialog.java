@@ -51,6 +51,7 @@ public class ConnectionDialog extends JDialog {
     private JList<MulticastServerListAdapter> serverList;
     private Timer time;
     private String shareName;
+    private int port = 33334;
 
     public ConnectionDialog() {
 	super((JFrame) null, "Connection Options", true);
@@ -63,7 +64,7 @@ public class ConnectionDialog extends JDialog {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 		try {
-		    searcher.setPort(Integer.parseInt(portTextField.getText()));
+		    searcher.setPort(port);
 		} catch (NumberFormatException e1) {
 		} catch (UnknownHostException e1) {
 		    e1.printStackTrace();
@@ -77,7 +78,7 @@ public class ConnectionDialog extends JDialog {
 	serverSelected = new String[3];
 	serverSelected[0] = "";
 	serverSelected[1] = "";
-	serverSelected[2] = "33334";
+	serverSelected[2] = "";
 
 	JPanel buttonPane = new JPanel();
 	buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -99,7 +100,6 @@ public class ConnectionDialog extends JDialog {
                 }catch(NullPointerException e){
                     System.out.println("ConnectionDialog " + e);
                 }
-                System.out.println("Password<!>"+pass+"<!>");
 		listener.onIPSelected(ipAddress, shareName, userName, port, pass);
 		ConnectionDialog.this.setVisible(false);
 		searcher.stop();
@@ -132,6 +132,7 @@ public class ConnectionDialog extends JDialog {
 		String ip = server.getIp().toString();
 		shareName = server.getShareName();
 		addressTextField.setText(ip);
+                portTextField.setText(String.valueOf(server.getPort()));
 	    }
 
 	});
@@ -156,34 +157,36 @@ public class ConnectionDialog extends JDialog {
 	addressTextField = new JTextField();
 	addressTextField.setText(serverSelected[1]);
 	addressTextField.setColumns(10);
+        addressTextField.enable(false);
 
 	JLabel portLabel = new JLabel("Port");
 
 	portTextField = new JTextField();
 	portTextField.setText(serverSelected[2]);
 	portTextField.setColumns(10);
-	portTextField.getDocument().addDocumentListener(new DocumentListener() {
-	    @Override
-	    public void removeUpdate(DocumentEvent arg0) {
-		updatePort();
-	    }
-
-	    @Override
-	    public void insertUpdate(DocumentEvent arg0) {
-		updatePort();
-	    }
-
-	    @Override
-	    public void changedUpdate(DocumentEvent arg0) {
-		updatePort();
-	    }
-
-	    private void updatePort() {
-		searcher.stop();
-		testAdapter.clear();
-		time.restart();
-	    }
-	});
+        portTextField.enable(true);
+//	portTextField.getDocument().addDocumentListener(new DocumentListener() {
+//	    @Override
+//	    public void removeUpdate(DocumentEvent arg0) {
+//		updatePort();
+//	    }
+//
+//	    @Override
+//	    public void insertUpdate(DocumentEvent arg0) {
+//		updatePort();
+//	    }
+//
+//	    @Override
+//	    public void changedUpdate(DocumentEvent arg0) {
+//		updatePort();
+//	    }
+//
+//	    private void updatePort() {
+//		searcher.stop();
+//		testAdapter.clear();
+//		time.restart();
+//	    }
+//	});
         
         JLabel passwordLabel = new JLabel("Password");
 
@@ -259,11 +262,25 @@ public class ConnectionDialog extends JDialog {
 	    @Override
 	    public void onShareFound(ServerInformation shareInfo) {
 		testAdapter.addShareInfo(shareInfo);
+                System.out.println("ADDED NEW SERVER "+shareInfo.getShareName()+" N= "+testAdapter.getSize());
 	    }
 	});
     }
 
     public void setOnIpSelectedListener(OnIPSelectListener listener) {
 	this.listener = listener;
+    }
+    
+    public void restart(){
+        portTextField.setText("");
+        addressTextField.setText("");
+        port=33335;
+        searcher.stop();
+        testAdapter.clear();
+        time.restart();
+//        MulticastServerListAdapter [] coisas = new MulticastServerListAdapter[testAdapter.information.size()];
+//        testAdapter.information.toArray(coisas);
+//        serverList.setListData(coisas);
+        System.out.println("Restart Search");
     }
 }

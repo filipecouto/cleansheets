@@ -242,4 +242,14 @@ public class ClientInterface extends Communicator implements RtcCommunicator {
     protected void onError(Object error) {
         listener.onError(error);
     }
+
+    @Override
+    public int getPort() {
+        return port;
+    }
+
+    @Override
+    public ClientInfo getClientInfo() {
+        return info;
+    }
 }

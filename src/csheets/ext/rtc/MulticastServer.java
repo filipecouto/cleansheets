@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * Multicast server for propagating tpc server's ip address
@@ -13,23 +14,23 @@ import java.net.UnknownHostException;
  * 
  */
 public class MulticastServer {
+    private static int PORT = 33334;
     private DatagramSocket socket;
     private DatagramPacket outPacket;
     private Runnable searcher;
     private String serverName;
     private int serverNrClients;
+    private List<RtcCommunicator> communicators;
 
-    public MulticastServer(final int port, final String username,
-	    final int nrClients) {
-	this.serverName = username;
-	this.serverNrClients = nrClients;
+    public MulticastServer(List<RtcCommunicator> communicators) {
+        this.communicators = communicators;
 	searcher = new Runnable() {
 
 	    @Override
 	    public void run() {
 		try {
 		    socket = new DatagramSocket();
-		    String info = setMsg();
+		    String info = setMessage();
 		    while (true) {
 			byte[] outBuf = info.getBytes();
 
@@ -37,7 +38,7 @@ public class MulticastServer {
 			InetAddress address = InetAddress
 				.getByName("224.2.2.3");
 			outPacket = new DatagramPacket(outBuf, outBuf.length,
-				address, port);
+				address, PORT);
 			socket.send(outPacket);
 			try {
 			    Thread.sleep(1000);
@@ -58,8 +59,18 @@ public class MulticastServer {
      * 
      * @return message
      */
-    private String setMsg() {
-	return (serverNrClients + ";" + serverName);
+    private String setMessage() {
+        int count=0;
+        String message="";
+        System.out.println("Communicators Number: "+communicators.size());
+        for(RtcCommunicator com : communicators){
+            if(com.getSharingProperties().isOwner()){
+                System.out.println("owner?");
+                count++;
+                message+=com.getClientInfo().getShareName()+";"+com.getConnectedUsers().length+";"+com.getPort();
+            }
+        }
+	return (count + ";" + message);
     }
 
     /**

@@ -32,7 +32,6 @@ public class ServerInterface implements RtcCommunicator {
     private RtcSharingProperties properties;
     private UIController uiController;
     private ArrayList<Client> clients;
-    private MulticastServer multserver;
 
     public ServerInterface(ClientInfo clientInfo, int port,
             RtcSharingProperties properties, UIController uiController) {
@@ -45,7 +44,6 @@ public class ServerInterface implements RtcCommunicator {
 
     @Override
     public void start() {
-        multserver = new MulticastServer(port, info.getShareName(), clients.size());
         try {
             server = new ServerSocket(port);
             connected = true;
@@ -76,7 +74,6 @@ public class ServerInterface implements RtcCommunicator {
         try {
             connected = false;
             server.close();
-            multserver.stop();
             listener.onDisconnected(info);
         } catch (IOException e) {
             e.printStackTrace();
@@ -177,7 +174,6 @@ public class ServerInterface implements RtcCommunicator {
                 synchronized (clients) {
                 clients.add(newClient);
                 newClient.run();
-                multserver.serverNrClient(clients.size());
                 }
             }
             else{
@@ -323,5 +319,15 @@ public class ServerInterface implements RtcCommunicator {
     
     public void onError(Object error){
         listener.onError(error);
+    }
+
+    @Override
+    public int getPort() {
+        return port;
+    }
+
+    @Override
+    public ClientInfo getClientInfo() {
+        return info;
     }
 }

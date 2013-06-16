@@ -12,6 +12,7 @@ import csheets.ui.ctrl.EditEvent;
 import csheets.ui.ctrl.EditListener;
 import csheets.ui.ctrl.UIController;
 import csheets.ui.ext.UIExtension;
+import java.net.UnknownHostException;
 
 /**
  * This extension lets the user share his/her workbook with other CleanSheets
@@ -33,6 +34,7 @@ public class RealTimeCollaboration extends Extension {
     private ClientInfo identity;
     private ArrayList<RtcCommunicator> communicators = new ArrayList<RtcCommunicator>();
     private RtcUI rtcUI;
+    private MulticastServer multserver;
 
     private boolean isOwner;
 
@@ -87,6 +89,9 @@ public class RealTimeCollaboration extends Extension {
 	server.start();
 	communicators.add(server);
 
+        if(multserver == null ) {
+            multserver = new MulticastServer(communicators);
+        }
 	return identity;
     }
 

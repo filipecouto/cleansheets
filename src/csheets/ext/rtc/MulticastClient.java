@@ -30,11 +30,18 @@ public class MulticastClient {
 		    while (true) {
 			socket.receive(inPacket);
 			String msg = new String(inBuf, 0, inPacket.getLength());
-			String[] info = splitMsg(msg);
-			onShareFoundListener
-				.onShareFound(new ServerInformation(info[1],
-					Integer.parseInt(info[0]), inPacket
-						.getAddress()));
+                        System.out.println("MSG:"+msg);
+			String[] info = splitMessage(msg);
+                        int count=Integer.parseInt(info[0]);
+                        //System.out.println("Count= "+count);
+                        for(int i=0;i<count;i++){
+                            onShareFoundListener
+                                    .onShareFound(new ServerInformation(info[1+i],
+                                            Integer.parseInt(info[2+i]), Integer.parseInt(info[3+i])
+                                            ,inPacket.getAddress()));
+                            //System.out.println(info[i]+" "+info[1+i]+" "+info[2+i]+" "+inPacket.getAddress());
+                        }
+                        System.out.println("-IN-");
 		    }
 		} catch (IOException ioe) {
 		}
@@ -55,11 +62,8 @@ public class MulticastClient {
      * 
      * @return message
      */
-    private static String[] splitMsg(String msg) {
-	int pos = msg.indexOf(";");
-	String[] tmp = new String[2];
-	tmp[0] = (String) msg.subSequence(0, (pos));
-	tmp[1] = (String) msg.subSequence(pos + 1, msg.length());
+    private static String[] splitMessage(String msg) {
+	String[] tmp = msg.split(";");
 	return tmp;
     }
 
@@ -75,6 +79,7 @@ public class MulticastClient {
 	stop();
 	this.port = port;
 	startSearching();
+        System.out.println("Searching.................................");
     }
 
     /**
@@ -97,5 +102,6 @@ public class MulticastClient {
 	InetAddress address = InetAddress.getByName("224.2.2.3");
 	socket.joinGroup(address);
 	inPacket = new DatagramPacket(inBuf, inBuf.length);
+        System.out.println("Porta: "+port);
     }
 }

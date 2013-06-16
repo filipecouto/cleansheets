@@ -13,6 +13,7 @@ public class ServerInformation {
 
     private String shareName;
     private int nrPersons;
+    private int port;
     private InetAddress ip;
 
     /**
@@ -24,14 +25,15 @@ public class ServerInformation {
      * @param ip
      *            Share's ip address
      */
-    public ServerInformation(String shareName, int nrPersons, InetAddress ip) {
+    public ServerInformation(String shareName, int nrPersons, int port, InetAddress ip) {
 	this.shareName = shareName;
 	this.nrPersons = nrPersons;
+        this.port = port;
 	this.ip = ip;
     }
 
     public String toString() {
-	return (shareName + " - " + getIp() + " - " + (nrPersons + 1) + " persons(s)");
+	return (shareName + " - " + nrPersons + " person(s)");
     }
 
     /**
@@ -60,5 +62,13 @@ public class ServerInformation {
      */
     public int getNrPersons() {
 	return nrPersons;
+    }
+    
+    /**
+     * 
+     * @return port number
+     */
+    public int getPort(){
+        return port;
     }
 }

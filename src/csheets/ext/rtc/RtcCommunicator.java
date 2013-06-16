@@ -57,4 +57,16 @@ public interface RtcCommunicator extends RtcInterface {
      */
     public boolean isActivated();
     
+    /**
+     * 
+     * @return the port number
+     */
+    public abstract int getPort();
+    
+    /**
+     * 
+     * @return clientInfo
+     */
+    public abstract ClientInfo getClientInfo();
+    
 }

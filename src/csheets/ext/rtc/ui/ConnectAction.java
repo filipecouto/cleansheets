@@ -27,8 +27,7 @@ public class ConnectAction extends FocusOwnerAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
-	if (ipDialog == null) {
+        if (ipDialog == null) {
 	    ipDialog = new ConnectionDialog();
 	    ipDialog.setOnIpSelectedListener(new OnIPSelectListener() {
 		@Override
@@ -38,7 +37,6 @@ public class ConnectAction extends FocusOwnerAction {
 		    // String ip = "";
 		    // try {
 		    try {
-                        System.out.println("ConnectAction");
 			client = extension.createClient(
 				new ClientInfo(shareName,username,password), address, port,
 				uiController);
@@ -57,6 +55,7 @@ public class ConnectAction extends FocusOwnerAction {
 	    });
 	    ipDialog.setVisible(true);
 	} else {
+            ipDialog.restart();
 	    ipDialog.setVisible(true);
 	}
     }
