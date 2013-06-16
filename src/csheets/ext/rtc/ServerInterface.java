@@ -146,7 +146,7 @@ public class ServerInterface implements RtcCommunicator {
 	}
 
 	@Override
-	public synchronized ClientInfo[] getConnectedUsers() {
+	public ClientInfo[] getConnectedUsers() {
 		if (connected) {
 			synchronized (clients) {
 				final int len = clients.size();
@@ -162,10 +162,10 @@ public class ServerInterface implements RtcCommunicator {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public int getConnectedUsersCount() {
-		return clients.size();
+		return clients.size() + 1;
 	}
 
 	/**

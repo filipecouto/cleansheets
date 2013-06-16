@@ -1,12 +1,14 @@
 package csheets.ext.rtc.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -115,6 +117,7 @@ public class ConnectionDialog extends JDialog {
 
 		testAdapter = new MulticastClientListAdapter();
 		serverList = new JList<MulticastClientListAdapter>(testAdapter);
+		serverList.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		serverList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
