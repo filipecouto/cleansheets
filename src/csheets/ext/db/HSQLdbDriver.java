@@ -254,27 +254,19 @@ public class HSQLdbDriver implements DatabaseInterface {
     public void update(String table, String columns[], String values[],
 	    int positionInArray) {
 	PreparedStatement prepareStatement;
-	String sql = "Update " + table + " set " + columns[positionInArray]
-		+ "= '" + values[positionInArray] + "'  Where ";
-	for (int i = 0; i < positionInArray; i++) {
-	    sql += columns[i] + "= '" + values[i] + "'";
-	    if ((i + 1) != (positionInArray)) {
-		sql += " and ";
+	String sql = "UPDATE " + table + " SET " + columns[positionInArray]
+		+ "= '" + values[positionInArray] + "'  WHERE ";
+	for(int i = 0; i < columns.length; i++) {
+	    if(i != positionInArray) {
+		    sql += columns[i] + "='" + values[i] + "'";
+		    if((i+1) != columns.length && columns.length > positionInArray) {
+			sql += " AND ";
+		    }
 	    }
 	}
-	if (positionInArray < (columns.length - 1)) {
-	    sql += " and ";
-	    for (int i = positionInArray + 1; i < columns.length; i++) {
-		sql += columns[i] + "= '" + values[i] + "'";
-		if ((i + 1) != columns.length) {
-		    sql += " and ";
-		}
-	    }
-	}
-	System.out.println(sql);
 	try {
+	    System.out.println("Statement = " + sql);
 	    prepareStatement = databaseConnection.prepareStatement(sql);
-
 	    prepareStatement.executeUpdate();
 	} catch (SQLException e) {
 	    e.printStackTrace();

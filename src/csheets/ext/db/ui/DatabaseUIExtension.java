@@ -100,8 +100,8 @@ public class DatabaseUIExtension extends UIExtension implements
 		int endColumn = sharedArea.getFinalCell().getColumn();
 		int row = c.getAddress().getRow();
 
-		String[] cellsNames = new String[endColumn - beginColumn];
-		for (int i = beginColumn; i < endColumn; i++) {
+		String[] cellsNames = new String[endColumn - beginColumn + 1];
+		for (int i = beginColumn; i <= endColumn; i++) {
 		    cellsNames[i] = sheet.getCell(i, row).getContent();
 		}
 		return cellsNames;
