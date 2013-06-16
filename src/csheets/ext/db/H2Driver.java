@@ -73,7 +73,6 @@ public class H2Driver implements DatabaseInterface {
 		Statement += ")";
 	    }
 	    Statement += ")";
-	    System.out.println(Statement);
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (Exception e) {
 	    if (e.getMessage().contains("already exists")) {
@@ -195,7 +194,6 @@ public class H2Driver implements DatabaseInterface {
 		    "PUBLIC", "%", null);
 	    while (rs.next()) {
 		tables.add(rs.getString(3));
-		System.out.println(rs.getString(3));
 	    }
 	    rs.close();
 	    databaseConnection.close();
@@ -274,7 +272,6 @@ public class H2Driver implements DatabaseInterface {
 	    }
 	}
 	try {
-	    System.out.println("Statement = " + sql);
 	    prepareStatement = databaseConnection.prepareStatement(sql);
 	    prepareStatement.executeUpdate();
 	} catch (SQLException e) {

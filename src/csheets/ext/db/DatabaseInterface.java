@@ -105,10 +105,45 @@ public interface DatabaseInterface {
      */
     public void dropTable(String table);
 
+    /**
+     * Invoked by classes CheckUpdatesOnSheet for updating the database
+     * 
+     * @param table
+     * @param columns
+     * @param values
+     * @param positionInArray
+     */
+
     public void update(String table, String columns[], String values[],
 	    int positionInArray);
 
-    public void insert(String table, String column, String value, String [] columnNames);
+    /**
+     * Invoked by classes CheckUpdatesOnSheet for uinserting new row in the
+     * database
+     * 
+     * @param table
+     * @param column
+     * @param value
+     * @param columnNames
+     */
+    public void insert(String table, String column, String value,
+	    String[] columnNames);
 
-    public void insertColumn(String table, int position, String value, String columnName);
+    /**
+     * Method for inserting new column
+     * 
+     * @param table
+     * @param position
+     * @param value
+     * @param columnName
+     */
+    public void insertColumn(String table, int position, String value,
+	    String columnName);
+    /*
+     * After a group discussion and a thorough analysis of the statement, was
+     * decided that the creation of new columns would not be considered because
+     * the statement speaks of records. Records are the contents of a column and
+     * not a new column.This method is prepared to insert a new column, but this
+     * functionality is not implemented.
+     */
 }

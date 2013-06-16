@@ -62,7 +62,7 @@ public class DerbyDriver implements DatabaseInterface {
 	    Statement += ")";
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (Exception e) {
-	    if (e.getMessage().contains("already exists")) {
+	    if (e.getMessage().contains("already exists") && (e.getMessage() != null)) {
 		throw new RuntimeException("Table already exists");
 	    }
 	    e.printStackTrace();
@@ -192,7 +192,6 @@ public class DerbyDriver implements DatabaseInterface {
 		    "APP", "%", null);
 	    while (rs.next()) {
 		tables.add(rs.getString(3));
-		System.out.println(rs.getString(3));
 	    }
 	    rs.close();
 	    databaseConnection.close();
@@ -276,7 +275,6 @@ public class DerbyDriver implements DatabaseInterface {
 	    }
 	}
 	try {
-	    System.out.println("Statement = " + sql);
 	    prepareStatement = databaseConnection.prepareStatement(sql);
 	    prepareStatement.executeUpdate();
 	} catch (SQLException e) {

@@ -26,7 +26,6 @@ public class HSQLdbDriver implements DatabaseInterface {
     public Connection openDatabase(String database) {
 	try {
 	    Class.forName("org.hsqldb.jdbcDriver");
-	    System.out.println("Database: " + database);
 	    databaseConnection = DriverManager.getConnection("jdbc:hsqldb:"
 		    + database);
 	} catch (ClassNotFoundException e) {
@@ -74,7 +73,6 @@ public class HSQLdbDriver implements DatabaseInterface {
 		Statement += ")";
 	    }
 	    Statement += ")";
-	    System.out.println(Statement);
 	    databaseConnection.prepareStatement(Statement).execute();
 	} catch (Exception e) {
 	    if (e.getMessage().contains("already exists")) {
@@ -196,7 +194,6 @@ public class HSQLdbDriver implements DatabaseInterface {
 		    "PUBLIC", "%", null);
 	    while (rs.next()) {
 		tables.add(rs.getString(3));
-		System.out.println(rs.getString(3));
 	    }
 	    rs.close();
 	    databaseConnection.close();
@@ -275,7 +272,6 @@ public class HSQLdbDriver implements DatabaseInterface {
 	    }
 	}
 	try {
-	    System.out.println("Statement = " + sql);
 	    prepareStatement = databaseConnection.prepareStatement(sql);
 	    prepareStatement.executeUpdate();
 	} catch (SQLException e) {
